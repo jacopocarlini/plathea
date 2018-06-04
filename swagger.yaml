@@ -1,0 +1,546 @@
+swagger: "2.0"
+info:
+  description: "Rest APIs Plathea"
+  version: "1.0.0"
+  title: "Plathea"
+
+paths:
+  /room/{roomID}:
+    get:
+      tags:
+      - "room"
+      summary: "Returns all the information available about a room"
+      description: "Return a single room given a roomID"
+      operationId: "getRoomInfo"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "roomID"
+        in: "path"
+        description: "ID of a room"
+        required: true
+        type: "integer"
+        format: "int"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Room"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Room not found"
+    delete:
+        tags:
+        - "room"
+        summary: "Delete a room"
+        description: ""
+        operationId: "deleteRoom"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "roomID"
+          in: "path"
+          description: "Room id to delete"
+          required: true
+          type: "integer"
+          format: "int64"
+        responses:
+          200:
+            description: "successful operation"
+          400:
+            description: "Invalid ID supplied"
+          404:
+            description: "Room not found"
+  /room:
+    post:
+      tags:
+      - "room"
+      summary: "Add a new room"
+      description: ""
+      operationId: "addRoom"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Room that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/Room"
+      responses:
+        200:
+          description: "successful operation"
+        405:
+          description: "Invalid input"
+    put:
+      tags:
+      - "room"
+      summary: "Update an existing room"
+      description: ""
+      operationId: "updateRoom"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Room that needs to be modified"
+        required: true
+        schema:
+          $ref: "#/definitions/Room"
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Room not found"
+        405:
+          description: "Validation exception"
+  /rooms:
+    get:
+      tags:
+      - "room"
+      summary: "Returns all existing rooms"
+      description: "Return an array of rooms"
+      operationId: "getAllRooms"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Room"
+        400:
+          description: "Something went worng"
+  /room_settings/{roomID}:
+    post:
+      tags:
+      - "room"
+      summary: "Set the settings of a room"
+      description: ""
+      operationId: "addRoomSettings"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "roomID"
+        in: "path"
+        description: "ID of a room"
+        required: true
+        type: "integer"
+        format: "int"
+      - in: "body"
+        name: "body"
+        description: "Room Settings that needs to be setted"
+        required: true
+        schema:
+          $ref: "#/definitions/RoomSettings"
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Room not found"
+        405:
+          description: "Invalid input"
+
+  /person/{personID}:
+    get:
+      tags:
+      - "person"
+      summary: "Returns all information of a person"
+      description: "Return a person given a personID"
+      operationId: "getPositionFromPersonID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "personID"
+        in: "path"
+        description: "ID of a person"
+        required: true
+        type: "integer"
+        format: "int"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Person"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Person not found"
+    # delete:
+    #   tags:
+    #   - "person"
+    #   summary: "Delete a person"
+    #   description: ""
+    #   operationId: "deletePerson"
+    #   produces:
+    #   - "application/json"
+    #   parameters:
+    #   - name: "personID"
+    #     in: "path"
+    #     description: "Person id to delete"
+    #     required: true
+    #     type: "integer"
+    #     format: "int64"
+    #   responses:
+    #     200:
+    #       description: "successful operation"
+    #     400:
+    #       description: "Invalid ID supplied"
+    #     404:
+    #       description: "Person not found"
+  # /person:
+  #   post:
+  #     tags:
+  #     - "person"
+  #     summary: "Add a new person"
+  #     description: ""
+  #     operationId: "addPerson"
+  #     consumes:
+  #     - "application/json"
+  #     produces:
+  #     - "application/json"
+  #     parameters:
+  #     - in: "body"
+  #       name: "body"
+  #       description: "Person that needs to be added"
+  #       required: true
+  #       schema:
+  #         $ref: "#/definitions/Person"
+  #     responses:
+  #       200:
+  #         description: "successful operation"
+  #       405:
+  #         description: "Invalid input"
+  #   put:
+  #     tags:
+  #     - "person"
+  #     summary: "Update an existing person"
+  #     description: ""
+  #     operationId: "updatePerson"
+  #     consumes:
+  #     - "application/json"
+  #     produces:
+  #     - "application/json"
+  #     parameters:
+  #     - in: "body"
+  #       name: "body"
+  #       description: "Person that needs to be modified"
+  #       required: true
+  #       schema:
+  #         $ref: "#/definitions/Person"
+  #     responses:
+  #       200:
+  #         description: "successful operation"
+  #       400:
+  #         description: "Invalid ID supplied"
+  #       404:
+  #         description: "Person not found"
+  #       405:
+  #         description: "Validation exception"
+  /people:
+    get:
+      tags:
+      - "person"
+      summary: "Returns all existing people"
+      description: "Return an array of people"
+      operationId: "getAllPeople"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Person"
+        400:
+          description: "Something went worng"
+
+  /identity/{identityID}:
+    get:
+      tags:
+      - "identity"
+      summary: "Returns all the information available about a identity"
+      description: "Return a single identity given a identityID"
+      operationId: "getIdentityInfo"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "identityID"
+        in: "path"
+        description: "ID of an identity"
+        required: true
+        type: "integer"
+        format: "int"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Identity"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Identity not found"
+    delete:
+        tags:
+        - "identity"
+        summary: "Delete an identity"
+        description: ""
+        operationId: "deleteIdentity"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "identityID"
+          in: "path"
+          description: "Identity id to delete"
+          required: true
+          type: "integer"
+          format: "int64"
+        responses:
+          200:
+            description: "successful operation"
+          400:
+            description: "Invalid ID supplied"
+          404:
+            description: "Identity not found"
+  /identity:
+    post:
+      tags:
+      - "identity"
+      summary: "Add a new identity"
+      description: ""
+      operationId: "addIdentity"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Identity that needs to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/Identity"
+      responses:
+        200:
+          description: "successful operation"
+        405:
+          description: "Invalid input"
+    put:
+      tags:
+      - "identity"
+      summary: "Update an existing identity"
+      description: ""
+      operationId: "updateIdentity"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Identity that needs to be modified"
+        required: true
+        schema:
+          $ref: "#/definitions/Identity"
+      responses:
+        200:
+          description: "successful operation"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Identity not found"
+        405:
+          description: "Validation exception"
+  /identities:
+    get:
+      tags:
+      - "identity"
+      summary: "Returns all existing identities"
+      description: "Return an array of identities"
+      operationId: "getAllIdentities"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Identity"
+        400:
+          description: "Something went worng"
+
+  /object/{objectID}:
+    get:
+      tags:
+      - "object"
+      summary: "Returns all information of an object"
+      description: "Return an object given an objectID"
+      operationId: "getPositionFromObjectID"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "objectID"
+        in: "path"
+        description: "ID of an object"
+        required: true
+        type: "integer"
+        format: "int"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Object"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Object not found"
+  /objects:
+    get:
+      tags:
+      - "object"
+      summary: "Returns all the objects"
+      description: "Return an array of objects"
+      operationId: "getAllPositions"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Object"
+        400:
+          description: "Something went worng"
+
+  /video/{roomID}:
+    get:
+      tags:
+      - "room"
+      summary: "Returns a video stream available about a room"
+      description: "Return the video stream given a roomID"
+      operationId: "getVideoRoom"
+      produces:
+      - "video/mp4"
+      parameters:
+      - name: "roomID"
+        in: "path"
+        description: "ID of a room"
+        required: true
+        type: "integer"
+        format: "int"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: file
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Room not found"
+
+
+
+
+definitions:
+  Room:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int"
+      name:
+        type: "string"
+      Objects:
+        type: "array"
+        items:
+          $ref: "#/definitions/Object"
+      settings:
+        $ref: "#/definitions/RoomSettings"
+
+  RoomSettings:
+    type: "object"
+    properties:
+      WXmin:
+        type: "number"
+        format: "float"
+      WXmax:
+        type: "number"
+        format: "float"
+      WYmin:
+        type: "number"
+        format: "float"
+      WYmax:
+        type: "number"
+        format: "float"
+      WZmin:
+        type: "number"
+        format: "float"
+      WZmax:
+        type: "number"
+        format: "float"
+
+  Object:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      position:
+        $ref: "#/definitions/Position"
+      is_person:
+        type: "boolean"
+      person:
+        $ref: "#/definitions/Person"
+
+  Person:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      identity:
+        $ref: "#/definitions/Identity"
+      last_position:
+        $ref: "#/definitions/Position"
+      tracked:
+        type: "boolean"
+      identified:
+        type: "boolean"
+
+  Position:
+    type: "object"
+    properties:
+      identityID:
+          type: "integer"
+      x:
+        type: "number"
+        format: "float"
+      y:
+        type: "number"
+        format: "float"
+      z:
+        type: "number"
+        format: "float"
+
+  Identity:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+      surname:
+        type: "string"
