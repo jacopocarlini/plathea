@@ -1,0 +1,296 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Template|Win32">
+      <Configuration>Template</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Template|x64">
+      <Configuration>Template</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{16397D5B-F1CB-408C-B9CD-D9FA16C883FC}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Template|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LibraryPath)</LibraryPath>
+    <ExecutablePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\CyberLink\include;C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\xerces-c-3.1.0\src;C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\jpeg-8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>cv200d.lib;cxcore200d.lib;highgui200d.lib;jpeg.lib;WS2_32.lib;comctl32.lib;Iphlpapi.lib;xerces-c_3D.lib;CyberLink.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\CyberLink\lib\win32\vc60;C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\xerces-c-3.1.0\Build\Win32\VC9\Debug;C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\jpeg-8\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk-10.0.1\include;..\..\tinyxml;..\..\LeoStormLibrary\LeoStormComponentLib;..\..\LeoStormLibrary\LeoStormWindowsOpenCV;..\..\LeoStormLibrary\LeoStormWindowsLib;..\..\LeoStormLibrary\LeoStormSTLExtension;..\..\opencv-master\build\install_debug\include;..\..\libjpeg-turbo-1.3.1\debug\include;C:\Program Files\Java\jdk-10.0.1\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TIXML_USE_STL;_USE_MATH_DEFINES;_WIN64;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>tinyxmlstld.lib;LeoStormComponentLib.lib;LeoStormSTLExtension.lib;LeoStormWindowsLib.lib;LeoStormWindowsOpenCV.lib;opencv_ml310d.lib;opencv_video310d.lib;opencv_core310d.lib;opencv_highgui310d.lib;opencv_calib3d310d.lib;opencv_imgproc310d.lib;opencv_objdetect310d.lib;opencv_videoio310d.lib;opencv_imgcodecs310d.lib;turbojpeg-static.lib;WS2_32.lib;Iphlpapi.lib;comctl32.lib;uxtheme.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\tinyxml;..\..\LeoStormLibrary\x64\Debug;..\..\libjpeg-turbo-1.3.1\debug\lib;..\..\opencv-master\build\install_debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\CyberLink\include;C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\xerces-c-3.1.0\src;C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\jpeg-8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>cv200.lib;cxcore200.lib;highgui200.lib;jpeg.lib;WS2_32.lib;comctl32.lib;Iphlpapi.lib;xerces-c_3.lib;CyberLink_Release.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\CyberLink\lib\win32\vc60;C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\xerces-c-3.1.0\Build\Win32\VC9\Release;C:\Users\Francesco Leotta\Documents\Visual Studio 2008\Projects\jpeg-8\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\tinyxml;..\..\LeoStormLibrary\LeoStormComponentLib;..\..\LeoStormLibrary\LeoStormWindowsOpenCV;..\..\LeoStormLibrary\LeoStormWindowsLib;..\..\LeoStormLibrary\LeoStormSTLExtension;..\..\opencv-master\build\install_release\include;..\..\libjpeg-turbo-1.3.1\release\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>TIXML_USE_STL;_USE_MATH_DEFINES;_WIN64;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>tinyxmlstl.lib;LeoStormComponentLib.lib;LeoStormSTLExtension.lib;LeoStormWindowsLib.lib;LeoStormWindowsOpenCV.lib;opencv_ml310.lib;opencv_video310.lib;opencv_core310.lib;opencv_highgui310.lib;opencv_calib3d310.lib;opencv_imgproc310.lib;opencv_objdetect310.lib;opencv_videoio310.lib;opencv_imgcodecs310.lib;turbojpeg-static.lib;WS2_32.lib;Iphlpapi.lib;comctl32.lib;uxtheme.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\tinyxml;..\..\LeoStormLibrary\x64\Release;..\..\opencv-master\build\install_release\lib;..\..\libjpeg-turbo-1.3.1\release\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AcquisitionStatistics.cpp" />
+    <ClCompile Include="HelloJNI.c" />
+    <ClCompile Include="Interfaccia.cpp" />
+    <ClCompile Include="MLDialog.cpp" />
+    <ClCompile Include="NetworkCamera.cpp" />
+    <ClCompile Include="ElaborationCore.cpp" />
+    <ClCompile Include="FaceDatabase.cpp" />
+    <ClCompile Include="MainApp.cpp" />
+    <ClCompile Include="matrix.cpp" />
+    <ClCompile Include="munkres.cpp" />
+    <ClCompile Include="PlanViewMap.cpp" />
+    <ClCompile Include="PositionTest.cpp" />
+    <ClCompile Include="PositionTestDialog.cpp" />
+    <ClCompile Include="RecordPlayerDialog.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="RoomSettings.cpp" />
+    <ClCompile Include="Shared.cpp" />
+    <ClCompile Include="SIFT\imgfeatures.cpp" />
+    <ClCompile Include="SIFT\kdtree.cpp" />
+    <ClCompile Include="SIFT\minpq.cpp" />
+    <ClCompile Include="SIFT\sift.cpp" />
+    <ClCompile Include="SIFT\utils.cpp" />
+    <ClCompile Include="StereoCalibration.cpp" />
+    <ClCompile Include="StereoExplorer.cpp" />
+    <ClCompile Include="SVMDialog.cpp" />
+    <ClCompile Include="SyncTest.cpp" />
+    <ClCompile Include="TCPServer.cpp" />
+    <ClCompile Include="TestAnalyzer.cpp" />
+    <ClCompile Include="TestAnalyzerDialog.cpp" />
+    <ClCompile Include="TestDesigner.cpp" />
+    <ClCompile Include="VideoRecorder.cpp" />
+    <ClCompile Include="video_output.cpp" />
+    <ClCompile Include="ApplicationWorkFlow.cpp" />
+    <ClCompile Include="ConnectedComponents.cpp" />
+    <ClCompile Include="LeottaBackgroundModel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AcquisitionStatistics.h" />
+    <ClInclude Include="CommonHeader.h" />
+    <ClInclude Include="HelloJNI.h" />
+    <ClInclude Include="Interfaccia.h" />
+    <ClInclude Include="MLDialog.h" />
+    <ClInclude Include="NetworkCamera.h" />
+    <ClInclude Include="ElaborationCore.h" />
+    <ClInclude Include="FaceDatabase.h" />
+    <ClInclude Include="matrix.h" />
+    <ClInclude Include="munkres.h" />
+    <ClInclude Include="PlanViewMap.h" />
+    <ClInclude Include="PositionTest.h" />
+    <ClInclude Include="PositionTestDialog.h" />
+    <ClInclude Include="RecordPlayerDialog.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="RoomSettings.h" />
+    <ClInclude Include="Shared.h" />
+    <ClInclude Include="SIFT\imgfeatures.h" />
+    <ClInclude Include="SIFT\kdtree.h" />
+    <ClInclude Include="SIFT\minpq.h" />
+    <ClInclude Include="SIFT\sift.h" />
+    <ClInclude Include="SIFT\utils.h" />
+    <ClInclude Include="StereoCalibration.h" />
+    <ClInclude Include="StereoExplorer.h" />
+    <ClInclude Include="SVMDialog.h" />
+    <ClInclude Include="SyncTest.h" />
+    <ClInclude Include="TCPServer.h" />
+    <ClInclude Include="TestAnalyzer.h" />
+    <ClInclude Include="TestAnalyzerDialog.h" />
+    <ClInclude Include="TestDesigner.h" />
+    <ClInclude Include="VideoRecorder.h" />
+    <ClInclude Include="video_output.h" />
+    <ClInclude Include="ApplicationWorkFlow.h" />
+    <ClInclude Include="ConnectedComponents.h" />
+    <ClInclude Include="LeottaBackgroundModel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="family.ico" />
+    <None Include="HelloJNI.java" />
+    <None Include="worldCoo.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PLaTHEA.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="PLaTHEA.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

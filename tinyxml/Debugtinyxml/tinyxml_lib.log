@@ -1,0 +1,8 @@
+﻿  tinyxmlparser.cpp
+  tinyxmlerror.cpp
+  tinyxml.cpp
+c:\users\jack1\desktop\github\plathea\tinyxml\tinyxml.cpp(670): warning C4458: se si dichiara 'value', il membro della classe verrà nascosto
+  c:\users\jack1\desktop\github\plathea\tinyxml\tinyxml.h(761): note: vedere la dichiarazione di 'TiXmlNode::value'
+  tinystr.cpp
+  Generazione del codice in corso...
+  tinyxml_lib.vcxproj -> C:\Users\jack1\Desktop\github\plathea\tinyxml\Debugtinyxml\tinyxml.lib

@@ -1,0 +1,3 @@
+﻿  xmltest.cpp
+xmltest.obj : warning LNK4075: '/EDITANDCONTINUE' ignorato a causa della specifica di '/SAFESEH'
+  tinyXmlTest.vcxproj -> C:\Users\jack1\Desktop\github\plathea\tinyxml\DebugtinyXmlTest\tinyXmlTest.exe

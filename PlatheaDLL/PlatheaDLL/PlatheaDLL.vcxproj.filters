@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="File di origine">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="File di intestazione">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="File di risorse">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="File di intestazione\Core">
+      <UniqueIdentifier>{95564c69-9c1b-4c5b-82df-52a7bffcfc05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\Core">
+      <UniqueIdentifier>{42f70792-d990-4479-98b2-caca1c1f020f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\Core\Calibration">
+      <UniqueIdentifier>{ff7c2b91-1e7c-455b-9eb6-6b07a7b00c0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\Core\Test">
+      <UniqueIdentifier>{aba00d25-53fc-4a9e-85d6-d7646066cada}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\Core\External">
+      <UniqueIdentifier>{278b6ef8-a0ca-438b-ac36-23b1466a73af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\Core\Background">
+      <UniqueIdentifier>{68f842b7-8b40-4116-9d92-ef9d32477611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\Core\Calibration">
+      <UniqueIdentifier>{f902f917-a68c-4cbc-8b66-f6b4033a7981}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\Core\External">
+      <UniqueIdentifier>{98dbe711-72c0-4e43-b0f4-4358a6f88b4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\Core\Background">
+      <UniqueIdentifier>{71fbe9b4-edc1-49f2-9c8f-28a6b819110c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\Core\Test">
+      <UniqueIdentifier>{6006826b-5118-4f02-baa0-f9f5d9c6e94d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di origine\Core\External\SIFT">
+      <UniqueIdentifier>{77585377-6a0e-4c82-bf2b-fd26e96032fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File di intestazione\Core\External\SIFT">
+      <UniqueIdentifier>{0ae2b0ab-9a75-46bf-94eb-c4d4e7a45907}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="PlatheaDLL.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonHeader.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="video_output.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ElaborationCore.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoRecorder.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ApplicationWorkFlow.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanViewMap.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomSettings.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="StereoCalibration.h">
+      <Filter>File di intestazione\Core\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkCamera.h">
+      <Filter>File di intestazione\Core\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="FaceDatabase.h">
+      <Filter>File di intestazione\Core\Calibration</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionTestDialog.h">
+      <Filter>File di intestazione\Core\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionTest.h">
+      <Filter>File di intestazione\Core\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="StereoExplorer.h">
+      <Filter>File di intestazione\Core\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="TestDesigner.h">
+      <Filter>File di intestazione\Core\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="TestAnalyzer.h">
+      <Filter>File di intestazione\Core\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="TestAnalyzerDialog.h">
+      <Filter>File di intestazione\Core\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix.h">
+      <Filter>File di intestazione\Core\External</Filter>
+    </ClInclude>
+    <ClInclude Include="munkres.h">
+      <Filter>File di intestazione\Core\External</Filter>
+    </ClInclude>
+    <ClInclude Include="LeottaBackgroundModel.h">
+      <Filter>File di intestazione\Core\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectedComponents.h">
+      <Filter>File di intestazione\Core\Background</Filter>
+    </ClInclude>
+    <ClInclude Include="SIFT\utils.h">
+      <Filter>File di intestazione\Core\External\SIFT</Filter>
+    </ClInclude>
+    <ClInclude Include="SIFT\imgfeatures.h">
+      <Filter>File di intestazione\Core\External\SIFT</Filter>
+    </ClInclude>
+    <ClInclude Include="SIFT\kdtree.h">
+      <Filter>File di intestazione\Core\External\SIFT</Filter>
+    </ClInclude>
+    <ClInclude Include="SIFT\minpq.h">
+      <Filter>File di intestazione\Core\External\SIFT</Filter>
+    </ClInclude>
+    <ClInclude Include="SIFT\sift.h">
+      <Filter>File di intestazione\Core\External\SIFT</Filter>
+    </ClInclude>
+    <ClInclude Include="RecordPlayerDialog.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="PlatheaDLL.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Shared.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="video_output.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ElaborationCore.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoRecorder.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ApplicationWorkFlow.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PlanViewMap.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomSettings.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="FaceDatabase.cpp">
+      <Filter>File di origine\Core\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkCamera.cpp">
+      <Filter>File di origine\Core\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="StereoCalibration.cpp">
+      <Filter>File di origine\Core\Calibration</Filter>
+    </ClCompile>
+    <ClCompile Include="matrix.cpp">
+      <Filter>File di origine\Core\External</Filter>
+    </ClCompile>
+    <ClCompile Include="munkres.cpp">
+      <Filter>File di origine\Core\External</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectedComponents.cpp">
+      <Filter>File di origine\Core\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="LeottaBackgroundModel.cpp">
+      <Filter>File di origine\Core\Background</Filter>
+    </ClCompile>
+    <ClCompile Include="TestDesigner.cpp">
+      <Filter>File di origine\Core\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestAnalyzer.cpp">
+      <Filter>File di origine\Core\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestAnalyzerDialog.cpp">
+      <Filter>File di origine\Core\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionTest.cpp">
+      <Filter>File di origine\Core\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionTestDialog.cpp">
+      <Filter>File di origine\Core\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="StereoExplorer.cpp">
+      <Filter>File di origine\Core\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="SIFT\kdtree.cpp">
+      <Filter>File di origine\Core\External\SIFT</Filter>
+    </ClCompile>
+    <ClCompile Include="SIFT\imgfeatures.cpp">
+      <Filter>File di origine\Core\External\SIFT</Filter>
+    </ClCompile>
+    <ClCompile Include="SIFT\minpq.cpp">
+      <Filter>File di origine\Core\External\SIFT</Filter>
+    </ClCompile>
+    <ClCompile Include="SIFT\sift.cpp">
+      <Filter>File di origine\Core\External\SIFT</Filter>
+    </ClCompile>
+    <ClCompile Include="SIFT\utils.cpp">
+      <Filter>File di origine\Core\External\SIFT</Filter>
+    </ClCompile>
+    <ClCompile Include="RecordPlayerDialog.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
