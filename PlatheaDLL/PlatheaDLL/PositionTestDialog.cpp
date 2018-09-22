@@ -588,170 +588,10 @@ INT_PTR CALLBACK CompletePositionTestProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
 }
 */
 
-void* Test(int cmd) {
-	static bool doClipRect = false;
-	//destFrame = GetDlgItem(hwndDlg, IDC_POSITIONTESTSTATIC);
-	//backgroundStaticHwnd = GetDlgItem(hwndDlg, IDC_BACKGROUNDSTATIC);
-	//leftLittleStaticHwnd = GetDlgItem(hwndDlg, IDC_LEFTLITTLESTATIC);
-	//rightLittleStaticHwnd = GetDlgItem(hwndDlg, IDC_RIGHTLITTLESTATIC);
-	//HWND tabControl = GetDlgItem(hwndDlg, IDC_POSITIONTESTTAB);
-	/*
-	switch (cmd) {
-	case 0:
-	if (wParam != 0 && doClipRect) {
-	PerformClipCursor(hwndDlg, false);
-	}
-	SetWindowLong(hwndDlg, DWLP_MSGRESULT, 0);
-	return TRUE;
-	case 1:
-	{
-	if (doClipRect) {
-	PerformClipCursor(hwndDlg, false);
-	}
-	}
-	SetWindowLong(hwndDlg, DWLP_MSGRESULT, 0);
-	return TRUE;
-	case 2:
-	{
-	testPositionHwnd = hwndDlg;
-	EnableWindow(GetParent(hwndDlg), FALSE);
 
-	RECT imageClientRect; GetClientRect(destFrame, &imageClientRect);
-	currentImage = cvCreateImage(cvSize(imageClientRect.right, imageClientRect.bottom), IPL_DEPTH_8U, 3);
-	hBitmap = NULL;
-	HDC frameDC = GetDC(destFrame);
-	memDC = CreateCompatibleDC(frameDC);
-	ReleaseDC(destFrame, frameDC);
-
-	Button_SetCheck(GetDlgItem(hwndDlg, IDC_BACKGROUNDMODELCHECK), BST_CHECKED);
-	Button_SetCheck(GetDlgItem(hwndDlg, IDC_FOREGROUNDCHECK), BST_CHECKED);
-
-	wchar_t *folderName;
-	SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &folderName);
-	SetDlgItemText(hwndDlg, IDC_DATADIRECTORYEDIT, folderName);
-	CoTaskMemFree(folderName);
-
-	currentlySelectedTest.clear();
-
-	int iconWidth = GetSystemMetrics(SM_CXSMICON), iconHeight = GetSystemMetrics(SM_CYSMICON);
-
-	HDC listViewDC = GetDC(NULL);
-	BITMAPINFO bi;
-	memset(&bi, 0, sizeof(bi));
-	bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bi.bmiHeader.biWidth = iconWidth;
-	bi.bmiHeader.biHeight = iconHeight;
-	bi.bmiHeader.biPlanes = 1;
-	bi.bmiHeader.biBitCount = (unsigned short) 24;
-	bi.bmiHeader.biCompression = BI_RGB;
-
-	BYTE *colorArray;
-	HBITMAP hBitmap = CreateDIBSection(listViewDC, &bi, DIB_RGB_COLORS, (void **) &colorArray, NULL, NULL);
-	HBITMAP hBlackMask = CreateBitmap(iconWidth, iconHeight, 1, 1, NULL);
-
-	ICONINFO ii;
-	memset(&ii, 0, sizeof(ii));
-	ii.fIcon = TRUE;
-	ii.hbmColor = hBitmap;
-	ii.hbmMask = hBlackMask;
-
-	hSmallMouseActivity = ImageList_Create(iconWidth, iconHeight, ILC_COLOR24, 1, 1);
-
-	COLORREF mouseActivityColors[3] = {RGB(0, 0, 0), RGB(255, 0, 0), RGB(0, 255, 0)};
-	for (int c = 0; c < 3; c++) {
-	BYTE *colorPtr = colorArray;
-	for (int i = 0; i < iconHeight; i++) {
-	for (int j = 0; j < iconWidth; j++, colorPtr+=3) {
-	colorPtr[0] = GetBValue(mouseActivityColors[c]);
-	colorPtr[1] = GetGValue(mouseActivityColors[c]);
-	colorPtr[2] = GetRValue(mouseActivityColors[c]);
-	}
-	}
-	HICON hIcon = CreateIconIndirect(&ii);
-	ImageList_AddIcon(hSmallMouseActivity, hIcon);
-	DestroyIcon(hIcon);
-	}
-
-	hSmall = ImageList_Create(iconWidth, iconHeight, ILC_COLOR24, 1, 1);
-
-	selectedPathsImage.clear();
-	int j = 0;
-	for (std::unordered_map<int, TestPath>::const_iterator it = mainTestDesigner.begin(); it != mainTestDesigner.end(); it++, j++) {
-	BYTE *colorPtr = colorArray;
-	for (int i = 0; i < iconHeight; i++) {
-	for (int j = 0; j < iconWidth; j++, colorPtr+=3) {
-	colorPtr[0] = GetBValue(it->second.pathColor);
-	colorPtr[1] = GetGValue(it->second.pathColor);
-	colorPtr[2] = GetRValue(it->second.pathColor);
-	}
-	}
-
-	HICON hIcon = CreateIconIndirect(&ii);
-	ImageList_AddIcon(hSmall, hIcon);
-	DestroyIcon(hIcon);
-	selectedPathsImage[it->first] = j;
-	}
-	DeleteObject(hBitmap);
-	DeleteObject(hBlackMask);
-	ReleaseDC(NULL, listViewDC);
-
-	processingStageOutput.enterTestingPhase();
-
-	processingStageOutput.ImageDestinationInfo(BACKGROUND_STAGE, NULL, 0) = backgroundStaticHwnd;
-	processingStageOutput.ImageDestinationInfo(DISPARITY_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(EDGE_ACTIVITY_STAGE, NULL, 0) = NULL;
-
-	processingStageOutput.ImageDestinationInfo(RAW_FOREGROUND_STAGE, NULL, 0) = leftLittleStaticHwnd;
-	processingStageOutput.ImageDestinationInfo(PLANVIEW_OCCUPANCY_STAGE, NULL, 0) = NULL;
-
-	processingStageOutput.ImageDestinationInfo(FILTERED_FOREGROUND_STAGE, NULL, 0) = rightLittleStaticHwnd;
-	processingStageOutput.ImageDestinationInfo(PLANVIEW_HEIGHT_STAGE, NULL, 0) = NULL;
-
-	//Tab control configuration
-	TCITEM tie;
-	tie.mask = TCIF_TEXT | TCIF_IMAGE;
-	tie.iImage = -1;
-
-	if (si->GetStereoRig() && si->GetStereoRig()->IsRunning() &&(AcquisitionCameraFactory::GetRegisteredCameras()[si->GetStereoRig()->GetAcquisitionProperties().cameraModel].availableOptions & AcquisitionCameraFactory::CameraDescription::VIRTUAL_CAMERA)) {
-	tie.pszText = L"Complete Offline test";
-	currentlyTabbedWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_COMPLETEOFFLINETEST),
-	tabControl,	CompletePositionTestProc);
-	doClipRect = false;
-	} else {
-	tie.pszText = L"New Position test";
-	currentlyTabbedWindow = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_NEWPOSITIONTESTCHILD),
-	tabControl, NewPositionTestProc);
-	doClipRect = true;
-	PerformClipCursor(hwndDlg, false);
-	}
-	TabCtrl_InsertItem(tabControl, 0, &tie);
-
-	RECT tabbedWindowRect; GetWindowRect(tabControl, &tabbedWindowRect);
-	tabbedWindowRect.right -= tabbedWindowRect.left;
-	tabbedWindowRect.bottom -= tabbedWindowRect.top;
-	tabbedWindowRect.left = tabbedWindowRect.top = 0;
-	TabCtrl_AdjustRect(tabControl, FALSE, &tabbedWindowRect);
-
-	SetWindowPos(currentlyTabbedWindow, NULL, tabbedWindowRect.left, tabbedWindowRect.top,
-	tabbedWindowRect.right - tabbedWindowRect.left, tabbedWindowRect.bottom - tabbedWindowRect.top,
-	SWP_SHOWWINDOW);
-
-	}
-	return TRUE;
-	case WM_COMMAND:
-	{
-
-	WORD messageId = HIWORD(wParam);
-	WORD controlId = LOWORD(wParam);
-	if (messageId == BN_CLICKED) {
-	if (controlId == IDC_POSITIONTESTCLOSE || controlId == IDCANCEL) {
-	PostMessage(hwndDlg, WM_CLOSE, 0, 0);
-	return TRUE;
-	} else if (controlId == IDC_STARTPOSITIONTEST) {
-	*/
+void PositionTestStart() {
 	if (currentlySelectedTest.GetPositionTestType() == PositionTest::NOT_INITIALIZED_TEST) {
-		//MessageBox(hwndDlg, L"No test has been selected", L"Check data", MB_OK | MB_ICONWARNING);
-		return 0;
+		return;
 	}
 
 	notYetAnalyzedData.clear();
@@ -762,12 +602,10 @@ void* Test(int cmd) {
 		for (int i = 0; i < currentlySelectedTest.size(); i++) {
 			int mouseIndex = standardRawMouseMessageDispatcher.GetMouseIndexByUser(i + 1);
 			if (mouseIndex == -1) {
-				//MessageBox(hwndDlg, L"You do not assigned a mouse to each user", L"Check data", MB_OK | MB_ICONWARNING);
-				return 0;
+				return;
 			}
 			else if (standardRawMouseMessageDispatcher.GetInstalledMice()[mouseIndex].associatedSubject == -1) {
-				//MessageBox(hwndDlg, L"Some users has not an associated identity", L"Check data", MB_OK | MB_ICONWARNING);
-				return 0;
+				return;
 			}
 			else {
 				usersToSubjects[i] = standardRawMouseMessageDispatcher.GetInstalledMice()[mouseIndex].associatedSubject;
@@ -800,195 +638,27 @@ void* Test(int cmd) {
 
 	//EnableWindow(currentlyTabbedWindow, FALSE);
 
-	//EnableWindow(GetDlgItem(hwndDlg, IDC_STARTPOSITIONTEST), FALSE);
-	//EnableWindow(GetDlgItem(hwndDlg, IDC_STOPPOSITIONTEST), TRUE);
-	//EnableWindow(GetDlgItem(hwndDlg, IDC_POSITIONTESTCLOSE), FALSE);
-	//EnableWindow(GetDlgItem(hwndDlg, IDC_SAVETESTTOREPOSITORY), FALSE);
-
-	//EnableWindow(GetDlgItem(hwndDlg, IDC_DATADIRECTORYBUTTON), FALSE);
-	return 0;
-	/*
-	} else if (controlId == IDC_STOPPOSITIONTEST) {
-	currentlySelectedTest.StopTest(mainTestDesigner, RoomSettings::GetInstance()->data.texelSide);
-	if (currentlySelectedTest.GetPositionTestType() == PositionTest::OFFLINE_POSITION_TEST) {
-	si->GetStereoRig()->StopRecorderMode();
-	} else if (currentlySelectedTest.GetPositionTestType() == PositionTest::COMPLETION_POSITION_TEST) {
-	si->GetStereoRig()->StopPlaybackMode();
-	}
-	EnableWindow(currentlyTabbedWindow, TRUE);
-
-	EnableWindow(GetDlgItem(hwndDlg, IDC_STARTPOSITIONTEST), TRUE);
-	EnableWindow(GetDlgItem(hwndDlg, IDC_STOPPOSITIONTEST), FALSE);
-	EnableWindow(GetDlgItem(hwndDlg, IDC_POSITIONTESTCLOSE), TRUE);
-	EnableWindow(GetDlgItem(hwndDlg, IDC_SAVETESTTOREPOSITORY), TRUE);
-
-	EnableWindow(GetDlgItem(hwndDlg, IDC_DATADIRECTORYBUTTON), TRUE);
-
-	currentlySelectedTest.UpdateImage(currentImage, mainTestDesigner);
-	hBitmap = IplImage2HBITMAP(destFrame, hBitmap, currentImage);
-	RedrawStaticControl(&destFrame, 1);
-	return TRUE;
-	} else if (controlId == IDC_BACKGROUNDMODELCHECK) {
-	processingStageOutput.ImageDestinationInfo(DISPARITY_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(EDGE_ACTIVITY_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(BACKGROUND_STAGE, NULL, 0) = backgroundStaticHwnd;
-	RedrawStaticControl(&backgroundStaticHwnd, 1);
-	return TRUE;
-	} else if (controlId == IDC_EDGEINTENSITYCHECK) {
-	processingStageOutput.ImageDestinationInfo(BACKGROUND_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(DISPARITY_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(EDGE_ACTIVITY_STAGE, NULL, 0) = backgroundStaticHwnd;
-	RedrawStaticControl(&backgroundStaticHwnd, 1);
-	return TRUE;
-	} else if (controlId == IDC_DISPARITYMAPCHECK) {
-	processingStageOutput.ImageDestinationInfo(BACKGROUND_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(EDGE_ACTIVITY_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(DISPARITY_STAGE, NULL, 0) = backgroundStaticHwnd;
-	RedrawStaticControl(&backgroundStaticHwnd, 1);
-	return TRUE;
-	} else if (controlId == IDC_FOREGROUNDCHECK) {
-	processingStageOutput.ImageDestinationInfo(PLANVIEW_OCCUPANCY_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(RAW_FOREGROUND_STAGE, NULL, 0) = leftLittleStaticHwnd;
-
-	processingStageOutput.ImageDestinationInfo(PLANVIEW_HEIGHT_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(FILTERED_FOREGROUND_STAGE, NULL, 0) = rightLittleStaticHwnd;
-	RedrawStaticControl(&leftLittleStaticHwnd, 1);
-	RedrawStaticControl(&rightLittleStaticHwnd, 1);
-	return TRUE;
-	} else if (controlId == IDC_PLANVIEWCHECK) {
-	processingStageOutput.ImageDestinationInfo(RAW_FOREGROUND_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(PLANVIEW_OCCUPANCY_STAGE, NULL, 0) = leftLittleStaticHwnd;
-
-	processingStageOutput.ImageDestinationInfo(FILTERED_FOREGROUND_STAGE, NULL, 0) = NULL;
-	processingStageOutput.ImageDestinationInfo(PLANVIEW_HEIGHT_STAGE, NULL, 0) = rightLittleStaticHwnd;
-	RedrawStaticControl(&leftLittleStaticHwnd, 1);
-	RedrawStaticControl(&rightLittleStaticHwnd, 1);
-	return TRUE;
-	} else if (controlId == IDC_SAVETESTTOREPOSITORY) {
-	char testName[256];
-	GetDlgItemTextA(hwndDlg, IDC_TESTNAMEEDIT, testName, 256);
-	trim(testName);
-	if (strcmp(testName, "") == 0) {
-	MessageBox(hwndDlg, L"Empty string is not a valid experiment name", L"Error", MB_OK | MB_ICONWARNING);
-	return TRUE;
-	} else if (GetPositionTestVector().find(testName) != GetPositionTestVector().end()) {
-	if (currentlySelectedTest.GetPositionTestType() == PositionTest::COMPLETION_POSITION_TEST) {
-	MessageBox(hwndDlg, L"The name for the experiment has been already used. Unable to replace in completion mode", L"Name already exists", MB_OK | MB_ICONERROR);
-	return TRUE;
-	} else if (MessageBox(hwndDlg, L"The name for the experiment has been already used. Replace it?", L"Name already exists", MB_YESNO | MB_ICONQUESTION) == IDNO) {
-	return TRUE;
-	}
-	}
-	bool writableDirectory = true;
-	if (currentlySelectedTest.GetPositionTestType() == PositionTest::OFFLINE_POSITION_TEST) {
-	char baseDirectory[_MAX_PATH]; GetDlgItemTextA(hwndDlg, IDC_DATADIRECTORYEDIT, baseDirectory, _MAX_PATH);
-	sprintf_s(baseDirectory, "%s\\%s - %s", baseDirectory, currentlySelectedTest.GetCompletionDate(),
-	currentlySelectedTest.GetCompletionTime());
-	currentlySelectedTest.SetAdditionalDataDirectory(baseDirectory);
-	if (!CreateDirectoryA(baseDirectory, NULL))
-	writableDirectory = false;
-	else {
-	si->GetStereoRig()->SaveRecordingToDirectory(baseDirectory);
-	currentlySelectedTest.GetCvArrStorage().saveToDir(baseDirectory);
-	}
-	}
-	if (writableDirectory)
-	GetPositionTestVector()[testName] = currentlySelectedTest;
-	else {
-	MessageBox(hwndDlg, L"The system was not able to save additional data into the specified folder. Please verify that you have access to the folder.", L"Error", MB_OK | MB_ICONERROR);
-	}
-	return TRUE;
-	} else if (controlId == IDC_DATADIRECTORYBUTTON) {
-	char buf[_MAX_PATH];
-	if (UseCommonItemDialog(buf, sizeof(buf), hwndDlg, CLSID_FileOpenDialog, FOS_PICKFOLDERS))
-	SetDlgItemTextA(hwndDlg, IDC_DATADIRECTORYEDIT, buf);
-	return TRUE;
-	}
-	}
-	}
-	break;
-	case WM_CLOSE:
-	{
-	if (currentlySelectedTest.IsTestStarted())
-	return TRUE;
-	processingStageOutput.exitTestingPhase();
-	if (hBitmap)
-	DeleteObject(hBitmap);
-	hBitmap = NULL;
-	DeleteDC(memDC);
-	currentlySelectedTest.clear();
-	ClipCursor(NULL);
-	if (currentlyTabbedWindow)
-	DestroyWindow(currentlyTabbedWindow);
-	currentlyTabbedWindow = NULL;
-	ImageList_Destroy(hSmall); hSmall = NULL;
-	ImageList_Destroy(hSmallMouseActivity); hSmallMouseActivity = NULL;
-	EnableWindow(GetParent(hwndDlg), TRUE);
-	DestroyWindow(hwndDlg);
-	doClipRect = false;
-	SetEvent(eventToWait[1]);
-	}
-	return TRUE;
-	case WM_PAINT:
-	{
-	PAINTSTRUCT ps;
-	BeginPaint(hwndDlg, &ps);
-
-	HBRUSH blackBrush = (HBRUSH) GetStockObject(BLACK_BRUSH);
-
-	RECT frameClientRect; GetClientRect(destFrame, &frameClientRect);
-	MapWindowPoints(destFrame, hwndDlg, (POINT *) &frameClientRect, 2);
-	if (AreRectIntersected(RECTToLeoRect(frameClientRect), RECTToLeoRect(ps.rcPaint))) {
-	if (memDC && hBitmap) {
-	SelectObject(memDC, hBitmap);
-	BitBlt(ps.hdc, frameClientRect.left, frameClientRect.top, currentImage->width,
-	currentImage->height, memDC, 0, 0, SRCCOPY);
-	} else {
-	FillRect(ps.hdc, &frameClientRect, blackBrush);
-	}
-	}
-
-	GetClientRect(backgroundStaticHwnd, &frameClientRect);
-	MapWindowPoints(backgroundStaticHwnd, hwndDlg, (POINT *) &frameClientRect, 2);
-	if (AreRectIntersected(RECTToLeoRect(frameClientRect), RECTToLeoRect(ps.rcPaint)))
-	FillRect(ps.hdc, &frameClientRect, blackBrush);
-
-	GetClientRect(leftLittleStaticHwnd, &frameClientRect);
-	MapWindowPoints(leftLittleStaticHwnd, hwndDlg, (POINT *) &frameClientRect, 2);
-	if (AreRectIntersected(RECTToLeoRect(frameClientRect), RECTToLeoRect(ps.rcPaint)))
-	FillRect(ps.hdc, &frameClientRect, blackBrush);
-
-	GetClientRect(rightLittleStaticHwnd, &frameClientRect);
-	MapWindowPoints(rightLittleStaticHwnd, hwndDlg, (POINT *) &frameClientRect, 2);
-	if (AreRectIntersected(RECTToLeoRect(frameClientRect), RECTToLeoRect(ps.rcPaint)))
-	FillRect(ps.hdc, &frameClientRect, blackBrush);
-
-	EndPaint(hwndDlg, &ps);
-	}
-	return TRUE;
-	}
-	return FALSE;
-	*/
 }
 
-int PositionTestProc(int cmd) {
+HANDLE* PositionTestProc(int cmd) {
 	DWORD id_recv;
 	HANDLE thread = CreateThread(NULL,
 		0,
-		(LPTHREAD_START_ROUTINE)Test,
+		(LPTHREAD_START_ROUTINE)PositionTestStart,
 		(LPVOID)cmd,
 		NORMAL_PRIORITY_CLASS,
 		&id_recv);
-	return 0;
+	if (thread == NULL) {
+		return NULL;
+	}
+
+	// WaitForSingleObject(thread, INFINITE);
+	return &thread;
 }
 
 
 
 int PositionTestThread() {
-	//testPositionHwnd = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_POSITIONTEST), (HWND) lpParameter, PositionTestProc);
-	//ShowWindow(testPositionHwnd, SW_SHOW);
-	//UpdateWindow(testPositionHwnd);
-
 	DWORD waitResult = 2;
 	waitResult = 0;
 	//while (waitResult != 1) {
@@ -1010,11 +680,20 @@ int PositionTestThread() {
 	//}
 	return 0;
 }
-/*
-bool ShowPositionTestWindow(HWND parentWindow) {
-	DWORD threadID;
-	chBEGINTHREADEX(NULL, 0, PositionTestThread, (LPVOID) parentWindow, 0, &threadID);
-	return true;
+
+HANDLE* ShowPositionTestWindow(HWND parentWindow) {
+	DWORD id_recv;
+	HANDLE thread = CreateThread(NULL,
+		0,
+		(LPTHREAD_START_ROUTINE)PositionTestThread,
+		NULL,
+		NORMAL_PRIORITY_CLASS,
+		&id_recv);
+	if (thread == NULL) {
+		return NULL;
+	}
+	else {
+		return &thread;
+	}
 }
 
-*/

@@ -11,6 +11,7 @@ using namespace leostorm::logging;
 using namespace leostorm::settingspersistence;
 
 
+// variables
 
 SystemInfo * si = new SystemInfo();
 
@@ -19,85 +20,53 @@ bool hideVideoInput = false;
 bool saveTracksToFile = false;
 bool svmTracker = false;
 
-// DEMO's functions
-void loadConfigurationFile(const char str[]) {
-	//char str[] = "C:\\Users\\jack1\\Desktop\\PLaTHEATest\\";
-	SettingsPersistence::GetInstance()->LoadFromFile(str);
+
+HANDLE* positionThread;
+
+
+
+// Da cancellare
+Point* createPoint() {
+	return new Point();
 }
 
-
-//enum CalibrationType{LEFT_INTERNAL = 1, RIGHT_INTERNAL = 2, STEREO = 4, ALL_CALIBRATION = 8};
-void internalCalibration(const char str[], int selectedMask) {
-	DBOUT("internalCalibration");
-	//char str[] = "C:\\Users\\jack1\\Desktop\\PLaTHEATest\\InternalCalibration";
-	StereoCalibration::GetInstance()->LoadFromFolder(str, selectedMask);
+void internalCalibrationDemo(const char str[]) {
+	calibration_internalcalibration_load(str, 7);
 }
-
-
-void externalCalibration(const char str[]) {
-	DBOUT("externalCalibration");
-	//char str[] = "C:\\Users\\jack1\\Desktop\\PLaTHEATest\\ExternalCalibration";
-	ExternalCalibration::GetInstance()->LoadFromFolder(str);
-}
-
-void svmClassifier(const char str[]) {
-	DBOUT("svmClassifier");
-	//char str[] = "C:\\Users\\jack1\\Desktop\\PLaTHEATest\\Tracking\\svmclassifier.xml";
-	PlanViewMap::SetSVMClassifierFileName(str);
-}
-
-// this is equals then initializeSystem() but with defined values - ONLY for testing purpose
 void initializeSystemDemo() {
-	DBOUT("initializeSystem");
-	char strBuffer[64];
-
-	InitializationStruct leftIs, rightIs;
-	InitializationStruct::AcquisitionProperties ap;
-	InitializationStruct::Authentication auth;
-
-	auth.username = "root";
-	auth.password = "password";
-	auth.type = (strcmp("none", "none") == 0 ? InitializationStruct::Authentication::NONE_AUTH : InitializationStruct::Authentication::OPEN_HTTP);
-
-	ap.resolution = "320x240";
-	ap.fps = atoi("10");
-	ap.cameraModel = ap.cameraModel = "Virtual Acquisition Camera";
-	ap.cameraAvailableOptions = AcquisitionCameraFactory::GetRegisteredCameras()[ap.cameraModel].availableOptions;
-
-	leftIs.tcddata.IPAddress = "192.168.8.3";
-	leftIs.tcddata.portNumber = atoi("80");
-	leftIs.authentication = auth;
-	leftIs.acquisitionProperties = ap;
-	leftIs.componentName = "LEFT_SIDE_CAMERA";
-
-	rightIs.tcddata.IPAddress = "192.168.8.2";
-	rightIs.tcddata.portNumber = atoi("80");
-	rightIs.authentication = auth;
-	rightIs.acquisitionProperties = ap;
-	rightIs.componentName = "RIGHT_SIDE_CAMERA";
-
-	AcquisitionCamera *leftCamera = AcquisitionCameraFactory::CreateNewInstance(ap.cameraModel, leftIs);
-	AcquisitionCamera *rightCamera = AcquisitionCameraFactory::CreateNewInstance(ap.cameraModel, rightIs);
-
-	si->SetStereoRig(new StereoRig(ap, leftCamera, rightCamera, true));
-	si->GetStereoRig()->Start();
-
-	bool hideVideoInput = false;
-	if (!hideVideoInput) {
-		VideoEvent ve1;
-		ve1.st = NETWORK_STEREO_RIG;
-		ve1.eventSource = si->GetStereoRig();
-		ve1.ev = STEREO_IMAGE_READY;
-		si->GetVideoOutput()->ChangeSource(&ve1);
-	}
+	system_initializesystem("root", "password", "none", "320x240", 10, "Virtual Acquisition Camera", 
+		"192.168.8.3", 80, "192.168.8.2", 80);
 }
+
+void openPositionTest() {
+	if (si->GetElaborationCore() == NULL) {
+		//MessageBox(hwnd, L"Elaboration core has not been started. No software measurements will be available.",
+		//	L"Warning", MB_OK | MB_ICONWARNING);
+		return;
+	}
+	else if (si->GetElaborationCore()->DuringInitializationPhase()) {
+		//int exitInitPhase = MessageBox(hwnd, L"Elaboration core is still into initialization phase. Tracking will not be performed. Do you want to exit from initialization phase?",
+		//	L"Warning", MB_YESNO | MB_ICONQUESTION);
+		//if (exitInitPhase == IDYES)
+			si->GetElaborationCore()->EndInitializationPhase();
+	}
+	PositionTestThread();
+	cout << "PositionTestThread" << endl;
+
+
+}
+void startPositionTest() {
+	PositionTestProc(0);
+}
+
+
+
 // type: none/Open HTTP
 // resolution: 320x240/480x360/640/480
 // fps: 10/15
 // camera model: Virtual Acquisition Camera/Axis 207 Network Camera/FireWire Camera/Vivotek IP161 Network Camera
-void initializeSystem(const char* username, const char* password, const char* type, const char* resolution,
+void system_initializesystem(const char* username, const char* password, const char* type, const char* resolution,
 	int fps, const char* cameraModel, const char* IPAddress1, int port1, const char* IPAddress2, int port2) {
-	DBOUT("initializeSystem");
 	char strBuffer[64];
 
 	InitializationStruct leftIs, rightIs;
@@ -141,56 +110,6 @@ void initializeSystem(const char* username, const char* password, const char* ty
 	}
 }
 
-void startLocalEngine(bool withoutTracking, bool saveTracksToFile) {
-	DBOUT("startLocalEngine");
-	wchar_t errMsg[1024];
-	ElaborationCore *ec = new ElaborationCore();
-	if (withoutTracking)
-		ec->SetElaborationCoreMode(ElaborationCore::TRACKING_FREE_ELABORATION_CORE_MODE);
-	else if (saveTracksToFile) {
-		//COMDLG_FILTERSPEC filtro[] = { L"Track Log File", L"*.log" };
-		//if (UseCommonItemDialog(buf, sizeof(buf), hwnd, CLSID_FileSaveDialog, 0, filtro, 1)) {
-			ec->ActivateSaveToFileMode("track.log");
-		//}
-	}
-	if (ec->PrerequisitesCheck(errMsg, 1024)) {
-		si->SetElaborationCore(ec);
-		si->GetElaborationCore()->Start();
-	}
-	else {
-		delete ec;
-		//MessageBox(si->GetMainWindow(), errMsg, L"Error", MB_ICONERROR);
-	}
-
-	//ElaborationCore *ec = new ElaborationCore();
-	//si->SetElaborationCore(ec);
-	//si->GetElaborationCore()->Start();
-}
-
-void openPositionTest() {
-	DBOUT("startPositionTest")
-	if (si->GetElaborationCore() == NULL) {
-		//MessageBox(hwnd, L"Elaboration core has not been started. No software measurements will be available.",
-		//	L"Warning", MB_OK | MB_ICONWARNING);
-		return;
-	}
-	else if (si->GetElaborationCore()->DuringInitializationPhase()) {
-		//int exitInitPhase = MessageBox(hwnd, L"Elaboration core is still into initialization phase. Tracking will not be performed. Do you want to exit from initialization phase?",
-		//	L"Warning", MB_YESNO | MB_ICONQUESTION);
-		//if (exitInitPhase == IDYES)
-			si->GetElaborationCore()->EndInitializationPhase();
-	}
-	PositionTestThread();
-	cout << "PositionTestThread" << endl;
-
-
-}
-
-void startPositionTest() {
-	PositionTestProc(0);
-}
-
-
 void system_hidevideoinput() {
 	hideVideoInput = !hideVideoInput;
 	//CheckMenuItem(hMenu, ID_SYSTEM_HIDEVIDEOINPUT, (hideVideoInput ? MF_CHECKED : MF_UNCHECKED));
@@ -227,25 +146,51 @@ void system_stopacquisition() {
 	si->SetStereoRig(NULL);
 }
 
-// not implemented
-void system_acquisitionstats() {}
-
-// TODO: gestire facebd view
-void system_editfacedatabase() {
-	wchar_t errMsg[1024];
-	if (mainFaceDatabase.PrerequisitesCheck(errMsg, 1024)) {
-		//DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_FACEDBASE), NULL, FaceDBaseDialogProc);
-		// dovrebbe aprire la finestra per il facedb
-	}
-	else {
-		MessageBox(si->GetMainWindow(), errMsg, L"Error", MB_ICONERROR);
-	}
+void system_selecthaarcascadexml(const char dir[]) {
+	mainFaceDatabase.SetHaarClassifierFileName(dir);
 }
 
+void system_loadconfigurationfile(const char str[]) {
+	//char str[] = "C:\\Users\\jack1\\Desktop\\PLaTHEATest\\";
+	SettingsPersistence::GetInstance()->LoadFromFile(str);
+}
+
+void system_saveconfigurationfileas(const char dir[]) {
+	SettingsPersistence::GetInstance()->SaveToFile("PLaTHEAConfiguration", dir);
+}
+
+void system_acquisitionstats_start() {
+	StartAcquisitionStatisticProc();
+}
+
+void system_acquisitionstats_stop() {
+	StartAcquisitionStatisticProc();
+}
+
+float* system_acquisitionstats() {
+	return GetAcquisitionStatisticProc();
+}
+
+void test_positiontest(bool exitInitPhase) {
+	if (si->GetElaborationCore() == NULL) {
+	}
+	else if (si->GetElaborationCore()->DuringInitializationPhase()) {
+		if (exitInitPhase)
+			si->GetElaborationCore()->EndInitializationPhase();
+	}
+	positionThread = ShowPositionTestWindow();
+}
+
+void test_positiontest_start() {
+	positionThread = PositionTestProc(0);
+}
+
+void test_positiontest_stop() {
+	TerminateThread(positionThread, 0);
+}
 
 void test_savetrackstofile() {
 	saveTracksToFile = !saveTracksToFile;
-	//CheckMenuItem(hMenu, ID_TEST_SAVETRACKSTOFILE, (saveTracksToFile ? MF_CHECKED : MF_UNCHECKED));
 }
 
 void test_plathearecorder() {
@@ -266,11 +211,130 @@ void test_startvideorecording() {
 void test_stopvideorecordingandsave(bool save, const char* dir) {
 	si->GetStereoRig()->StopRecorderMode();
 	if (save)
-		si->GetStereoRig()->SaveRecordingToDirectory(buf);
+		si->GetStereoRig()->SaveRecordingToDirectory(dir);
+}
+
+void test_svmlearning(const char dir[]) {
+		PlanViewMap::SetSVMClassifierFileName(dir);
+		svmTracker = true;
+}
+
+
+void calibration_saveexternalcalibrationdata(const char dir[]){
+	ExternalCalibration::GetInstance()->SaveToFolder(dir);
+}
+
+void calibration_loadexternalcalibrationdata(const char str[]) {
+	ExternalCalibration::GetInstance()->LoadFromFolder(str);
+}
+
+//enum CalibrationType{LEFT_INTERNAL = 1, RIGHT_INTERNAL = 2, STEREO = 4, ALL_CALIBRATION = 8};
+void calibration_internalcalibration_save(const char dir[], int selectedMask) {
+	StereoCalibration::GetInstance()->SaveToFolder(dir, selectedMask);
+}
+
+//enum CalibrationType{LEFT_INTERNAL = 1, RIGHT_INTERNAL = 2, STEREO = 4, ALL_CALIBRATION = 8};
+void calibration_internalcalibration_load(const char dir[], int selectedMask) {
+	StereoCalibration::GetInstance()->LoadFromFolder(dir, selectedMask);
+}
+
+void calibration_internalcalibration_rectificationbyparam() {
+	StereoCalibration *csc = StereoCalibration::GetInstance();
+	if (csc->D_LEFT == NULL || csc->M_LEFT == NULL || csc->D_RIGHT == NULL || csc->M_RIGHT == NULL || csc->R == NULL || csc->T == NULL) {
+		return;
+	}
+
+	csc->Q = cvCreateMat(4, 4, CV_64FC1);
+
+	csc->mx_LEFT = cvCreateMat(240, 320, CV_32F);
+	csc->my_LEFT = cvCreateMat(240, 320, CV_32F);
+	csc->mx_RIGHT = cvCreateMat(240, 320, CV_32F);
+	csc->my_RIGHT = cvCreateMat(240, 320, CV_32F);
+
+	double R1[3][3], R2[3][3];
+	CvMat _R1 = cvMat(3, 3, CV_64F, R1);
+	CvMat _R2 = cvMat(3, 3, CV_64F, R2);
+
+	/* Bouguet Method */
+	double P1[3][4], P2[3][4];
+	CvMat _P1 = cvMat(3, 4, CV_64F, P1);
+	CvMat _P2 = cvMat(3, 4, CV_64F, P2);
+	cvStereoRectify(csc->M_LEFT, csc->M_RIGHT, csc->D_LEFT, csc->D_RIGHT, cvSize(320, 240),
+		csc->R, csc->T, &_R1, &_R2, &_P1, &_P2, csc->Q, CV_CALIB_ZERO_DISPARITY);
+	cvInitUndistortRectifyMap(csc->M_LEFT, csc->D_LEFT, &_R1, &_P1, csc->mx_LEFT, csc->my_LEFT);
+	cvInitUndistortRectifyMap(csc->M_RIGHT, csc->D_RIGHT, &_R2, &_P2, csc->mx_RIGHT, csc->my_RIGHT);
+}
+
+void calibration_internalcalibration_rectification_bouguet(bool singleCalibration) {
+	StereoCalibration::GetInstance()->RectificationBouguet(singleCalibration);	
+}
+
+void calibration_internalcalibration_rectification_hartley(bool singleCalibration) {
+	StereoCalibration::GetInstance()->RectificationHartley(singleCalibration);
+}
+
+void calibration_internalcalibration_startleft() {
+	StereoCalibration::GetInstance()->StartLeft();
+}
+
+void calibration_internalcalibration_startright() {
+	StereoCalibration::GetInstance()->StartRight();
+}
+
+void calibration_internalcalibration_stop() {
+	StereoCalibration::GetInstance()->StopCalibration();
+}
+
+void calibration_editroomsettings(float WXmin, float WXmax, float WYmin, float WYmax, float WZmin, float WZmax,
+	float texelSide, float personMaximumHeight, float personAverageHeight, float personAverageWidth, float personMimimumHeight) {
+	RoomSettings::GetInstance()->EditSettings( WXmin,  WXmax,  WYmin,  WYmax,  WZmin,  WZmax,
+		 texelSide,  personMaximumHeight,  personAverageHeight,  personAverageWidth,  personMimimumHeight);
+}
+
+
+void localizationengine_startlocalizationengine(bool withoutTracking, bool saveTracksToFile, const char dir []) {
+	ElaborationCore *ec = new ElaborationCore();
+	wchar_t errMsg[1024];
+	if (withoutTracking)
+		ec->SetElaborationCoreMode(ElaborationCore::TRACKING_FREE_ELABORATION_CORE_MODE);
+	else if (saveTracksToFile) {
+			ec->ActivateSaveToFileMode(dir);
+	}
+	if (ec->PrerequisitesCheck(errMsg, 1024)) {
+		si->SetElaborationCore(ec);
+		si->GetElaborationCore()->Start();
+	}
+	else {
+		delete ec;
+	}
+}
+
+void localizationengine_endinitializationphase() {
+	si->GetElaborationCore()->EndInitializationPhase();
+}
+
+void localizationengine_stoplocalizationengine() {
+	si->SetElaborationCore(NULL);
+}
+
+void localizationengine_selectsvmclassifier(const char dir []) {
+		PlanViewMap::SetSVMClassifierFileName(dir);		
+		svmTracker = true;	
+}
+
+void localizationengine_opticalflow() {
+	if (svmTracker) {
+		svmTracker = false;
+	}
+}
+
+void localizationengine_svm() {
+	if (!svmTracker) {
+		svmTracker = true;
+	}
 }
 
 
 
 
-
-
+//

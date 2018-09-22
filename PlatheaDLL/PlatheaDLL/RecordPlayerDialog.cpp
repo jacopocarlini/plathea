@@ -31,7 +31,8 @@ static CvArrStorage cas;
 static PLaTHEARecorderMode prm = PLaTHEA_NO_PLAYER;
 static HWND recordPlayerDialogHwnd = NULL;
 
-static enum InternalStatusEnum {RECORDER_STANDBY, RECORDER_EXECUTION} status = RECORDER_STANDBY;
+static enum InternalStatusEnum { RECORDER_STANDBY, RECORDER_EXECUTION };
+InternalStatusEnum status = RECORDER_STANDBY;
 
 extern SystemInfo *si;
 
@@ -41,7 +42,7 @@ static bool CheckSelectedDirectoryValidity(char *directory) {
 	if (hFile == INVALID_HANDLE_VALUE)
 		return false;
 	FindClose(hFile);
-	char * filenames[] = {"left.avi", "right.avi"};
+	const char * filenames[] = {"left.avi", "right.avi"};
 	char buf[_MAX_PATH];
 	for (int i = 0; i < 2; i++) {
 		sprintf_s(buf, _MAX_PATH, "%s\\%s", directory, filenames[i]);
@@ -53,6 +54,7 @@ static bool CheckSelectedDirectoryValidity(char *directory) {
 	return true;
 }
 
+/*
 static INT_PTR CALLBACK RecordPlayerDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 	case WM_INITDIALOG:
@@ -149,12 +151,13 @@ static INT_PTR CALLBACK RecordPlayerDialogProc(HWND hwndDlg, UINT uMsg, WPARAM w
 	}
 	return FALSE;
 }
+*/
 
 void ShowRecordPlayerDialog(HWND parentWindow, PLaTHEARecorderMode mode) {
 	if (prm != PLaTHEA_NO_PLAYER)
 		return;
 	prm = mode;
-	recordPlayerDialogHwnd = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_RECORDERDIALOG), parentWindow, RecordPlayerDialogProc);
+	//recordPlayerDialogHwnd = CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_RECORDERDIALOG), parentWindow, RecordPlayerDialogProc);
 	ShowWindow(recordPlayerDialogHwnd, SW_SHOW);
 }
 

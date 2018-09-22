@@ -17,28 +17,26 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
 
-#ifndef ROOM_SETTINGS_H
-#define ROOM_SETTINGS_H
+#ifndef SVM_DIALOG_H
+#define SVM_DIALOG_H
 
 #include "CommonHeader.h"
 
-struct RoomSettingsStruct {
-	float WXmin, WXmax, WYmin, WYmax, WZmin, WZmax;
-	float texelSide;
-	float personMimimumHeight, personMaximumHeight, personAverageHeight, personAverageWidth;
+void ShowSVMDialog(HWND parentWindow);
+void ShowSVMDialog(HWND parentWindow, CvMat* trainingData, CvMat *trainingClass);
+
+struct SVMResult {
+	cv::ml::SVM *svm;
+	float accuracy;
+	int numberOfHit;
+	SVMResult();
+	~SVMResult();
 };
 
-class RoomSettings {
-private:
-	static INT_PTR CALLBACK DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	static RoomSettings *instance;
-	RoomSettings();
-public:
-	RoomSettingsStruct &data;
-	static RoomSettings *GetInstance();
-	void EditSettings(float WXmin, float WXmax, float WYmin, float WYmax, float WZmin, float WZmax,
-		float texelSide, float personMaximumHeight, float personAverageHeight, float personAverageWidth, float personMimimumHeight);
-	void OpenDialogWindow(HWND parentHwnd);
+struct RBFSearchResult {
+	double nu;
+	double gamma;
+	float accuracy;
 };
 
-#endif //ROOM_SETTINGS_H
+#endif //SVM_DIALOG_H

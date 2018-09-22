@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AcquisitionStatistics.h" />
     <ClInclude Include="ApplicationWorkFlow.h" />
     <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="ConnectedComponents.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="FaceDatabase.h" />
     <ClInclude Include="LeottaBackgroundModel.h" />
     <ClInclude Include="matrix.h" />
+    <ClInclude Include="MLDialog.h" />
     <ClInclude Include="munkres.h" />
     <ClInclude Include="NetworkCamera.h" />
     <ClInclude Include="PlanViewMap.h" />
@@ -179,6 +181,8 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="StereoCalibration.h" />
     <ClInclude Include="StereoExplorer.h" />
+    <ClInclude Include="SVMDialog.h" />
+    <ClInclude Include="SyncTest.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TestAnalyzer.h" />
     <ClInclude Include="TestAnalyzerDialog.h" />
@@ -187,6 +191,7 @@
     <ClInclude Include="video_output.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AcquisitionStatistics.cpp" />
     <ClCompile Include="ApplicationWorkFlow.cpp" />
     <ClCompile Include="ConnectedComponents.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -194,6 +199,7 @@
     <ClCompile Include="FaceDatabase.cpp" />
     <ClCompile Include="LeottaBackgroundModel.cpp" />
     <ClCompile Include="matrix.cpp" />
+    <ClCompile Include="MLDialog.cpp" />
     <ClCompile Include="munkres.cpp" />
     <ClCompile Include="NetworkCamera.cpp" />
     <ClCompile Include="PlanViewMap.cpp" />
@@ -217,6 +223,8 @@
     </ClCompile>
     <ClCompile Include="StereoCalibration.cpp" />
     <ClCompile Include="StereoExplorer.cpp" />
+    <ClCompile Include="SVMDialog.cpp" />
+    <ClCompile Include="SyncTest.cpp" />
     <ClCompile Include="TestAnalyzer.cpp" />
     <ClCompile Include="TestAnalyzerDialog.cpp" />
     <ClCompile Include="TestDesigner.cpp" />

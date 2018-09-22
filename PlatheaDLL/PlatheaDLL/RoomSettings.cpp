@@ -72,6 +72,24 @@ RoomSettings *RoomSettings::GetInstance() {
 
 RoomSettings::RoomSettings(): data(roomSettingsSetter.data) {
 }
+
+void RoomSettings::EditSettings(float WXmin, float WXmax, float WYmin, float WYmax, float WZmin, float WZmax,
+	float texelSide, float personMaximumHeight, float personAverageHeight, float personAverageWidth, float personMimimumHeight) {
+	RoomSettingsStruct *rs = &RoomSettings::GetInstance()->data;
+
+	rs->WXmin = WXmin;
+	rs->WXmax = WXmax;
+	rs->WYmin = WYmax;
+	rs->WYmax = WYmax;
+	rs->WZmin = WZmin;
+	rs->WZmax = WZmax;
+	rs->texelSide = texelSide;
+	rs->personMaximumHeight = personMaximumHeight;
+	rs->personAverageHeight = personAverageHeight;
+	rs->personAverageWidth = personAverageWidth;
+	rs->personMimimumHeight = personMimimumHeight;
+}
+
 /*
 INT_PTR CALLBACK RoomSettings::DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	RoomSettingsStruct *rs = &RoomSettings::GetInstance()->data;

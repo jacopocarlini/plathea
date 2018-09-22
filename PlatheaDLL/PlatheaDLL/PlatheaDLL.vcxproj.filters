@@ -144,6 +144,18 @@
     <ClInclude Include="RecordPlayerDialog.h">
       <Filter>File di intestazione\Core</Filter>
     </ClInclude>
+    <ClInclude Include="MLDialog.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SVMDialog.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AcquisitionStatistics.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="SyncTest.h">
+      <Filter>File di intestazione\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -234,6 +246,18 @@
       <Filter>File di origine\Core\External\SIFT</Filter>
     </ClCompile>
     <ClCompile Include="RecordPlayerDialog.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="MLDialog.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SVMDialog.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AcquisitionStatistics.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="SyncTest.cpp">
       <Filter>File di origine\Core</Filter>
     </ClCompile>
   </ItemGroup>

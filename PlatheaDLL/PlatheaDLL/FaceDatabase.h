@@ -114,7 +114,7 @@ public:
 
 	//External parameter setter
 	char *GetHaarClassifierFilename();
-	void SetHaarClassifierFileName(char *fileName);
+	void SetHaarClassifierFileName(const char *fileName);
 	char *GetFaceDatabaseDirectory() {
 		return faceDatabaseDirectory;
 	}

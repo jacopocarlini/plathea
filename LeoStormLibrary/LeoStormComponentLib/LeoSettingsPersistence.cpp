@@ -121,7 +121,7 @@ void SettingsPersistence::LoadFromFile(const char *fileName) {
 	loadedFile = _strdup(fileName);
 }
 
-void SettingsPersistence::SaveToFile(char *rootLabel, char *fileName) {
+void SettingsPersistence::SaveToFile(const char *rootLabel, const char *fileName) {
 	wchar_t wide_buffer[256];
 	char buffer[256];
 

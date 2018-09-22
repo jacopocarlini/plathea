@@ -17,28 +17,22 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
 
-#ifndef ROOM_SETTINGS_H
-#define ROOM_SETTINGS_H
+#ifndef ML_DIALOG_H
+#define ML_DIALOG_H
 
 #include "CommonHeader.h"
 
-struct RoomSettingsStruct {
-	float WXmin, WXmax, WYmin, WYmax, WZmin, WZmax;
-	float texelSide;
-	float personMimimumHeight, personMaximumHeight, personAverageHeight, personAverageWidth;
+void ShowMLDialog (HWND parentWindow, bool accuracyController);
+bool VideoPlaybackStarted();
+bool VideoPlaybackStop();
+void CloseMLDialog();
+bool TrainingDataFileToMemory(char *fileName, CvMat **trainingDataMatrix, CvMat **trainingClassificationMatrix);
+
+struct TrainingDataFileRecord {
+	float colorDifference;
+	float positionDifference;
+	float angleDifference;
+	int classification;
 };
 
-class RoomSettings {
-private:
-	static INT_PTR CALLBACK DlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	static RoomSettings *instance;
-	RoomSettings();
-public:
-	RoomSettingsStruct &data;
-	static RoomSettings *GetInstance();
-	void EditSettings(float WXmin, float WXmax, float WYmin, float WYmax, float WZmin, float WZmax,
-		float texelSide, float personMaximumHeight, float personAverageHeight, float personAverageWidth, float personMimimumHeight);
-	void OpenDialogWindow(HWND parentHwnd);
-};
-
-#endif //ROOM_SETTINGS_H
+#endif //ML_DIALOG_H

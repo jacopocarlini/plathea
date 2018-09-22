@@ -586,7 +586,7 @@ char *FaceDatabase::GetHaarClassifierFilename() {
 	return haarFileName;
 }
 
-void FaceDatabase::SetHaarClassifierFileName(char *fileName) {
+void FaceDatabase::SetHaarClassifierFileName(const char *fileName) {
 	strcpy_s(haarFileName, MAX_PATH, fileName);
 }
 

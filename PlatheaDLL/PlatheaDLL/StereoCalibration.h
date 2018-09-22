@@ -29,6 +29,11 @@ public:
 	~StereoCalibration();
 	bool SaveToFolder(const char * folderName, int mask);
 	bool LoadFromFolder(const char * folderName, int mask);
+	void RectificationBouguet(bool singleCalibration);
+	void RectificationHartley(bool singleCalibration);
+	void StartLeft();
+	void StartRight();
+	void StopCalibration();
 	CvMat *M_LEFT, *M_RIGHT; //Cameras intrinsics matrix
 	CvMat *D_LEFT, *D_RIGHT; //Distortion vectors
 	CvMat *R; //Rotation matrix
@@ -61,7 +66,7 @@ private:
 	std::vector<CvPoint2D32f> points[2]; //Here we store for each view and for both cameras chessboard's corners position
 	static StereoCalibration *instance;
 	//static INT_PTR CALLBACK StereoDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	//void StartNewCalibration(CalibrationType ct);
+	void StartNewCalibration(CalibrationType ct);
 	void StopCurrentCalibration();
 	//void UpdateLabels();
 	HANDLE stopEvent;
@@ -80,7 +85,7 @@ public:
 	CvMat *Rotation_Matrix;
 	CvMat *Traslation_Vector;
 	void CleanMemory();
-	bool SaveToFolder(char * folderName);
+	bool SaveToFolder(const char * folderName);
 	bool LoadFromFolder(const char * folderName);
 	bool IsComplete();
 private:

@@ -23,9 +23,9 @@
 #include "CommonHeader.h"
 #include "PositionTest.h"
 
-bool ShowPositionTestWindow();
+HANDLE* ShowPositionTestWindow();
 int PositionTestThread();
-int PositionTestProc(int cmd);
+HANDLE* PositionTestProc(int cmd);
 void RegisterNewSoftwareMeasurements(std::vector<TrackedObject *> &data, DWORD measurementTimestamp);
 
 PositionTest *GetCurrentlySelectedTest();

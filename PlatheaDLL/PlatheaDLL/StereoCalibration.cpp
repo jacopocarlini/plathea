@@ -345,25 +345,24 @@ void StereoCalibration::Run(void *param) {
 }
 
 
-/*
+
 void StereoCalibration::StartNewCalibration(CalibrationType ct) {
 	if (ct==STEREO && (!(calibrationStatus & LEFT_INTERNAL) || !(calibrationStatus & RIGHT_INTERNAL))) {
-		MessageBox(currentDialog, L"Left and/or Right internal calibration data are not loaded", L"Error", MB_OK | MB_ICONERROR);
+		//MessageBox(currentDialog, L"Left and/or Right internal calibration data are not loaded", L"Error", MB_OK | MB_ICONERROR);
 		return;
 	}
 	char buf[260];
 	calibrationSettings.lastCalibrationSelected = ct;
-	GetDlgItemTextA(currentDialog, IDC_TEXELSIDE, buf, 260); calibrationSettings.squareSize = (float) atof(buf);
-	GetDlgItemTextA(currentDialog, IDC_ROWNUMBER, buf, 260); calibrationSettings.ny = atoi(buf);
-	GetDlgItemTextA(currentDialog, IDC_COLNUMBER, buf, 260); calibrationSettings.nx = atoi(buf);
-	EnableWindow(GetDlgItem(currentDialog, IDC_STARTLEFTINTERNAL), FALSE);
-	EnableWindow(GetDlgItem(currentDialog, IDC_STARTRIGHTINTERNAL), FALSE);
-	EnableWindow(GetDlgItem(currentDialog, IDC_STARTSTEREO), FALSE);
-	EnableWindow(GetDlgItem(currentDialog, IDC_STOPCURRENTCALIBRATION), TRUE);
+	//GetDlgItemTextA(currentDialog, IDC_TEXELSIDE, buf, 260); calibrationSettings.squareSize = (float) atof(buf);
+	//GetDlgItemTextA(currentDialog, IDC_ROWNUMBER, buf, 260); calibrationSettings.ny = atoi(buf);
+	//GetDlgItemTextA(currentDialog, IDC_COLNUMBER, buf, 260); calibrationSettings.nx = atoi(buf);
+	//EnableWindow(GetDlgItem(currentDialog, IDC_STARTLEFTINTERNAL), FALSE);
+	//EnableWindow(GetDlgItem(currentDialog, IDC_STARTRIGHTINTERNAL), FALSE);
+	//EnableWindow(GetDlgItem(currentDialog, IDC_STARTSTEREO), FALSE);
+	//EnableWindow(GetDlgItem(currentDialog, IDC_STOPCURRENTCALIBRATION), TRUE);
 	Start();
 }
 
-*/
 
 void StereoCalibration::StopCurrentCalibration() {
 	/*
@@ -374,6 +373,39 @@ void StereoCalibration::StopCurrentCalibration() {
 	EnableWindow(GetDlgItem(currentDialog, IDC_STARTSTEREO), TRUE);
 	EnableWindow(GetDlgItem(currentDialog, IDC_STOPCURRENTCALIBRATION), FALSE);
 	*/
+}
+
+void StereoCalibration::RectificationBouguet(bool singleCalibration) {
+	StereoCalibration *sc = StereoCalibration::GetInstance();
+	sc->calibrationSettings.lastRectificationSelected = BOUGUET_RECTIFICATION;
+	if (!singleCalibration)
+		sc->StartNewCalibration(ALL_CALIBRATION);
+	else
+		sc->StartNewCalibration(STEREO);
+}
+
+
+void StereoCalibration::RectificationHartley(bool singleCalibration) {
+	StereoCalibration *sc = GetInstance();
+	sc->calibrationSettings.lastRectificationSelected = HARTLEY_RECTIFICATION;
+	if (!singleCalibration)
+		sc->StartNewCalibration(ALL_CALIBRATION);
+	else
+		sc->StartNewCalibration(STEREO);
+}
+
+void StereoCalibration::StartLeft() {
+	StereoCalibration *sc = GetInstance();
+	sc->StartNewCalibration(LEFT_INTERNAL);
+}
+void StereoCalibration::StartRight() {
+	StereoCalibration *sc = GetInstance();
+	sc->StartNewCalibration(RIGHT_INTERNAL);
+}
+void StereoCalibration::StopCalibration() {
+	StereoCalibration *sc = GetInstance();
+	sc->Stop();
+	sc->StopCurrentCalibration();
 }
 
 /*
@@ -868,8 +900,9 @@ int ExternalCalibration::FillVectors(std::vector<CvPoint2D32f> *pixels, std::vec
 
 	return totElem;
 }
+*/
 
-bool ExternalCalibration::SaveToFolder(char *folderName) {
+bool ExternalCalibration::SaveToFolder(const char *folderName) {
 	if (Rotation_Matrix && Traslation_Vector) {
 		int maxLen = ((int) strlen(folderName)) + 255;
 		char * tempStr = new char[maxLen];
@@ -882,7 +915,7 @@ bool ExternalCalibration::SaveToFolder(char *folderName) {
 	}
 }
 
-*/
+
 
 bool ExternalCalibration::LoadFromFolder(const char *folderName) {
 	CvMat *rm, *tv;

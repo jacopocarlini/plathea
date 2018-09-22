@@ -123,7 +123,7 @@ namespace leostorm {
 			static SettingsPersistence *GetInstance();
 			~SettingsPersistence();
 			void LoadFromFile(const char *fileName);
-			void SaveToFile(char *rootLabel, char *fileName = NULL);
+			void SaveToFile(const char *rootLabel,const char *fileName = NULL);
 			char *GetCurrentlyLoadedFile() {
 				return loadedFile;
 			}
