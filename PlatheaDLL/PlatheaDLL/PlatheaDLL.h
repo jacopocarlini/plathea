@@ -40,9 +40,6 @@ public:
 	void printPoint();
 };
 
-void Point::printPoint() {
-	std::cout << "point!" << std::endl;
-}
 
 extern "C" PLATHEADLL_API Point* createPoint();
 
@@ -121,5 +118,8 @@ extern "C" PLATHEADLL_API void localizationengine_svm();
 //extern "C" PLATHEADLL_API void showwindow_planviewheightsmap();
 
 
+extern "C" PLATHEADLL_API std::vector<TrackedObject*> getTrackedPeople();
+
+void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons);
 
 

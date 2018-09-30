@@ -23,6 +23,7 @@
 #include "Shared.h"
 #include "video_output.h"
 #include "PositionTestDialog.h"
+#include "PlatheaDLL.h"
 
 #include <LeoLog4CPP.h>
 
@@ -481,6 +482,7 @@ void ElaborationCore::Run(void *param) {
 				}
 				//if (serv != NULL)
 					//serv->NotifyClients(pvm->trackedPersons);
+				updateTrackedPeople(pvm->trackedPersons);
 				if (saveToFile && hSaveToFile != INVALID_HANDLE_VALUE) {
 					char lineToWrite[256]; DWORD writtenBytes;
 					for (std::vector<TrackedObject *>::const_iterator it = pvm->trackedPersons.begin(); it != pvm->trackedPersons.end(); it++) {

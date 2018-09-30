@@ -681,7 +681,7 @@ int PositionTestThread() {
 	return 0;
 }
 
-HANDLE* ShowPositionTestWindow(HWND parentWindow) {
+HANDLE* ShowPositionTestWindow() {
 	DWORD id_recv;
 	HANDLE thread = CreateThread(NULL,
 		0,

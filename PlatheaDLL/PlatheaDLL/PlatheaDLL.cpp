@@ -3,6 +3,9 @@
 
 #include "stdafx.h"
 #include "PlatheaDLL.h"
+#include <mutex>          // std::mutex
+
+std::mutex mtx;           // mutex for critical section
 
 
 using namespace std;
@@ -14,6 +17,7 @@ using namespace leostorm::settingspersistence;
 // variables
 
 SystemInfo * si = new SystemInfo();
+vector<TrackedObject*> trackedPeople;
 
 HWND hActiveModelessWindow = NULL;
 bool hideVideoInput = false;
@@ -333,6 +337,25 @@ void localizationengine_svm() {
 		svmTracker = true;
 	}
 }
+
+
+
+
+std::vector<TrackedObject*> getTrackedPeople() {
+	mtx.lock();
+	std::vector<TrackedObject*> ret = trackedPeople;
+	mtx.unlock();
+	return ret;
+}
+
+
+
+void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
+	mtx.lock();
+	trackedPeople = trackedPersons;
+	mtx.unlock();
+}
+
 
 
 
