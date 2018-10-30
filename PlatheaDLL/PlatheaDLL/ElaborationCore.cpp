@@ -329,19 +329,27 @@ DWORD WINAPI HaarThread(LPVOID lpParam) {
 }
 
 bool ElaborationCore::PrerequisitesCheck(wchar_t *errMsg, int bufferSize, bool *warning) {
+	printf("check\n");
 	if (!StereoCalibration::GetInstance()->IsComplete()) {
 		if (errMsg) {
 			wcscpy_s(errMsg, bufferSize, L"Stereo Calibration Data has not been loaded!!\r\n\r\nElaboration Core won't be able to execute the whole work.");
 		}
+		printf("stereo calibration data has not been loaded\n");
 		return false;
 	} else if (currentElaborationCoreMode == FULL_FEATURE_ELABORATION_CORE_MODE) {
 		if (!ExternalCalibration::GetInstance()->IsComplete()) {
+			printf("External calibration data has not been loaded\n");
+
 			if (errMsg) {
 				wcscpy_s(errMsg, bufferSize, L"External Calibration Data has not been loaded!!\r\n\r\nElaboration Core won't be able to execute the whole work.");
 			}
 			return false;
-		} else if (!mainFaceDatabase.PrerequisitesCheck(errMsg, bufferSize, warning))
+		}
+		else if (!mainFaceDatabase.PrerequisitesCheck(errMsg, bufferSize, warning)) {
+			printf("mainFaceDatabase data has not been loaded\n");
+
 			return false;
+		}
 	}
 	if (warning)
 		*warning = false;

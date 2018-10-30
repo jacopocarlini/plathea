@@ -78,7 +78,9 @@ extern "C" PLATHEADLL_API void test_positiontest_start();  // TODO DEMO menu
 extern "C" PLATHEADLL_API void test_positiontest_stop();  // TODO DEMO menu
 extern "C" PLATHEADLL_API void test_statisticanalyzer(); // TODO
 //extern "C" PLATHEADLL_API void test_showdebugconsole();
-extern "C" PLATHEADLL_API void test_plathearecorder(); //TODO
+extern "C" PLATHEADLL_API void test_plathearecorder(); //demo 
+extern "C" PLATHEADLL_API void test_plathearecorder_start(const char* dir); //demo
+extern "C" PLATHEADLL_API void test_plathearecorder_stop(); //demo
 extern "C" PLATHEADLL_API void test_svmlearning(const char dir[]);
 extern "C" PLATHEADLL_API void test_savetrackstofile();
 
@@ -119,6 +121,7 @@ extern "C" PLATHEADLL_API void localizationengine_svm();
 
 
 extern "C" PLATHEADLL_API std::vector<TrackedObject*> getTrackedPeople();
+extern "C" PLATHEADLL_API ElaborationCore* getElaborationCore();
 
 void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons);
 

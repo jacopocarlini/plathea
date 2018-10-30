@@ -203,8 +203,18 @@ void test_plathearecorder() {
 		if (si->GetStereoRig()->GetAcquisitionProperties().cameraAvailableOptions & AcquisitionCameraFactory::CameraDescription::VIRTUAL_CAMERA) {
 			selectedMode = PLaTHEA_PLAYER_MODE;
 		}
-		//ShowRecordPlayerDialog(hwnd, selectedMode);
+		ShowRecordPlayerDialog(NULL, selectedMode);
 	}
+}
+
+void test_plathearecorder_start(const char* dir) {
+	//const char* s = "D:\PLaTHEATest\Tests\21-12-2012 - 11-25-10-165";
+	printf("start");
+	StartPlayer(dir);
+}
+
+void test_plathearecorder_stop() {
+	StopPlayer();
 }
 
 void test_startvideorecording() {
@@ -239,6 +249,7 @@ void calibration_internalcalibration_save(const char dir[], int selectedMask) {
 
 //enum CalibrationType{LEFT_INTERNAL = 1, RIGHT_INTERNAL = 2, STEREO = 4, ALL_CALIBRATION = 8};
 void calibration_internalcalibration_load(const char dir[], int selectedMask) {
+	//InternalState currentState = ApplicationWorkFlow::GetInstance()->GetCurrentState();
 	StereoCalibration::GetInstance()->LoadFromFolder(dir, selectedMask);
 }
 
@@ -299,16 +310,20 @@ void calibration_editroomsettings(float WXmin, float WXmax, float WYmin, float W
 void localizationengine_startlocalizationengine(bool withoutTracking, bool saveTracksToFile, const char dir []) {
 	ElaborationCore *ec = new ElaborationCore();
 	wchar_t errMsg[1024];
+	//printf("ec\n");
 	if (withoutTracking)
 		ec->SetElaborationCoreMode(ElaborationCore::TRACKING_FREE_ELABORATION_CORE_MODE);
 	else if (saveTracksToFile) {
 			ec->ActivateSaveToFileMode(dir);
 	}
-	if (ec->PrerequisitesCheck(errMsg, 1024)) {
+	if (ec->PrerequisitesCheck(errMsg , 1024)) {
+	//	printf("ec avviato\n");
 		si->SetElaborationCore(ec);
 		si->GetElaborationCore()->Start();
 	}
 	else {
+	//	printf("ec delete\n");
+
 		delete ec;
 	}
 }
@@ -338,6 +353,10 @@ void localizationengine_svm() {
 	}
 }
 
+void localizationengine_setengineparameters() {
+
+}
+
 
 
 
@@ -348,6 +367,9 @@ std::vector<TrackedObject*> getTrackedPeople() {
 	return ret;
 }
 
+ElaborationCore* getElaborationCore() {
+	return (si->GetElaborationCore());
+}
 
 
 void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {

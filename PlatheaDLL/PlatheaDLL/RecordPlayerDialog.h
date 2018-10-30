@@ -21,10 +21,13 @@
 #define RECORD_PLAYER_DIALOG_H
 
 #include "CommonHeader.h"
+#include <string>  
 
 enum PLaTHEARecorderMode {PLaTHEA_RECORDER_MODE, PLaTHEA_PLAYER_MODE, PLaTHEA_NO_PLAYER};
 
 void ShowRecordPlayerDialog(HWND parentWindow, PLaTHEARecorderMode mode);
 void CloseRecordPlayerDialog();
+void StartPlayer(const char dir[260]);
+void StopPlayer();
 
 #endif //RECORD_PLAYER_DIALOG_H
