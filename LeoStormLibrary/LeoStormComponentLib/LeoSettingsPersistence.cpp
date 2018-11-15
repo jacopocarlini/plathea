@@ -51,7 +51,7 @@ SettingsPersistence::~SettingsPersistence() {
 	instance = NULL;
 }
 
-void SettingsPersistence::LoadFromFile(const char *fileName) {
+void SettingsPersistence::LoadFromFile(char *fileName) {
 	TiXmlDocument doc(fileName);
 	bool loadOkay = doc.LoadFile();
 	if (!loadOkay)

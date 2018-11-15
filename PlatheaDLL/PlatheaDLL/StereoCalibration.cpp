@@ -28,6 +28,12 @@
 #include <Uxtheme.h>
 #include "Shared.h"
 
+#define DBOUT( s )            \
+{                             \
+   std::wostringstream os_;    \
+   os_ << s << "\n";                   \
+   OutputDebugStringW( os_.str().c_str() );  \
+}
 
 
 using namespace leostorm::logging;
@@ -69,20 +75,27 @@ StereoCalibration::~StereoCalibration() {
 
 
 void StereoCalibration::CleanMemory(CalibrationType ct) {
-	if (ct == ALL_CALIBRATION)
+	if (ct == ALL_CALIBRATION) {
 		calibrationStatus = 0;
-	else
+		DBOUT("ct if");
+	}
+	else {
 		calibrationStatus &= (~ct);
+		DBOUT("ct else");
+	}
 	if (ct == LEFT_INTERNAL || ct == ALL_CALIBRATION) {
+		DBOUT("LEFT");
 		if (this->M_LEFT) cvReleaseMat(&this->M_LEFT);
 		if (this->D_LEFT) cvReleaseMat(&this->D_LEFT);
 	}
 	if (ct == RIGHT_INTERNAL || ct == ALL_CALIBRATION) {
+		DBOUT("RIGHT");
 		if (this->M_RIGHT) cvReleaseMat(&this->M_RIGHT);
 		if (this->D_RIGHT) cvReleaseMat(&this->D_RIGHT);
 		calibrationStatus &= (~RIGHT_INTERNAL);
 	}
 	if (ct == STEREO || ct == ALL_CALIBRATION) {
+		DBOUT("ALL");
 		if (this->R) cvReleaseMat(&this->R);
 		if (this->E) cvReleaseMat(&this->E);
 		if (this->F) cvReleaseMat(&this->F);
@@ -584,21 +597,46 @@ bool StereoCalibration::SaveToFolder(const char *folderName, int mask) {
 }
 
 bool StereoCalibration::LoadFromFolder(const char *folderName, int mask) {
+	DBOUT(mask);
+	DBOUT(LEFT_INTERNAL);
+	DBOUT(RIGHT_INTERNAL);
+	DBOUT(STEREO);
+	DBOUT(M_LEFT);
+	DBOUT(D_LEFT);
+	DBOUT(R);
+	DBOUT(F);
+	DBOUT(E);
+	DBOUT(mx_LEFT);
+	DBOUT(my_LEFT);
+	DBOUT(mx_RIGHT);
+	DBOUT(my_RIGHT);
+	DBOUT(calibrationStatus);
 	int maxLen = int(strlen(folderName)) + 255;
 	char * tempStr = new char[maxLen];
 	if (mask & LEFT_INTERNAL) {
 		CleanMemory(LEFT_INTERNAL);
-		sprintf_s(tempStr, maxLen, "%s\\LeftIntrinsics.xml", folderName); M_LEFT = (CvMat *) cvLoad(tempStr);
+		sprintf_s(tempStr, maxLen, "%s\\LeftIntrinsics.xml", folderName);
+		DBOUT(tempStr);
+		M_LEFT = (CvMat *) cvLoad(tempStr);
 		sprintf_s(tempStr, maxLen, "%s\\LeftDistortion.xml", folderName); D_LEFT = (CvMat *) cvLoad(tempStr);
-		if (M_LEFT && D_LEFT)
+		DBOUT(calibrationStatus);
+		DBOUT(M_LEFT);
+		DBOUT(D_LEFT);
+		if (M_LEFT && D_LEFT) {
 			calibrationStatus |= LEFT_INTERNAL;
+			DBOUT(calibrationStatus);
+		}
+		DBOUT(calibrationStatus);
 	}
 	if (mask & RIGHT_INTERNAL) {
 		CleanMemory(RIGHT_INTERNAL);
 		sprintf_s(tempStr, maxLen, "%s\\RightDistortion.xml", folderName); D_RIGHT = (CvMat *) cvLoad(tempStr);
 		sprintf_s(tempStr, maxLen, "%s\\RightIntrinsics.xml", folderName); M_RIGHT = (CvMat *) cvLoad(tempStr);
+		DBOUT(calibrationStatus);
 		if (M_RIGHT && D_RIGHT)
 			calibrationStatus |= RIGHT_INTERNAL;
+		DBOUT(calibrationStatus);
+
 	}
 	if (mask & STEREO) {
 		CleanMemory(STEREO);
@@ -611,8 +649,11 @@ bool StereoCalibration::LoadFromFolder(const char *folderName, int mask) {
 		sprintf_s(tempStr, maxLen, "%s\\mx_RIGHT.xml", folderName); mx_RIGHT = (CvMat *) cvLoad(tempStr);
 		sprintf_s(tempStr, maxLen, "%s\\my_RIGHT.xml", folderName); my_RIGHT = (CvMat *) cvLoad(tempStr);
 		sprintf_s(tempStr, maxLen, "%s\\3DReprojection.xml", folderName); Q = (CvMat *) cvLoad(tempStr);
+		DBOUT(calibrationStatus);
 		if (R && R && F && E && mx_LEFT && my_LEFT && mx_RIGHT && my_RIGHT)
 			calibrationStatus |= STEREO;
+		DBOUT(calibrationStatus);
+
 		//WARNING: VERY BAD CODE TO CHANGE MAPPING
 		/*for (int i = 0; i < my_RIGHT->rows; i++) {
 			float *my_right_ptr = (float *) (my_RIGHT->data.ptr + (i * my_RIGHT->step));

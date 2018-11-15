@@ -27,7 +27,12 @@ bool svmTracker = false;
 
 HANDLE* positionThread;
 
-
+#define DBOUT( s )            \
+{                             \
+   std::wostringstream os_;    \
+   os_ << s << "\n";                   \
+   OutputDebugStringW( os_.str().c_str() );  \
+}
 
 // Da cancellare
 Point* createPoint() {
@@ -154,12 +159,27 @@ void system_selecthaarcascadexml(const char dir[]) {
 	mainFaceDatabase.SetHaarClassifierFileName(dir);
 }
 
-void system_loadconfigurationfile(const char str[]) {
+void system_loadconfigurationfile(char str[]) {
 	//char str[] = "C:\\Users\\jack1\\Desktop\\PLaTHEATest\\";
+	//PathRemoveFileSpecA(currentDirectory); 
+	//SetCurrentDirectoryA(currentDirectory);
+	//SettingsPersistence::GetInstance()->LoadFromFile(str);
+	//HCURSOR originalCursor = SetCursor(LoadCursor(NULL, IDC_WAIT));
+	char currentDirectory[_MAX_PATH];
+	strcpy(currentDirectory, str);
+	//PathRemoveFileSpecA(currentDirectory); 
+	//creare funzione che toglie il nome del file
+	SetCurrentDirectoryA("D:\\PLaTHEATest");
 	SettingsPersistence::GetInstance()->LoadFromFile(str);
+	//UpdateWindowTitle(hwnd);
+	//SetCursor(originalCursor);
 }
 
+
 void system_saveconfigurationfileas(const char dir[]) {
+	si = new SystemInfo();
+	ApplicationWorkFlow::GetInstance()->UpdateSystemState(APPLICATION_STARTED);
+
 	SettingsPersistence::GetInstance()->SaveToFile("PLaTHEAConfiguration", dir);
 }
 
@@ -229,6 +249,7 @@ void test_stopvideorecordingandsave(bool save, const char* dir) {
 }
 
 void test_svmlearning(const char dir[]) {
+		DBOUT(dir);
 		PlanViewMap::SetSVMClassifierFileName(dir);
 		svmTracker = true;
 }
@@ -239,7 +260,8 @@ void calibration_saveexternalcalibrationdata(const char dir[]){
 }
 
 void calibration_loadexternalcalibrationdata(const char str[]) {
-	ExternalCalibration::GetInstance()->LoadFromFolder(str);
+	int ret = ExternalCalibration::GetInstance()->LoadFromFolder(str);
+	printf("extrn=%d\n",ret);
 }
 
 //enum CalibrationType{LEFT_INTERNAL = 1, RIGHT_INTERNAL = 2, STEREO = 4, ALL_CALIBRATION = 8};
@@ -337,6 +359,7 @@ void localizationengine_stoplocalizationengine() {
 }
 
 void localizationengine_selectsvmclassifier(const char dir []) {
+		DBOUT(dir);
 		PlanViewMap::SetSVMClassifierFileName(dir);		
 		svmTracker = true;	
 }

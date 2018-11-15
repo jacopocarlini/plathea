@@ -64,7 +64,7 @@ extern "C" PLATHEADLL_API float* system_acquisitionstats(); // return float arra
 extern "C" PLATHEADLL_API void system_acquisitionstats_start(); 
 extern "C" PLATHEADLL_API void system_acquisitionstats_stop(); 
 extern "C" PLATHEADLL_API void system_hidevideoinput();
-extern "C" PLATHEADLL_API void system_loadconfigurationfile(const char str[]);  //DEMO
+extern "C" PLATHEADLL_API void system_loadconfigurationfile(char str[]);  //DEMO
 extern "C" PLATHEADLL_API void system_saveconfigurationfileas(const char str[]);
 //extern "C" PLATHEADLL_API void system_saveconfigurationfile();   
 extern "C" PLATHEADLL_API void system_selecthaarcascadexml(const char dir[]);
@@ -73,7 +73,7 @@ extern "C" PLATHEADLL_API void system_editfacedatabase();  //TODO
 
 extern "C" PLATHEADLL_API void test_synchronizationtest(); // TODO
 extern "C" PLATHEADLL_API void test_testdesigner(); // TODO 
-extern "C" PLATHEADLL_API void test_positiontest(bool exitInitPhase);  // DEMO menu *Da chiedere al prof
+extern "C" PLATHEADLL_API void test_positiontest(bool exitInitPhase);  // DEMO menu 
 extern "C" PLATHEADLL_API void test_positiontest_start();  // TODO DEMO menu
 extern "C" PLATHEADLL_API void test_positiontest_stop();  // TODO DEMO menu
 extern "C" PLATHEADLL_API void test_statisticanalyzer(); // TODO
