@@ -13,8 +13,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
-import io.swagger.model.Body5;
-import io.swagger.model.Body6;
+import io.swagger.model.Body8;
+import io.swagger.model.Body9;
 import io.swagger.model.Identity;
 
 import java.util.Map;
@@ -36,7 +36,7 @@ import javax.validation.constraints.*;
 @Path("/identity")
 
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2018-11-15T18:26:33.199Z[GMT]")public class IdentityApi  {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2018-11-17T10:12:31.093Z[GMT]")public class IdentityApi  {
    private final IdentityApiService delegate;
 
    public IdentityApi(@Context ServletConfig servletContext) {
@@ -69,7 +69,7 @@ import javax.validation.constraints.*;
         @ApiResponse(responseCode = "200", description = "successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
-    public Response addIdentity(@Parameter(description = "The name and the surname of the Identity to create." ,required=true) Body6 body
+    public Response addIdentity(@Parameter(description = "The name and the surname of the Identity to create." ,required=true) Body9 body
 
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
@@ -120,7 +120,7 @@ import javax.validation.constraints.*;
         @ApiResponse(responseCode = "404", description = "Identity not found"),
         
         @ApiResponse(responseCode = "405", description = "Validation exception") })
-    public Response updateIdentity(@Parameter(description = "Identity that needs to be modified" ,required=true) Body5 body
+    public Response updateIdentity(@Parameter(description = "Identity that needs to be modified" ,required=true) Body8 body
 
 ,@Parameter(description = "Identity ID to update",required=true) @PathParam("identityID") Integer identityID
 ,@Context SecurityContext securityContext)

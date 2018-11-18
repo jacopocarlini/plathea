@@ -415,7 +415,9 @@ void OnCommand(HWND hwnd, int id, HWND hWndCtl, UINT codeNotify) {
 					DBOUT(buf);
 					HCURSOR originalCursor = SetCursor(LoadCursor(NULL, IDC_WAIT));
 					char currentDirectory[_MAX_PATH]; strcpy(currentDirectory, buf);
-					PathRemoveFileSpecA(currentDirectory); SetCurrentDirectoryA(currentDirectory);
+					PathRemoveFileSpecA(currentDirectory);
+					DBOUT(currentDirectory);
+					SetCurrentDirectoryA(currentDirectory);
 					SettingsPersistence::GetInstance()->LoadFromFile(buf);
 					UpdateWindowTitle(hwnd);
 					SetCursor(originalCursor);

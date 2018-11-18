@@ -58,3 +58,4 @@ ipch
 # My ignore
 .vs
 plathea-code-24-trunk
+/jaxrs-jersey-server-generated/target/

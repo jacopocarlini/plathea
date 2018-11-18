@@ -9,17 +9,36 @@ import io.swagger.model.Body1;
 import io.swagger.model.Body2;
 import io.swagger.model.Body5;
 import io.swagger.model.Body6;
+import io.swagger.model.Body7;
+import io.swagger.model.Body8;
+import io.swagger.model.Body9;
 import io.swagger.model.Entity;
 import io.swagger.model.Identity;
 import io.swagger.model.Person;
 import io.swagger.model.Position;
 import io.swagger.model.Room;
 import io.swagger.model.Stream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ws.rs.Path;
 
 /**
  *
@@ -36,9 +55,11 @@ public class MainSystem {
     static int IDs=0;
     static int identityIDs=0;
 
-    
+    public static ReturnRoomMessage initializesystem(Integer roomID, UUID username, UUID password, UUID type, UUID resolution, Integer fps, UUID cameraModel, UUID ipAddress1) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
-           
+              
 
     //classi wrapper contenenti le info da inviare al client
     public static class ReturnRoomMessage{
@@ -589,7 +610,7 @@ public class MainSystem {
         return new ReturnEntitiesMessage(StatusCode.OK).setPayload(entities);
     }
 
-    public static synchronized ReturnIdentityMessage addIdentity(Body6 body){
+    public static synchronized ReturnIdentityMessage addIdentity(Body9 body){
         Identity identity = new Identity();
         identity.firstname(body.getFirstname());
         identity.setSurname(body.getSurname());
@@ -616,7 +637,7 @@ public class MainSystem {
         }     
     }
     
-    public static synchronized ReturnIdentityMessage updateIdentity(Integer identityID, Body5 body) {
+    public static synchronized ReturnIdentityMessage updateIdentity(Integer identityID, Body8 body) {
         if(identities.containsKey(identityID)){
             identities.get(identityID).firstname(body.getFirstname());
             identities.get(identityID).surname(body.getSurname());
@@ -665,15 +686,203 @@ public class MainSystem {
     
     
     //PLATHEA
-    
-    public static synchronized ReturnRoomMessage loadconfigurationfile(Integer roomID, Object body) {   
+    public static synchronized ReturnRoomMessage facedatabase(Integer roomID, List<String> filenames, List<File> filename){ 
+        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("No files in the body");
+        //System.out.println(filenames);
+        //System.out.println(filenames.size());
+        //System.out.println(filename);
+        //System.out.println(filename.size());
+        if (filenames.size() != filename.size()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("Error: names of files");
         if(rooms.containsKey(roomID)){
-            System.out.println(body);
-            //rooms.get(roomID).interfaceJNI.loadConfigurationFile(null);
+            new File("room"+roomID+"\\FaceDatabase").mkdirs();
+            //String[] name = (String[]) filenames.toArray();
+            for(int i=0;i<filenames.size();i++){
+                File file = filename.get(i);
+                try {
+                    String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\FaceDatabase\\"+filenames.get(i);                   
+                    System.out.println(path);
+                    File output = new File(path);            
+                    byte[] bytesArray = file.toString().getBytes();
+                    
+                    output.getParentFile().mkdirs();
+                    if(output.createNewFile()){
+                        System.out.println("File Created");
+                    }else System.out.println("File already exists");                   
+                    
+                    PrintWriter fw = new PrintWriter(output);
+                   
+                    for(int j=0;j<bytesArray.length; j++){
+                        //System.out.println(bytesArray[j]);
+                        fw.println(bytesArray[j]);
+                    }
+                           
+                    fw.close();
+                    
+                    //FileOutputStream fos = new FileOutputStream(output);     
+                    //fos.write(bytesArray);
+                    //fos.close();
+                    
+                    
+                } catch (Exception ex) {
+                    Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+                       
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
+    
+    
+    public static synchronized ReturnRoomMessage loadconfigurationfile(Integer roomID, List<File> filename) {   
+        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID);
+        if(rooms.containsKey(roomID)){
+            //System.out.println(filename.get(0));
+            File file = filename.get(0);
+            /*
+            try {
+                new File("room"+roomID).mkdir();
+                File output = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\experiment.xml");            
+                if(output.createNewFile()){
+                    System.out.println("File Created");
+                }else System.out.println("File already exists");
+                
+                String s = file.toString().replace("\\", "/");
+                System.out.println(s);
+                PrintWriter fw = new PrintWriter(output);
+                fw.write(s);
+                fw.close();
+                /*
+                System.out.println("leggo");
+                byte[] bytesArray = new byte[(int) file.length()]; 
+                FileInputStream fis = new FileInputStream(file);
+                fis.read(bytesArray); //read file into bytes[]
+                fis.close();
+                
+                System.out.println("scrivo");
+                FileOutputStream fos = new FileOutputStream(output);     
+                fos.write(bytesArray);
+                fos.close();
+                
+            } catch (Exception ex) {
+                Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            */
+            rooms.get(roomID).interfaceJNI.loadConfigurationFile(
+                    "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\experiment.xml");
+            return new ReturnRoomMessage(StatusCode.OK);
+        }
+        return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
+    
+    public static synchronized ReturnRoomMessage internalcalibration(Integer roomID, List<File> filename, Integer mask) { 
+        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID);
+        if(rooms.containsKey(roomID)){
+            /*
+            new File("room"+roomID+"\\InternalCalibration").mkdirs();
+            String[] name = {"3DReprojection.xml", "Essential.xml", "Fundamental.xml", 
+                "LeftDistortion.xml", "LeftIntrinsics.xml", "mx_LEFT.xml", "mx_RIGHT.xml",
+                "my_LEFT.xml", "my_RIGHT.xml", "RightDistortion.xml", "RightIntrinsics.xml",
+                "Rotation.xml", "Traslation.xml"};
+            for(int i=0;i<filename.size();i++){
+                File file = filename.get(i);
+                try {
+                    String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\InternalCalibration\\"+name[i];                   
+                    System.out.println(path);
+                    File output = new File(path);            
+                    output.getParentFile().mkdirs();
+                    if(output.createNewFile()){
+                        System.out.println("File Created");
+                    }else System.out.println("File already exists");
+
+                    String s = file.toString().replace("\\", "/");
+                    PrintWriter fw = new PrintWriter(output);
+                    fw.write(s);
+                    fw.close();
+                    System.out.println("File salvato");
+                } catch (Exception ex) {
+                    Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+                    */
+            rooms.get(roomID).interfaceJNI.internalCalibration("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\InternalCalibration", mask);
+           
+            return new ReturnRoomMessage(StatusCode.OK);
+        }
+        return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
+    
+    public static synchronized ReturnRoomMessage externalcalibration(Integer roomID, List<File> filename) {   
+        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID);
+        if(rooms.containsKey(roomID)){
+            /*
+            new File("room"+roomID+"\\ExternalCalibration").mkdirs();
+            String[] name = {"External_Rotation.xml", "External_Traslation.xml"};
+            for(int i=0;i<filename.size();i++){
+                File file = filename.get(i);
+                try {
+                    String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\ExternalCalibration\\"+name[i];                   
+                    System.out.println(path);
+                    File output = new File(path);    
+                    if(output.createNewFile()){
+                        System.out.println("File Created");
+                    }else System.out.println("File already exists");
+
+                    String s = file.toString().replace("\\", "/");
+                    System.out.println(s.length());
+                    PrintWriter fw = new PrintWriter(output);
+                    fw.write(s);
+                    fw.close();
+                } catch (Exception ex) {
+                    Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+                    */
+            rooms.get(roomID).interfaceJNI.externalCalibration("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\ExternalCalibration");
+           
+            return new ReturnRoomMessage(StatusCode.OK);
+        }
+        return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
+    
+    public static synchronized ReturnRoomMessage selectsvmclassifier(Integer roomID, List<File> filename) {   
+        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID);
+        if(rooms.containsKey(roomID)){
+            /*
+            System.out.println(filename.get(0).getName().length());
+            File file = filename.get(0);
+            try {
+                new File("room"+roomID+"\\Tracking").mkdir();
+                File output = new File("room"+roomID+"\\Tracking\\svmclassifier.xml");            
+                if(output.createNewFile()){
+                    System.out.println("File Created");
+                }else System.out.println("File already exists");
+                
+                String s = file.toString().replace("\\", "/");
+                System.out.println(s.length());
+                PrintWriter fw = new PrintWriter(output);
+                fw.write(s);
+                fw.close();
+            } catch (Exception ex) {
+                Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            */
+            rooms.get(roomID).interfaceJNI.selectSVMclassifier("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\Tracking\\svmclassifier.xml");
+            return new ReturnRoomMessage(StatusCode.OK);
+        }
+        return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
+    
+    public static synchronized ReturnRoomMessage initializesystem(Integer roomID, String username, String password, String type, String resolution, Integer fps, String cameraModel, String ipAddress1, Integer port1, String ipAddress2, Integer port2) {
+        if(rooms.containsKey(roomID)){
+            System.out.println(username);
+            System.out.println(fps);
+            rooms.get(roomID).interfaceJNI.initializeSystem(username, password, type, resolution, fps, cameraModel, ipAddress1, port1, ipAddress2, port2);
+            return new ReturnRoomMessage(StatusCode.OK);
+        }
+        return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
+    
     
 }
     

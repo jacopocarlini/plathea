@@ -159,21 +159,36 @@ void system_selecthaarcascadexml(const char dir[]) {
 	mainFaceDatabase.SetHaarClassifierFileName(dir);
 }
 
+
+std::string setPath(string path) {
+	int length = path.length();
+	printf("il path prima: %s\n", path.c_str());
+	//printf("length=%d\n", length);
+	string delimiter = "\\";
+	size_t pos = 0;
+	pos = path.find_last_of(delimiter);
+	//printf("pos=%d\n", pos);
+	printf("il path dopo: %s\n", path.substr(0, pos).c_str());
+	return path.substr(0, pos);	
+}
+
+
 void system_loadconfigurationfile(char str[]) {
-	//char str[] = "C:\\Users\\jack1\\Desktop\\PLaTHEATest\\";
-	//PathRemoveFileSpecA(currentDirectory); 
-	//SetCurrentDirectoryA(currentDirectory);
-	//SettingsPersistence::GetInstance()->LoadFromFile(str);
-	//HCURSOR originalCursor = SetCursor(LoadCursor(NULL, IDC_WAIT));
 	char currentDirectory[_MAX_PATH];
 	strcpy(currentDirectory, str);
 	//PathRemoveFileSpecA(currentDirectory); 
-	//creare funzione che toglie il nome del file
-	SetCurrentDirectoryA("D:\\PLaTHEATest");
+	//setPath è una funzione naif per emulare PathRemoveFileSpecA 
+	string s(str);
+	printf("prima della chiamata: %s\n",s.c_str());
+	//DBOUT(setPath(s).c_str());
+	//const char* path = setPath(s).c_str();
+	//printf("dopo la chiamata: %s\n", setPath(s).c_str());
+	SetCurrentDirectoryA(setPath(s).c_str());
 	SettingsPersistence::GetInstance()->LoadFromFile(str);
 	//UpdateWindowTitle(hwnd);
 	//SetCursor(originalCursor);
 }
+
 
 
 void system_saveconfigurationfileas(const char dir[]) {

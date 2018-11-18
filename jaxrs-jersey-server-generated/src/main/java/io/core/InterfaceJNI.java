@@ -18,7 +18,7 @@ public class InterfaceJNI {
     // import C++ code
     static {
         //System.loadLibrary("PlatheaDLL");
-        System.load("D:\\github\\jaxrs-jersey-server-generated\\src\\main\\java\\io\\core\\InterfaceJNI_DLL.dll");
+        System.load("D:\\github\\plathea\\jaxrs-jersey-server-generated\\src\\main\\java\\io\\core\\InterfaceJNI_DLL.dll");
 
     }
 
@@ -39,10 +39,10 @@ public class InterfaceJNI {
 
     // Interface
     public native int loadConfigurationFile(String dir);
-    //public native int internalCalibration(String dir, int mask);
-    //public native int loadExternalCalibrationData(String dir);
-    //public native int selectSVMclassifier(String dir);
-    //public native int initializeSystem(String username, String password, String type, String resolution, int fps, String cameraModel, String IPAddress1, int port1, String IPAddress2, int port2);
+    public native int internalCalibration(String dir, int mask);
+    public native int externalCalibration(String dir);
+    public native int selectSVMclassifier(String dir);
+    public native int initializeSystem(String username, String password, String type, String resolution, int fps, String cameraModel, String IPAddress1, int port1, String IPAddress2, int port2);
     //public native int startLocalizationEngine(boolean withoutTracking, boolean saveTracksToFile, String dir);
     //public native int platheaRecorder_start(String dir);
 

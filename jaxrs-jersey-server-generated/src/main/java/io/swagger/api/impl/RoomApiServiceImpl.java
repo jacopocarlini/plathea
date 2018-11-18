@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.Map;
 import java.util.List;
 import io.swagger.api.NotFoundException;
+import java.io.FileInputStream;
 
 import java.io.InputStream;
 
@@ -45,16 +46,26 @@ import javax.validation.constraints.*;
     }
     @Override
     public Response externalcalibration(Integer roomID, List<File> filename, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnPeopleMessage ret = MainSystem.getPeopleInRoom(roomID);
+        MainSystem.ReturnRoomMessage ret = MainSystem.externalcalibration(roomID, filename);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
             return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
-        return Response.ok().entity(ret.getPayload()).build();
+        return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
+    public Response facedatabase(Integer roomID, List<String> filenames, List<File> filename, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.facedatabase(roomID, filenames, filename);
+        if (ret.getCode()==MainSystem.StatusCode.INVALID) 
+            return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
+        if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
+            return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
+        return Response.ok().entity(ret.getMessage()).build();
+    }
+
+    @Override
     public Response getPeopleInRoom(Integer roomID, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.getRoomInfo(roomID);
+        MainSystem.ReturnPeopleMessage ret = MainSystem.getPeopleInRoom(roomID);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
@@ -85,23 +96,31 @@ import javax.validation.constraints.*;
         return Response.ok().entity(ret.getPayload()).build();
     }
     @Override
-    public Response initializesystem(Integer roomID, UUID username, UUID password, UUID type, UUID resolution, Integer fps, UUID cameraModel, UUID ipAddress1, Integer port1, UUID ipAddress2, Integer port2, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
-    }
-    @Override
-    public Response internalcalibration(Integer roomID, List<File> filename, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
-    }
-    @Override
-    public Response loadconfigurationfile(Integer roomID, Object body, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.loadconfigurationfile(roomID, body);
+    public Response initializesystem(Integer roomID, String username, String password, String type, String resolution, Integer fps, String cameraModel, String ipAddress1, Integer port1, String ipAddress2, Integer port2, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.initializesystem(roomID, username, password, type, resolution, fps, cameraModel, ipAddress1, port1, ipAddress2, port2);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
             return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
-        return Response.ok().entity(ret.getPayload()).build();
+        return Response.ok().entity(ret.getMessage()).build();
+    }
+    @Override
+    public Response internalcalibration(Integer roomID, Integer mask, List<File> filename, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.internalcalibration(roomID, filename, mask);
+        if (ret.getCode()==MainSystem.StatusCode.INVALID) 
+            return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
+        if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
+            return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
+        return Response.ok().entity(ret.getMessage()).build();
+    }
+    @Override
+    public Response loadconfigurationfile(Integer roomID, List<File> filename, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.loadconfigurationfile(roomID, filename);
+        if (ret.getCode()==MainSystem.StatusCode.INVALID) 
+            return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
+        if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
+            return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
+        return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
     public Response plathearecorder(Integer roomID, SecurityContext securityContext) throws NotFoundException {
@@ -119,9 +138,13 @@ import javax.validation.constraints.*;
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
-    public Response selectsvmclassifier(Integer roomID, Object body, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    public Response selectsvmclassifier(Integer roomID, List<File> filename, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.selectsvmclassifier(roomID, filename);
+        if (ret.getCode()==MainSystem.StatusCode.INVALID) 
+            return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
+        if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
+            return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
+        return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
     public Response startlocalizationengine(Integer roomID, Boolean withoutTracking, Boolean saveTracksToFile, SecurityContext securityContext) throws NotFoundException {

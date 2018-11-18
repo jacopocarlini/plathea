@@ -20,7 +20,6 @@ import io.swagger.model.Person;
 import io.swagger.model.Room;
 import io.swagger.model.RoomSettings;
 import io.swagger.model.Stream;
-import java.util.UUID;
 
 import java.util.Map;
 import java.util.List;
@@ -41,7 +40,7 @@ import javax.validation.constraints.*;
 @Path("/room")
 
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2018-11-15T18:26:33.199Z[GMT]")public class RoomApi  {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2018-11-17T10:12:31.093Z[GMT]")public class RoomApi  {
    private final RoomApiService delegate;
 
    public RoomApi(@Context ServletConfig servletContext) {
@@ -110,6 +109,24 @@ import javax.validation.constraints.*;
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
         return delegate.externalcalibration(roomID,filename,securityContext);
+    }
+    @POST
+    @Path("/{roomID}/face_database")
+    @Consumes({ "multipart/form-data" })
+    
+    @Operation(summary = "Load the face database", description = "", tags={ "room" })
+    @ApiResponses(value = { 
+        @ApiResponse(responseCode = "200", description = "successful operation"),
+        
+        @ApiResponse(responseCode = "405", description = "Invalid input") })
+    public Response facedatabase(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
+,
+@Parameter(description = "the names of the files" ,required=true)@HeaderParam("filenames") List<String> filenames
+
+,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
+,@Context SecurityContext securityContext)
+    throws NotFoundException {
+        return delegate.facedatabase(roomID,filenames,filename,securityContext);
     }
     @GET
     @Path("/{roomID}/people")
@@ -186,31 +203,31 @@ import javax.validation.constraints.*;
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response initializesystem(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
 ,
-@Parameter(description = "" ,required=true)@HeaderParam("username") UUID username
+@Parameter(description = "" ,required=true)@HeaderParam("username") String username
 
 ,
-@Parameter(description = "" ,required=true)@HeaderParam("password") UUID password
+@Parameter(description = "" ,required=true)@HeaderParam("password") String password
 
 ,
-@Parameter(description = "" ,required=true)@HeaderParam("type") UUID type
+@Parameter(description = "" ,required=true)@HeaderParam("type") String type
 
 ,
-@Parameter(description = "" ,required=true)@HeaderParam("resolution") UUID resolution
+@Parameter(description = "" ,required=true)@HeaderParam("resolution") String resolution
 
 ,
 @Parameter(description = "" ,required=true)@HeaderParam("fps") Integer fps
 
 ,
-@Parameter(description = "" ,required=true)@HeaderParam("cameraModel") UUID cameraModel
+@Parameter(description = "" ,required=true)@HeaderParam("cameraModel") String cameraModel
 
 ,
-@Parameter(description = "" ,required=true)@HeaderParam("IPAddress1") UUID ipAddress1
+@Parameter(description = "" ,required=true)@HeaderParam("IPAddress1") String ipAddress1
 
 ,
 @Parameter(description = "" ,required=true)@HeaderParam("port1") Integer port1
 
 ,
-@Parameter(description = "" ,required=true)@HeaderParam("IPAddress2") UUID ipAddress2
+@Parameter(description = "" ,required=true)@HeaderParam("IPAddress2") String ipAddress2
 
 ,
 @Parameter(description = "" ,required=true)@HeaderParam("port2") Integer port2
@@ -229,14 +246,17 @@ import javax.validation.constraints.*;
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response internalcalibration(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
+,
+@Parameter(description = "mask" ,required=true)@HeaderParam("mask") Integer mask
+
 ,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.internalcalibration(roomID,filename,securityContext);
+        return delegate.internalcalibration(roomID,mask,filename,securityContext);
     }
     @POST
     @Path("/{roomID}/load_configuration_file")
-    @Consumes({ "application/xml" })
+    @Consumes({ "multipart/form-data" })
     
     @Operation(summary = "Load the configuration file", description = "", tags={ "room" })
     @ApiResponses(value = { 
@@ -244,11 +264,10 @@ import javax.validation.constraints.*;
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response loadconfigurationfile(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
-,@Parameter(description = "" ) Object body
-
+,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.loadconfigurationfile(roomID,body,securityContext);
+        return delegate.loadconfigurationfile(roomID,filename,securityContext);
     }
     @GET
     @Path("/{roomID}/plathea_recorder")
@@ -295,7 +314,7 @@ import javax.validation.constraints.*;
     }
     @POST
     @Path("/{roomID}/select_svm_classifier")
-    @Consumes({ "application/xml" })
+    @Consumes({ "multipart/form-data" })
     
     @Operation(summary = "Load the svm classifier file", description = "", tags={ "room" })
     @ApiResponses(value = { 
@@ -303,11 +322,10 @@ import javax.validation.constraints.*;
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response selectsvmclassifier(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
-,@Parameter(description = "" ) Object body
-
+,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.selectsvmclassifier(roomID,body,securityContext);
+        return delegate.selectsvmclassifier(roomID,filename,securityContext);
     }
     @POST
     @Path("/{roomID}/start_localization_engine")
