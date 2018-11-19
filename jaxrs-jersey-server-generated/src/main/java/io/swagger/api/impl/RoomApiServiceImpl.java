@@ -25,6 +25,7 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.validation.constraints.*;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2018-11-15T15:23:40.200Z[GMT]")public class RoomApiServiceImpl extends RoomApiService {
     @Override
     public Response addRoom(Body1 body, SecurityContext securityContext) throws NotFoundException {
@@ -45,8 +46,8 @@ import javax.validation.constraints.*;
         return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response externalcalibration(Integer roomID, List<File> filename, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.externalcalibration(roomID, filename);
+    public Response externalcalibration(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.externalcalibration(roomID, bodyParts, fileDispositions);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
@@ -54,8 +55,8 @@ import javax.validation.constraints.*;
         return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response facedatabase(Integer roomID, List<String> filenames, List<File> filename, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.facedatabase(roomID, filenames, filename);
+    public Response facedatabase(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.facedatabase(roomID, bodyParts, fileDispositions);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
@@ -105,8 +106,8 @@ import javax.validation.constraints.*;
         return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response internalcalibration(Integer roomID, Integer mask, List<File> filename, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.internalcalibration(roomID, filename, mask);
+    public Response internalcalibration(Integer roomID, Integer mask, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.internalcalibration(roomID, mask, bodyParts, fileDispositions);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
@@ -114,8 +115,8 @@ import javax.validation.constraints.*;
         return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response loadconfigurationfile(Integer roomID, List<File> filename, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.loadconfigurationfile(roomID, filename);
+    public Response loadconfigurationfile(Integer roomID, InputStream uploadedInputStream, FormDataContentDisposition fileDetail, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.loadconfigurationfile(roomID, uploadedInputStream, fileDetail);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
@@ -128,7 +129,7 @@ import javax.validation.constraints.*;
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
-    public Response plathearecorderstart(Integer roomID, List<File> filename, SecurityContext securityContext) throws NotFoundException {
+    public Response plathearecorderstart(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
@@ -138,8 +139,8 @@ import javax.validation.constraints.*;
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
     @Override
-    public Response selectsvmclassifier(Integer roomID, List<File> filename, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.selectsvmclassifier(roomID, filename);
+    public Response selectsvmclassifier(Integer roomID, InputStream uploadedInputStream, FormDataContentDisposition fileDetails, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.selectsvmclassifier(roomID, uploadedInputStream, fileDetails);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 

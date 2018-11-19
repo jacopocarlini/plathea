@@ -11,7 +11,7 @@ import io.swagger.model.Body5;
 import io.swagger.model.Body6;
 import io.swagger.model.Body7;
 import io.swagger.model.Body8;
-import io.swagger.model.Body9;
+//import io.swagger.model.Body9;
 import io.swagger.model.Entity;
 import io.swagger.model.Identity;
 import io.swagger.model.Person;
@@ -27,7 +27,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,6 +41,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Path;
+import org.glassfish.jersey.media.multipart.BodyPartEntity;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 /**
  *
@@ -610,7 +615,7 @@ public class MainSystem {
         return new ReturnEntitiesMessage(StatusCode.OK).setPayload(entities);
     }
 
-    public static synchronized ReturnIdentityMessage addIdentity(Body9 body){
+    public static synchronized ReturnIdentityMessage addIdentity(Body8 body){
         Identity identity = new Identity();
         identity.firstname(body.getFirstname());
         identity.setSurname(body.getSurname());
@@ -637,7 +642,7 @@ public class MainSystem {
         }     
     }
     
-    public static synchronized ReturnIdentityMessage updateIdentity(Integer identityID, Body8 body) {
+    public static synchronized ReturnIdentityMessage updateIdentity(Integer identityID, Body7 body) {
         if(identities.containsKey(identityID)){
             identities.get(identityID).firstname(body.getFirstname());
             identities.get(identityID).surname(body.getSurname());
@@ -686,46 +691,23 @@ public class MainSystem {
     
     
     //PLATHEA
-    public static synchronized ReturnRoomMessage facedatabase(Integer roomID, List<String> filenames, List<File> filename){ 
-        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("No files in the body");
-        //System.out.println(filenames);
-        //System.out.println(filenames.size());
-        //System.out.println(filename);
-        //System.out.println(filename.size());
-        if (filenames.size() != filename.size()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("Error: names of files");
+    public static synchronized ReturnRoomMessage facedatabase(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions){ 
+        if (bodyParts == null || bodyParts.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("No files in the body");
         if(rooms.containsKey(roomID)){
             new File("room"+roomID+"\\FaceDatabase").mkdirs();
-            //String[] name = (String[]) filenames.toArray();
-            for(int i=0;i<filenames.size();i++){
-                File file = filename.get(i);
-                try {
-                    String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\FaceDatabase\\"+filenames.get(i);                   
-                    System.out.println(path);
-                    File output = new File(path);            
-                    byte[] bytesArray = file.toString().getBytes();
-                    
-                    output.getParentFile().mkdirs();
-                    if(output.createNewFile()){
-                        System.out.println("File Created");
-                    }else System.out.println("File already exists");                   
-                    
-                    PrintWriter fw = new PrintWriter(output);
-                   
-                    for(int j=0;j<bytesArray.length; j++){
-                        //System.out.println(bytesArray[j]);
-                        fw.println(bytesArray[j]);
-                    }
-                           
-                    fw.close();
-                    
-                    //FileOutputStream fos = new FileOutputStream(output);     
-                    //fos.write(bytesArray);
-                    //fos.close();
-                    
-                    
-                } catch (Exception ex) {
-                    Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            for(int i=0;i<bodyParts.size();i++){
+                // save it
+                StringBuffer fileDetails = new StringBuffer("");		
+                /*
+                 * Casting FormDataBodyPart to BodyPartEntity, which can give us
+                 * InputStream for uploaded file
+                 */
+                BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyParts.get(i).getEntity();
+                String fileName = bodyParts.get(i).getContentDisposition().getFileName();
+                String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\FaceDatabase\\"+fileName;                 
+
+                writeToFile(bodyPartEntity.getInputStream(), path);			
+		
             }
                        
             return new ReturnRoomMessage(StatusCode.OK);
@@ -733,141 +715,85 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    
-    public static synchronized ReturnRoomMessage loadconfigurationfile(Integer roomID, List<File> filename) {   
-        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID);
+    public static synchronized ReturnRoomMessage loadconfigurationfile(Integer roomID, InputStream uploadedInputStream, FormDataContentDisposition fileDetail) {   
+        if (uploadedInputStream.equals(null)) return new ReturnRoomMessage(StatusCode.INVALID);
         if(rooms.containsKey(roomID)){
-            //System.out.println(filename.get(0));
-            File file = filename.get(0);
-            /*
-            try {
-                new File("room"+roomID).mkdir();
-                File output = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\experiment.xml");            
-                if(output.createNewFile()){
-                    System.out.println("File Created");
-                }else System.out.println("File already exists");
-                
-                String s = file.toString().replace("\\", "/");
-                System.out.println(s);
-                PrintWriter fw = new PrintWriter(output);
-                fw.write(s);
-                fw.close();
-                /*
-                System.out.println("leggo");
-                byte[] bytesArray = new byte[(int) file.length()]; 
-                FileInputStream fis = new FileInputStream(file);
-                fis.read(bytesArray); //read file into bytes[]
-                fis.close();
-                
-                System.out.println("scrivo");
-                FileOutputStream fos = new FileOutputStream(output);     
-                fos.write(bytesArray);
-                fos.close();
-                
-            } catch (Exception ex) {
-                Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            */
-            rooms.get(roomID).interfaceJNI.loadConfigurationFile(
-                    "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\experiment.xml");
+            String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID;
+            new File(path).mkdirs();
+            String uploadedFileLocation = path+"\\" + fileDetail.getFileName();
+            writeToFile(uploadedInputStream, uploadedFileLocation);                      
+            rooms.get(roomID).interfaceJNI.loadConfigurationFile(uploadedFileLocation);
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static synchronized ReturnRoomMessage internalcalibration(Integer roomID, List<File> filename, Integer mask) { 
-        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID);
-        if(rooms.containsKey(roomID)){
-            /*
-            new File("room"+roomID+"\\InternalCalibration").mkdirs();
-            String[] name = {"3DReprojection.xml", "Essential.xml", "Fundamental.xml", 
+    public static synchronized ReturnRoomMessage internalcalibration(Integer roomID,Integer mask, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions) { 
+        if (bodyParts == null || bodyParts.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("No files in the body");
+        String[] name = {"3DReprojection.xml", "Essential.xml", "Fundamental.xml", 
                 "LeftDistortion.xml", "LeftIntrinsics.xml", "mx_LEFT.xml", "mx_RIGHT.xml",
                 "my_LEFT.xml", "my_RIGHT.xml", "RightDistortion.xml", "RightIntrinsics.xml",
                 "Rotation.xml", "Traslation.xml"};
-            for(int i=0;i<filename.size();i++){
-                File file = filename.get(i);
-                try {
-                    String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\InternalCalibration\\"+name[i];                   
-                    System.out.println(path);
-                    File output = new File(path);            
-                    output.getParentFile().mkdirs();
-                    if(output.createNewFile()){
-                        System.out.println("File Created");
-                    }else System.out.println("File already exists");
+        if(rooms.containsKey(roomID)){
+            String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\InternalCalibration";
+            new File(path).mkdirs();
+            for(int i=0;i<bodyParts.size();i++){
+                // save it
+                StringBuffer fileDetails = new StringBuffer("");		
+                /*
+                 * Casting FormDataBodyPart to BodyPartEntity, which can give us
+                 * InputStream for uploaded file
+                 */
+                BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyParts.get(i).getEntity();
+                String fileName = bodyParts.get(i).getContentDisposition().getFileName();
+                String uploadedFileLocation = path+"\\"+fileName;                 
 
-                    String s = file.toString().replace("\\", "/");
-                    PrintWriter fw = new PrintWriter(output);
-                    fw.write(s);
-                    fw.close();
-                    System.out.println("File salvato");
-                } catch (Exception ex) {
-                    Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                writeToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);			
+		
             }
-                    */
-            rooms.get(roomID).interfaceJNI.internalCalibration("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\InternalCalibration", mask);
-           
+            rooms.get(roomID).interfaceJNI.internalCalibration(path, mask);         
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static synchronized ReturnRoomMessage externalcalibration(Integer roomID, List<File> filename) {   
-        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID);
+    public static synchronized ReturnRoomMessage externalcalibration(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions) {   
+        if (bodyParts == null || bodyParts.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("No files in the body");
+        String[] name = {"3DReprojection.xml", "Essential.xml", "Fundamental.xml", 
+                "LeftDistortion.xml", "LeftIntrinsics.xml", "mx_LEFT.xml", "mx_RIGHT.xml",
+                "my_LEFT.xml", "my_RIGHT.xml", "RightDistortion.xml", "RightIntrinsics.xml",
+                "Rotation.xml", "Traslation.xml"};
         if(rooms.containsKey(roomID)){
-            /*
-            new File("room"+roomID+"\\ExternalCalibration").mkdirs();
-            String[] name = {"External_Rotation.xml", "External_Traslation.xml"};
-            for(int i=0;i<filename.size();i++){
-                File file = filename.get(i);
-                try {
-                    String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\ExternalCalibration\\"+name[i];                   
-                    System.out.println(path);
-                    File output = new File(path);    
-                    if(output.createNewFile()){
-                        System.out.println("File Created");
-                    }else System.out.println("File already exists");
+            String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\ExternalCalibration";
+            new File(path).mkdirs();
+            for(int i=0;i<bodyParts.size();i++){
+                // save it
+                StringBuffer fileDetails = new StringBuffer("");		
+                /*
+                 * Casting FormDataBodyPart to BodyPartEntity, which can give us
+                 * InputStream for uploaded file
+                 */
+                BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyParts.get(i).getEntity();
+                String fileName = bodyParts.get(i).getContentDisposition().getFileName();
+                String uploadedFileLocation = path+"\\"+fileName;                 
 
-                    String s = file.toString().replace("\\", "/");
-                    System.out.println(s.length());
-                    PrintWriter fw = new PrintWriter(output);
-                    fw.write(s);
-                    fw.close();
-                } catch (Exception ex) {
-                    Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                writeToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);			
+		
             }
-                    */
-            rooms.get(roomID).interfaceJNI.externalCalibration("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\ExternalCalibration");
-           
+            rooms.get(roomID).interfaceJNI.externalCalibration(path);         
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static synchronized ReturnRoomMessage selectsvmclassifier(Integer roomID, List<File> filename) {   
-        if (filename.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID);
+    public static synchronized ReturnRoomMessage selectsvmclassifier(Integer roomID, InputStream uploadedInputStream, FormDataContentDisposition fileDetail) {   
+        if (uploadedInputStream.equals(null)) return new ReturnRoomMessage(StatusCode.INVALID);
         if(rooms.containsKey(roomID)){
-            /*
-            System.out.println(filename.get(0).getName().length());
-            File file = filename.get(0);
-            try {
-                new File("room"+roomID+"\\Tracking").mkdir();
-                File output = new File("room"+roomID+"\\Tracking\\svmclassifier.xml");            
-                if(output.createNewFile()){
-                    System.out.println("File Created");
-                }else System.out.println("File already exists");
-                
-                String s = file.toString().replace("\\", "/");
-                System.out.println(s.length());
-                PrintWriter fw = new PrintWriter(output);
-                fw.write(s);
-                fw.close();
-            } catch (Exception ex) {
-                Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            */
-            rooms.get(roomID).interfaceJNI.selectSVMclassifier("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\Tracking\\svmclassifier.xml");
+            String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\Tracking";
+            new File(path).mkdirs();
+            String uploadedFileLocation = path+"\\" + fileDetail.getFileName();
+            writeToFile(uploadedInputStream, uploadedFileLocation);            
+            rooms.get(roomID).interfaceJNI.selectSVMclassifier(uploadedFileLocation);
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
@@ -882,6 +808,29 @@ public class MainSystem {
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
+    
+    
+    // save uploaded file to new location
+    private static void writeToFile(InputStream uploadedInputStream,String uploadedFileLocation) {
+
+		try {
+			OutputStream out = new FileOutputStream(new File(
+					uploadedFileLocation));
+			int read = 0;
+			byte[] bytes = new byte[1024];
+
+			out = new FileOutputStream(new File(uploadedFileLocation));
+			while ((read = uploadedInputStream.read(bytes)) != -1) {
+				out.write(bytes, 0, read);
+			}
+			out.flush();
+			out.close();
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+
+	}
     
     
 }

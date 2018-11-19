@@ -36,11 +36,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.*;
 import javax.validation.constraints.*;
+import javax.ws.rs.core.MediaType;
+import javax.xml.bind.annotation.XmlElement;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 
 @Path("/room")
 
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2018-11-17T10:12:31.093Z[GMT]")public class RoomApi  {
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2018-11-18T18:02:56.242Z[GMT]")public class RoomApi  {
    private final RoomApiService delegate;
 
    public RoomApi(@Context ServletConfig servletContext) {
@@ -97,36 +101,35 @@ import javax.validation.constraints.*;
     }
     @POST
     @Path("/{roomID}/external_calibration")
-    @Consumes({ "multipart/form-data" })
-    
+    //@Consumes({ "multipart/form-data" })
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "Load the external calibration files", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response externalcalibration(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
-,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
+,@FormDataParam("files") List<FormDataBodyPart> bodyParts
+,@FormDataParam("files") FormDataContentDisposition fileDispositions
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.externalcalibration(roomID,filename,securityContext);
+        return delegate.externalcalibration(roomID,bodyParts, fileDispositions,securityContext);
     }
     @POST
     @Path("/{roomID}/face_database")
-    @Consumes({ "multipart/form-data" })
-    
+    //@Consumes({ "multipart/form-data" })
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "Load the face database", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response facedatabase(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
-,
-@Parameter(description = "the names of the files" ,required=true)@HeaderParam("filenames") List<String> filenames
-
-,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
+,@FormDataParam("files") List<FormDataBodyPart> bodyParts
+,@FormDataParam("files") FormDataContentDisposition fileDispositions
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.facedatabase(roomID,filenames,filename,securityContext);
+        return delegate.facedatabase(roomID, bodyParts, fileDispositions ,securityContext);
     }
     @GET
     @Path("/{roomID}/people")
@@ -238,8 +241,8 @@ import javax.validation.constraints.*;
     }
     @POST
     @Path("/{roomID}/internal_calibration")
-    @Consumes({ "multipart/form-data" })
-    
+    //@Consumes({ "multipart/form-data" })
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "Load the internal calibration files", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),
@@ -248,26 +251,27 @@ import javax.validation.constraints.*;
     public Response internalcalibration(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
 ,
 @Parameter(description = "mask" ,required=true)@HeaderParam("mask") Integer mask
-
-,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
+,@FormDataParam("files") List<FormDataBodyPart> bodyParts
+,@FormDataParam("files") FormDataContentDisposition fileDispositions
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.internalcalibration(roomID,mask,filename,securityContext);
+        return delegate.internalcalibration(roomID,mask, bodyParts,fileDispositions ,securityContext);
     }
     @POST
     @Path("/{roomID}/load_configuration_file")
-    @Consumes({ "multipart/form-data" })
-    
+    //@Consumes({ "application/xml" })
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "Load the configuration file", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response loadconfigurationfile(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
-,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
+,@FormDataParam("file") InputStream uploadedInputStream,
+		@FormDataParam("file") FormDataContentDisposition fileDetail
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.loadconfigurationfile(roomID,filename,securityContext);
+        return delegate.loadconfigurationfile(roomID, uploadedInputStream, fileDetail, securityContext);
     }
     @GET
     @Path("/{roomID}/plathea_recorder")
@@ -285,18 +289,19 @@ import javax.validation.constraints.*;
     }
     @POST
     @Path("/{roomID}/plathea_recorder_start")
-    @Consumes({ "multipart/form-data" })
-    
+    //@Consumes({ "multipart/form-data" })
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "start the recorder", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response plathearecorderstart(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
-,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
+,@FormDataParam("files") List<FormDataBodyPart> bodyParts
+,@FormDataParam("files") FormDataContentDisposition fileDispositions
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.plathearecorderstart(roomID,filename,securityContext);
+        return delegate.plathearecorderstart(roomID,bodyParts,fileDispositions ,securityContext);
     }
     @GET
     @Path("/{roomID}/plathea_recorder_stop")
@@ -314,18 +319,19 @@ import javax.validation.constraints.*;
     }
     @POST
     @Path("/{roomID}/select_svm_classifier")
-    @Consumes({ "multipart/form-data" })
-    
+    //@Consumes({ "multipart/form-data" })
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "Load the svm classifier file", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response selectsvmclassifier(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
-,@Parameter(description = "")@FormDataParam("filename")  List<File> filename
+,@FormDataParam("file") InputStream uploadedInputStream,
+		@FormDataParam("file") FormDataContentDisposition fileDetail
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.selectsvmclassifier(roomID,filename,securityContext);
+        return delegate.selectsvmclassifier(roomID,uploadedInputStream,fileDetail,securityContext);
     }
     @POST
     @Path("/{roomID}/start_localization_engine")

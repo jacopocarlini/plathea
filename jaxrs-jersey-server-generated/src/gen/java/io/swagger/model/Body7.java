@@ -16,43 +16,56 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import javax.validation.constraints.*;
 
 /**
  * Body7
  */
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2018-11-17T10:12:31.093Z[GMT]")public class Body7   {
-  @JsonProperty("filename")
-  private List<File> filename = null;
+@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaJerseyServerCodegen", date = "2018-11-18T18:02:56.242Z[GMT]")public class Body7   {
+  @JsonProperty("firstname")
+  private String firstname = null;
 
-  public Body7 filename(List<File> filename) {
-    this.filename = filename;
-    return this;
-  }
+  @JsonProperty("surname")
+  private String surname = null;
 
-  public Body7 addFilenameItem(File filenameItem) {
-    if (this.filename == null) {
-      this.filename = new ArrayList<File>();
-    }
-    this.filename.add(filenameItem);
+  public Body7 firstname(String firstname) {
+    this.firstname = firstname;
     return this;
   }
 
   /**
-   * Get filename
-   * @return filename
+   * Get firstname
+   * @return firstname
    **/
-  @JsonProperty("filename")
-  @Schema(description = "")
-  public List<File> getFilename() {
-    return filename;
+  @JsonProperty("firstname")
+  @Schema(required = true, description = "")
+  @NotNull
+  public String getFirstname() {
+    return firstname;
   }
 
-  public void setFilename(List<File> filename) {
-    this.filename = filename;
+  public void setFirstname(String firstname) {
+    this.firstname = firstname;
+  }
+
+  public Body7 surname(String surname) {
+    this.surname = surname;
+    return this;
+  }
+
+  /**
+   * Get surname
+   * @return surname
+   **/
+  @JsonProperty("surname")
+  @Schema(required = true, description = "")
+  @NotNull
+  public String getSurname() {
+    return surname;
+  }
+
+  public void setSurname(String surname) {
+    this.surname = surname;
   }
 
 
@@ -65,12 +78,13 @@ import javax.validation.constraints.*;
       return false;
     }
     Body7 body7 = (Body7) o;
-    return Objects.equals(this.filename, body7.filename);
+    return Objects.equals(this.firstname, body7.firstname) &&
+        Objects.equals(this.surname, body7.surname);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(filename);
+    return Objects.hash(firstname, surname);
   }
 
 
@@ -79,7 +93,8 @@ import javax.validation.constraints.*;
     StringBuilder sb = new StringBuilder();
     sb.append("class Body7 {\n");
     
-    sb.append("    filename: ").append(toIndentedString(filename)).append("\n");
+    sb.append("    firstname: ").append(toIndentedString(firstname)).append("\n");
+    sb.append("    surname: ").append(toIndentedString(surname)).append("\n");
     sb.append("}");
     return sb.toString();
   }
