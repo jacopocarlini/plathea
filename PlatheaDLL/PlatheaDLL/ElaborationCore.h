@@ -75,8 +75,9 @@ public:
 		return pvm;
 	}
 	void ShowSettingsWindow();
-	void EndInitializationPhase() {
-		initPhase = false;
+	void EndInitializationPhase() {		
+		initPhase = 0;
+		printf("%d initPhase  false=%d\n", &initPhase, initPhase);
 	}
 	bool DuringInitializationPhase() {
 		return initPhase;

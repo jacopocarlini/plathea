@@ -72,16 +72,34 @@ void StartPlayer(const char dir[260]) {
 		selectedDirectory[i] = dir[i];
 	}
 	if (CheckSelectedDirectoryValidity(selectedDirectory)) {
-		//printf("player");
-		cas.clear();
-		cas = CvArrStorage(selectedDirectory);
-		//printf("elaboration core:  %d\n",si->GetElaborationCore());
-		si->GetElaborationCore()->LoadSavedState(cas);
-
-		//if (si->GetElaborationCore()->DuringInitializationPhase())
-			//si->GetElaborationCore()->EndInitializationPhase();
-
-		si->GetStereoRig()->StartPlaybackMode(selectedDirectory, VideoPlaybackStarted());
+		printf("directory validity ok\n");
+		if (!si->GetElaborationCore() || !si->GetElaborationCore()->IsRunning())
+			printf("Elaboration is not yet started.\n");
+			//MessageBox(hwndDlg, L"Elaboration is not yet started.", L"Warning!!!", MB_OK | MB_ICONWARNING);
+		else {
+			cas.clear();
+			if (prm == PLaTHEA_RECORDER_MODE) {
+				cas.clear();
+				si->GetElaborationCore()->SaveCurrentState(cas);
+			}
+			else if (prm == PLaTHEA_PLAYER_MODE) {
+				cas = CvArrStorage(selectedDirectory);
+				si->GetElaborationCore()->LoadSavedState(cas);
+			}
+			if (si->GetElaborationCore()->DuringInitializationPhase()) {
+				printf("EndInitializationPhase\n");
+				printf("%d\n", si->GetElaborationCore());
+				si->GetElaborationCore()->EndInitializationPhase();
+			}
+		}
+		if (prm == PLaTHEA_RECORDER_MODE) {
+			si->GetStereoRig()->StartRecorderMode();
+			//SetDlgItemTextA(hwndDlg, IDC_EDIT1, "Recording Started");
+		}
+		else if (prm == PLaTHEA_PLAYER_MODE) {
+			si->GetStereoRig()->StartPlaybackMode(selectedDirectory, VideoPlaybackStarted());
+			//SetDlgItemTextA(hwndDlg, IDC_EDIT1, "Playback Started");
+		}
 		status = RECORDER_EXECUTION;
 	}
 }

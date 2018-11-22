@@ -9,6 +9,7 @@ using namespace std;
 
 JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_loadConfigurationFile(JNIEnv *env, jobject thisObj, jstring jdir) {
 	const char *dir = env->GetStringUTFChars(jdir, 0);
+	printf("dir:%s\n",dir);
 	system_loadconfigurationfile((char*)dir);
 	return 0;
 }
@@ -24,12 +25,14 @@ JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_internalCalibration(JNIEnv *env
 
 JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_externalCalibration(JNIEnv *env, jobject thisObj, jstring jdir) {
 	const char *dir = env->GetStringUTFChars(jdir, 0);
+	printf("dir:%s\n", dir);
 	calibration_loadexternalcalibrationdata((char*)dir);
 	return 0;
 }
 
 JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_selectSVMclassifier(JNIEnv *env, jobject thisObj, jstring jdir) {
 	const char *dir = env->GetStringUTFChars(jdir, 0);
+	printf("dir:%s\n", dir);
 	localizationengine_selectsvmclassifier((char*)dir);
 	return 0;
 }
@@ -52,9 +55,32 @@ JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_initializeSystem
 }
 
 
+JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_startLocalizationEngine
+(JNIEnv *env, jobject thisObj, jboolean withoutTracking, jboolean saveTracksToFile, jstring jdir) {
+	const char *dir = env->GetStringUTFChars(jdir, 0);
+	printf("dir:%s\n", dir);
+	localizationengine_startlocalizationengine(withoutTracking, saveTracksToFile, dir);
+	return 0;
+}
+
+JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaRecorder
+(JNIEnv *env, jobject thisObj) {
+	test_plathearecorder();
+	return 0;
+}
+
+JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaRecorderStart
+(JNIEnv *env, jobject thisObj, jstring jdir) {
+	const char *dir = env->GetStringUTFChars(jdir, 0);
+	printf("dir:%s\n", dir);
+	test_plathearecorder_start(dir);
+	return 0;
+}
+
 JNIEXPORT jstring JNICALL Java_io_core_InterfaceJNI_getRoomInfo(JNIEnv *env, jobject thisObj) {
 	char buf[10] = "Hello";
 	jstring str = env->NewStringUTF(buf);
-
+	std::vector<TrackedObject*> tracked = getTrackedPeople();
+	printf("\ntracked: %d\n", tracked.size());
 	return str;
 }

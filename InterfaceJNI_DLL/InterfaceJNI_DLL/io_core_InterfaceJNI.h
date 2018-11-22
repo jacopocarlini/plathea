@@ -47,6 +47,38 @@ extern "C" {
 	JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_initializeSystem
 	(JNIEnv *, jobject, jstring, jstring, jstring, jstring, jint, jstring, jstring, jint, jstring, jint);
 
+	/*
+	* Class:     io_core_InterfaceJNI
+	* Method:    startLocalizationEngine
+	* Signature: (ZZLjava/lang/String;)I
+	*/
+	JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_startLocalizationEngine
+	(JNIEnv *, jobject, jboolean, jboolean, jstring);
+
+	/*
+	* Class:     io_core_InterfaceJNI
+	* Method:    platheaRecorder
+	* Signature: ()I
+	*/
+	JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaRecorder
+	(JNIEnv *, jobject);
+
+	/*
+	* Class:     io_core_InterfaceJNI
+	* Method:    platheaRecorderStart
+	* Signature: (Ljava/lang/String;)I
+	*/
+	JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaRecorderStart
+	(JNIEnv *, jobject, jstring);
+
+	/*
+	* Class:     io_core_InterfaceJNI
+	* Method:    getPeopleInRoom
+	* Signature: (I)Ljava/lang/String;
+	*/
+	JNIEXPORT jstring JNICALL Java_io_core_InterfaceJNI_getPeopleInRoom
+	(JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif

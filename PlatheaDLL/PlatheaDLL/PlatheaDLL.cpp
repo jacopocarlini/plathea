@@ -162,13 +162,13 @@ void system_selecthaarcascadexml(const char dir[]) {
 
 std::string setPath(string path) {
 	int length = path.length();
-	printf("il path prima: %s\n", path.c_str());
+	//printf("il path prima: %s\n", path.c_str());
 	//printf("length=%d\n", length);
 	string delimiter = "\\";
 	size_t pos = 0;
 	pos = path.find_last_of(delimiter);
 	//printf("pos=%d\n", pos);
-	printf("il path dopo: %s\n", path.substr(0, pos).c_str());
+	//printf("il path dopo: %s\n", path.substr(0, pos).c_str());
 	return path.substr(0, pos);	
 }
 
@@ -179,7 +179,7 @@ void system_loadconfigurationfile(char str[]) {
 	//PathRemoveFileSpecA(currentDirectory); 
 	//setPath è una funzione naif per emulare PathRemoveFileSpecA 
 	string s(str);
-	printf("prima della chiamata: %s\n",s.c_str());
+	//printf("prima della chiamata: %s\n",s.c_str());
 	//DBOUT(setPath(s).c_str());
 	//const char* path = setPath(s).c_str();
 	//printf("dopo la chiamata: %s\n", setPath(s).c_str());
@@ -244,8 +244,9 @@ void test_plathearecorder() {
 
 void test_plathearecorder_start(const char* dir) {
 	//const char* s = "D:\PLaTHEATest\Tests\21-12-2012 - 11-25-10-165";
-	printf("start");
+	printf("start\n");
 	StartPlayer(dir);
+	printf("sterted\n");
 }
 
 void test_plathearecorder_stop() {
@@ -276,7 +277,7 @@ void calibration_saveexternalcalibrationdata(const char dir[]){
 
 void calibration_loadexternalcalibrationdata(const char str[]) {
 	int ret = ExternalCalibration::GetInstance()->LoadFromFolder(str);
-	printf("extrn=%d\n",ret);
+	printf("external calibration =%d\n",ret);
 }
 
 //enum CalibrationType{LEFT_INTERNAL = 1, RIGHT_INTERNAL = 2, STEREO = 4, ALL_CALIBRATION = 8};
@@ -347,19 +348,19 @@ void calibration_editroomsettings(float WXmin, float WXmax, float WYmin, float W
 void localizationengine_startlocalizationengine(bool withoutTracking, bool saveTracksToFile, const char dir []) {
 	ElaborationCore *ec = new ElaborationCore();
 	wchar_t errMsg[1024];
-	//printf("ec\n");
+	printf("start localization engine\n");
 	if (withoutTracking)
 		ec->SetElaborationCoreMode(ElaborationCore::TRACKING_FREE_ELABORATION_CORE_MODE);
 	else if (saveTracksToFile) {
 			ec->ActivateSaveToFileMode(dir);
 	}
 	if (ec->PrerequisitesCheck(errMsg , 1024)) {
-	//	printf("ec avviato\n");
+	 	printf("ec avviato\n");
 		si->SetElaborationCore(ec);
 		si->GetElaborationCore()->Start();
 	}
 	else {
-	//	printf("ec delete\n");
+		printf("ec delete\n");
 
 		delete ec;
 	}
@@ -377,6 +378,7 @@ void localizationengine_selectsvmclassifier(const char dir []) {
 		DBOUT(dir);
 		PlanViewMap::SetSVMClassifierFileName(dir);		
 		svmTracker = true;	
+		printf("svm selected\n");
 }
 
 void localizationengine_opticalflow() {
@@ -411,6 +413,7 @@ ElaborationCore* getElaborationCore() {
 
 
 void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
+	printf("update tracked people\n");
 	mtx.lock();
 	trackedPeople = trackedPersons;
 	mtx.unlock();

@@ -43,10 +43,11 @@ public class InterfaceJNI {
     public native int externalCalibration(String dir);
     public native int selectSVMclassifier(String dir);
     public native int initializeSystem(String username, String password, String type, String resolution, int fps, String cameraModel, String IPAddress1, int port1, String IPAddress2, int port2);
-    //public native int startLocalizationEngine(boolean withoutTracking, boolean saveTracksToFile, String dir);
-    //public native int platheaRecorder_start(String dir);
-
-    //public native String getPeopleInRoom(int roomID);
+    public native int startLocalizationEngine(boolean withoutTracking, boolean saveTracksToFile, String dir);
+    public native int platheaRecorder();
+    public native int platheaRecorderStart(String dir);
+    
+    public native String getPeopleInRoom(int roomID);
 
 
     void addRoomJNI() {

@@ -64,6 +64,9 @@ public class MainSystem {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    
+   
+
               
 
     //classi wrapper contenenti le info da inviare al client
@@ -543,9 +546,10 @@ public class MainSystem {
         if (!rooms.containsKey(roomID)) {   
             return new ReturnRoomMessage(StatusCode.NOT_FOUND);
         }
-        else{
-            return new ReturnRoomMessage(StatusCode.OK).setPayload(MyRoomToSwagger(rooms.get(roomID)));
-        }            
+        String s = rooms.get(roomID).interfaceJNI.getPeopleInRoom(roomID);
+        System.out.println(s);
+        return new ReturnRoomMessage(StatusCode.OK).setPayload(MyRoomToSwagger(rooms.get(roomID)));
+                    
     }
 
     public static synchronized ReturnRoomMessage addRoom(String roomName){
@@ -706,7 +710,7 @@ public class MainSystem {
                 String fileName = bodyParts.get(i).getContentDisposition().getFileName();
                 String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\FaceDatabase\\"+fileName;                 
 
-                writeToFile(bodyPartEntity.getInputStream(), path);			
+                //writeToFile(bodyPartEntity.getInputStream(), path);			
 		
             }
                        
@@ -721,7 +725,7 @@ public class MainSystem {
             String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID;
             new File(path).mkdirs();
             String uploadedFileLocation = path+"\\" + fileDetail.getFileName();
-            writeToFile(uploadedInputStream, uploadedFileLocation);                      
+            //writeToFile(uploadedInputStream, uploadedFileLocation);                      
             rooms.get(roomID).interfaceJNI.loadConfigurationFile(uploadedFileLocation);
             return new ReturnRoomMessage(StatusCode.OK);
         }
@@ -748,7 +752,7 @@ public class MainSystem {
                 String fileName = bodyParts.get(i).getContentDisposition().getFileName();
                 String uploadedFileLocation = path+"\\"+fileName;                 
 
-                writeToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);			
+                //writeToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);			
 		
             }
             rooms.get(roomID).interfaceJNI.internalCalibration(path, mask);         
@@ -777,7 +781,7 @@ public class MainSystem {
                 String fileName = bodyParts.get(i).getContentDisposition().getFileName();
                 String uploadedFileLocation = path+"\\"+fileName;                 
 
-                writeToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);			
+                //writeToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);			
 		
             }
             rooms.get(roomID).interfaceJNI.externalCalibration(path);         
@@ -792,7 +796,7 @@ public class MainSystem {
             String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\Tracking";
             new File(path).mkdirs();
             String uploadedFileLocation = path+"\\" + fileDetail.getFileName();
-            writeToFile(uploadedInputStream, uploadedFileLocation);            
+            //writeToFile(uploadedInputStream, uploadedFileLocation);            
             rooms.get(roomID).interfaceJNI.selectSVMclassifier(uploadedFileLocation);
             return new ReturnRoomMessage(StatusCode.OK);
         }
@@ -801,15 +805,38 @@ public class MainSystem {
     
     public static synchronized ReturnRoomMessage initializesystem(Integer roomID, String username, String password, String type, String resolution, Integer fps, String cameraModel, String ipAddress1, Integer port1, String ipAddress2, Integer port2) {
         if(rooms.containsKey(roomID)){
-            System.out.println(username);
-            System.out.println(fps);
             rooms.get(roomID).interfaceJNI.initializeSystem(username, password, type, resolution, fps, cameraModel, ipAddress1, port1, ipAddress2, port2);
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
+    public static synchronized ReturnRoomMessage startlocalizationengine(Integer roomID, Boolean withoutTracking, Boolean saveTracksToFile) {
+        if(rooms.containsKey(roomID)){
+            String path = "";
+            rooms.get(roomID).interfaceJNI.startLocalizationEngine(withoutTracking, saveTracksToFile, path);
+            return new ReturnRoomMessage(StatusCode.OK);
+        }
+        return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
     
+     public static synchronized ReturnRoomMessage plathearecorder(Integer roomID) {
+        if(rooms.containsKey(roomID)){
+            rooms.get(roomID).interfaceJNI.platheaRecorder();
+            return new ReturnRoomMessage(StatusCode.OK);
+        }
+        return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
+    
+    public static ReturnRoomMessage plathearecorderstart(Integer roomID) {
+        if(rooms.containsKey(roomID)){
+            String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room0\\Tests\\21-12-2012 - 11-25-10-165";
+            rooms.get(roomID).interfaceJNI.platheaRecorderStart(path);
+            return new ReturnRoomMessage(StatusCode.OK);
+        }
+        return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
+     
     // save uploaded file to new location
     private static void writeToFile(InputStream uploadedInputStream,String uploadedFileLocation) {
 

@@ -37,9 +37,9 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
     public abstract Response internalcalibration(Integer roomID,Integer mask,List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions,SecurityContext securityContext) throws NotFoundException;
     public abstract Response loadconfigurationfile(Integer roomID,InputStream uploadedInputStream, FormDataContentDisposition fileDetail,SecurityContext securityContext) throws NotFoundException;
     public abstract Response plathearecorder(Integer roomID,SecurityContext securityContext) throws NotFoundException;
-    public abstract Response plathearecorderstart(Integer roomID,List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions,SecurityContext securityContext) throws NotFoundException;
+    public abstract Response plathearecorderstart(Integer roomID,SecurityContext securityContext) throws NotFoundException;
     public abstract Response plathearecorderstop(Integer roomID,SecurityContext securityContext) throws NotFoundException;
     public abstract Response selectsvmclassifier(Integer roomID,InputStream uploadedInputStream, FormDataContentDisposition fileDetail,SecurityContext securityContext) throws NotFoundException;
-    public abstract Response startlocalizationengine(Integer roomID,Boolean withoutTracking,Boolean saveTracksToFile,SecurityContext securityContext) throws NotFoundException;
+    public abstract Response startlocalizationengine(Integer roomID,Integer withoutTracking,Integer saveTracksToFile,SecurityContext securityContext) throws NotFoundException;
     public abstract Response updateRoom(Body body,Integer roomID,SecurityContext securityContext) throws NotFoundException;
 }

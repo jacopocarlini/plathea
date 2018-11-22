@@ -249,8 +249,7 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response internalcalibration(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
-,
-@Parameter(description = "mask" ,required=true)@HeaderParam("mask") Integer mask
+,@Parameter(description = "mask" ,required=true)@HeaderParam("mask") Integer mask
 ,@FormDataParam("files") List<FormDataBodyPart> bodyParts
 ,@FormDataParam("files") FormDataContentDisposition fileDispositions
 ,@Context SecurityContext securityContext)
@@ -287,21 +286,18 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
     throws NotFoundException {
         return delegate.plathearecorder(roomID,securityContext);
     }
-    @POST
+    @GET
     @Path("/{roomID}/plathea_recorder_start")
     //@Consumes({ "multipart/form-data" })
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    //@Consumes(MediaType.MULTIPART_FORM_DATA)
     @Operation(summary = "start the recorder", description = "", tags={ "room" })
     @ApiResponses(value = { 
-        @ApiResponse(responseCode = "200", description = "successful operation"),
-        
+        @ApiResponse(responseCode = "200", description = "successful operation"),  
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response plathearecorderstart(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
-,@FormDataParam("files") List<FormDataBodyPart> bodyParts
-,@FormDataParam("files") FormDataContentDisposition fileDispositions
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.plathearecorderstart(roomID,bodyParts,fileDispositions ,securityContext);
+        return delegate.plathearecorderstart(roomID,securityContext);
     }
     @GET
     @Path("/{roomID}/plathea_recorder_stop")
@@ -334,9 +330,7 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
         return delegate.selectsvmclassifier(roomID,uploadedInputStream,fileDetail,securityContext);
     }
     @POST
-    @Path("/{roomID}/start_localization_engine")
-    
-    
+    @Path("/{roomID}/start_localization_engine")    
     @Operation(summary = "Start the localization engine", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),
@@ -344,11 +338,9 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
         @ApiResponse(responseCode = "405", description = "Invalid input") })
     public Response startlocalizationengine(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
 ,
-@Parameter(description = "disable tracking" ,required=true)@HeaderParam("withoutTracking") Boolean withoutTracking
-
+@Parameter(description = "disable tracking" ,required=true)@HeaderParam("withoutTracking") Integer withoutTracking
 ,
-@Parameter(description = "save tracks to file" ,required=true)@HeaderParam("saveTracksToFile") Boolean saveTracksToFile
-
+@Parameter(description = "save tracks to file" ,required=true)@HeaderParam("saveTracksToFile") Integer saveTracksToFile
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
         return delegate.startlocalizationengine(roomID,withoutTracking,saveTracksToFile,securityContext);

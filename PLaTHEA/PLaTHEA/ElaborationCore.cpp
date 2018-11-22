@@ -231,7 +231,7 @@ ElaborationCore::ElaborationCore(): BMState(ecParameters.BMState), noCorresponde
 	hwndSettings = NULL;
 
 	currentElaborationCoreMode = FULL_FEATURE_ELABORATION_CORE_MODE;
-	
+	DBOUT("true="+initPhase);
 	initPhase = true;
 
 	/*this->SGBMState = new cv::StereoSGBM(ecParameters.BMState->minDisparity, ecParameters.BMState->numberOfDisparities,
@@ -348,6 +348,7 @@ bool ElaborationCore::PrerequisitesCheck(wchar_t *errMsg, int bufferSize, bool *
 }
 
 void ElaborationCore::Run(void *param) {
+	DBOUT("elaboration core run");
 	ApplicationWorkFlow::GetInstance()->UpdateSystemState(ELABORATION_STARTED);
 
 	StereoRig *asr = si->GetStereoRig();
@@ -410,6 +411,7 @@ void ElaborationCore::Run(void *param) {
 	
 	StereoRig::StereoTimestampsStruct lastTimestamps; lastTimestamps.stereoTimeStamp = GetTickCount();
 	while (WaitForMultipleObjects(2, hEventsToWait, FALSE, INFINITE) == WAIT_OBJECT_0) {
+		DBOUT("while wait");
 		IplImage * leftImage, * rightImage;
 		asr->StereoLock.AcquireReadLock();
 			DWORD initialCount = GetTickCount();
@@ -452,8 +454,9 @@ void ElaborationCore::Run(void *param) {
 		
 		//We update the foreground info
 		CvSeq *blobs = bm->UpdateForeground(clonedColorImages[LEFT_SIDE_CAMERA], vEdge, hEdge, initPhase);
-
+		DBOUT(initPhase);
 		if (pvm) {
+			DBOUT("if pvm");
 			if (!initPhase && faceRecognitionPhase == 0) {
 				pvm->UpdatePlanViewMap(reprojection3D, bm->GetFindConnectedComponents()->GetConnectedComponents(),
 					disp, clonedColorImages[LEFT_SIDE_CAMERA], hctp.imagePixelMapping);
@@ -464,6 +467,7 @@ void ElaborationCore::Run(void *param) {
 			}
 			pvm->IdentifyVisibleSubjects();
 			if (!initPhase) {
+				DBOUT("if initphase");
 				if (faceRecognitionPhase == 1) {
 					pvm->Track_em(&hctp.tfc, dt);
 					faceRecognitionPhase = 2;
@@ -479,8 +483,11 @@ void ElaborationCore::Run(void *param) {
 				if (GetCurrentlySelectedTest()->IsTestStarted()) {
 					RegisterNewSoftwareMeasurements(pvm->trackedPersons, initialCount - GetCurrentlySelectedTest()->GetStartTime());
 				}
-				if (serv != NULL)
+				if (serv != NULL) {
+					DBOUT("aggiorno le tracked persons");
+					DBOUT(pvm->trackedPersons.size());
 					serv->NotifyClients(pvm->trackedPersons);
+				}
 				if (saveToFile && hSaveToFile != INVALID_HANDLE_VALUE) {
 					char lineToWrite[256]; DWORD writtenBytes;
 					for (std::vector<TrackedObject *>::const_iterator it = pvm->trackedPersons.begin(); it != pvm->trackedPersons.end(); it++) {

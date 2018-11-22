@@ -642,6 +642,7 @@ bool StereoRig::StartPlaybackMode(const char *baseDirectory, bool onRequestMode)
 	OpenCvCaptureCamera* CastedCameraPtr[2] = {(OpenCvCaptureCamera *) CameraPtr[0], (OpenCvCaptureCamera *) CameraPtr[1]};
 	const char * fileNames[] = {"left.avi", "right.avi"};
 	char destinationFileName[_MAX_PATH];
+	printf("get camera\n");
 	for (int i = 0; i < 2; i++) {
 		sprintf_s(destinationFileName, "%s\\%s", baseDirectory, fileNames[i]);
 		*CastedCameraPtr[i]->GetCapture() = cvCreateFileCapture(destinationFileName);
@@ -650,10 +651,12 @@ bool StereoRig::StartPlaybackMode(const char *baseDirectory, bool onRequestMode)
 	hOffsetFile = CreateFileA(destinationFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	cvReleaseImage(&currStereoBigImage[LEFT_SIDE_CAMERA]);
 	cvReleaseImage(&currStereoBigImage[RIGHT_SIDE_CAMERA]);
+	printf("set width and height\n");
 	int width = (int) cvGetCaptureProperty(*CastedCameraPtr[LEFT_SIDE_CAMERA]->GetCapture(), CV_CAP_PROP_FRAME_WIDTH);
 	int height = (int) cvGetCaptureProperty(*CastedCameraPtr[LEFT_SIDE_CAMERA]->GetCapture(), CV_CAP_PROP_FRAME_HEIGHT);
 	currStereoBigImage[LEFT_SIDE_CAMERA] = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
 	currStereoBigImage[RIGHT_SIDE_CAMERA] = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
+	printf("release\n");
 	char resString[64]; sprintf_s(resString, "%dx%d", width, height);
 	ap.resolution = resString;
 	StereoLock.ReleaseWriteLock();

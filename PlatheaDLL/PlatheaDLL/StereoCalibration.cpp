@@ -663,7 +663,7 @@ bool StereoCalibration::LoadFromFolder(const char *folderName, int mask) {
 		}*/
 		//END OF MAPPING CODE
 	}
-	printf("%d\n",calibrationStatus);
+	printf("calibration status: %d\n",calibrationStatus);
 	delete[] tempStr;
 	//UpdateLabels();
 	return true;

@@ -233,6 +233,8 @@ ElaborationCore::ElaborationCore(): BMState(ecParameters.BMState), noCorresponde
 	currentElaborationCoreMode = FULL_FEATURE_ELABORATION_CORE_MODE;
 	
 	initPhase = true;
+	printf("elaboration core %d\n", si->GetElaborationCore());
+	printf("%d initPhase  true=%d\n", &initPhase,initPhase);
 
 	/*this->SGBMState = new cv::StereoSGBM(ecParameters.BMState->minDisparity, ecParameters.BMState->numberOfDisparities,
 		ecParameters.BMState->SADWindowSize);
@@ -357,6 +359,7 @@ bool ElaborationCore::PrerequisitesCheck(wchar_t *errMsg, int bufferSize, bool *
 }
 
 void ElaborationCore::Run(void *param) {
+	printf("elaboration core run\n");
 	ApplicationWorkFlow::GetInstance()->UpdateSystemState(ELABORATION_STARTED);
 
 	StereoRig *asr = si->GetStereoRig();
@@ -419,6 +422,7 @@ void ElaborationCore::Run(void *param) {
 	
 	StereoRig::StereoTimestampsStruct lastTimestamps; lastTimestamps.stereoTimeStamp = GetTickCount();
 	while (WaitForMultipleObjects(2, hEventsToWait, FALSE, INFINITE) == WAIT_OBJECT_0) {
+		printf("while (WaitForMultipleObjects\n");
 		IplImage * leftImage, * rightImage;
 		asr->StereoLock.AcquireReadLock();
 			DWORD initialCount = GetTickCount();
@@ -461,8 +465,9 @@ void ElaborationCore::Run(void *param) {
 		
 		//We update the foreground info
 		CvSeq *blobs = bm->UpdateForeground(clonedColorImages[LEFT_SIDE_CAMERA], vEdge, hEdge, initPhase);
-
+		printf("initPhase %d\n", initPhase);
 		if (pvm) {
+			printf("if (pvm)\n");
 			if (!initPhase && faceRecognitionPhase == 0) {
 				pvm->UpdatePlanViewMap(reprojection3D, bm->GetFindConnectedComponents()->GetConnectedComponents(),
 					disp, clonedColorImages[LEFT_SIDE_CAMERA], hctp.imagePixelMapping);
@@ -473,6 +478,7 @@ void ElaborationCore::Run(void *param) {
 			}
 			pvm->IdentifyVisibleSubjects();
 			if (!initPhase) {
+				printf("if (!initPhase)\n");
 				if (faceRecognitionPhase == 1) {
 					pvm->Track_em(&hctp.tfc, dt);
 					faceRecognitionPhase = 2;
@@ -490,6 +496,7 @@ void ElaborationCore::Run(void *param) {
 				}
 				//if (serv != NULL)
 					//serv->NotifyClients(pvm->trackedPersons);
+				printf("tracked persons %d\n",pvm->trackedPersons.size());
 				updateTrackedPeople(pvm->trackedPersons);
 				if (saveToFile && hSaveToFile != INVALID_HANDLE_VALUE) {
 					char lineToWrite[256]; DWORD writtenBytes;
@@ -592,7 +599,7 @@ void ElaborationCore::LoadSavedState(CvArrStorage &stateContainer) {
 	si->GetStereoRig()->GetAcquisitionProperties().GetResolution(&height, &width, true);
 	delete bm;
 	bm = new BackgroundModeling(height, width);
-	
+	printf("replaceColorModel\n");
 	bm->GetColorModelPtr()->replaceColorModel(stateContainer);
 	modelLock.ReleaseWriteLock();
 }

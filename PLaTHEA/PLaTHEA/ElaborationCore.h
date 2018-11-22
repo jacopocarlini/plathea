@@ -76,6 +76,7 @@ public:
 	}
 	void ShowSettingsWindow();
 	void EndInitializationPhase() {
+		DBOUT("end init phase");
 		initPhase = false;
 	}
 	bool DuringInitializationPhase() {

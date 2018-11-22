@@ -125,13 +125,21 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
     }
     @Override
     public Response plathearecorder(Integer roomID, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+        MainSystem.ReturnRoomMessage ret = MainSystem.plathearecorder(roomID);
+        if (ret.getCode()==MainSystem.StatusCode.INVALID) 
+            return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
+        if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
+            return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
+        return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response plathearecorderstart(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    public Response plathearecorderstart(Integer roomID, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.plathearecorderstart(roomID);
+        if (ret.getCode()==MainSystem.StatusCode.INVALID) 
+            return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
+        if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
+            return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
+        return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
     public Response plathearecorderstop(Integer roomID, SecurityContext securityContext) throws NotFoundException {
@@ -148,9 +156,16 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
         return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response startlocalizationengine(Integer roomID, Boolean withoutTracking, Boolean saveTracksToFile, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+    public Response startlocalizationengine(Integer roomID, Integer withoutTracking, Integer saveTracksToFile, SecurityContext securityContext) throws NotFoundException {
+        boolean w,s;
+        w = (withoutTracking >0) ? true : false;
+        s = (saveTracksToFile >0) ? true : false;
+        MainSystem.ReturnRoomMessage ret = MainSystem.startlocalizationengine(roomID, w, s);
+        if (ret.getCode()==MainSystem.StatusCode.INVALID) 
+            return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
+        if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
+            return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
+        return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
     public Response updateRoom(Body body, Integer roomID, SecurityContext securityContext) throws NotFoundException {
