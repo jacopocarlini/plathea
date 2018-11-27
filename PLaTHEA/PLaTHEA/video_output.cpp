@@ -108,6 +108,7 @@ void VideoOutput::Run(void *param) {
 					asr->StereoLock.AcquireReadLock();
 						IplImage * left, * right;
 						asr->GetStereoImages(&left, &right, false);
+
 						selectFrame(LEFT_SIDE_SCREEN, left);
 						selectFrame(RIGHT_SIDE_SCREEN, right);
 						lastImageSize = cvSize(left->width, left->height);

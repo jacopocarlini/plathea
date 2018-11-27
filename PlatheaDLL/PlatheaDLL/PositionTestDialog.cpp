@@ -590,6 +590,126 @@ INT_PTR CALLBACK CompletePositionTestProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
 
 
 void PositionTestStart() {
+	static bool doClipRect = false;
+	
+	////INIT
+	
+	RECT imageClientRect; 
+	GetClientRect(destFrame, &imageClientRect);
+	currentImage = cvCreateImage(cvSize(520, 520), IPL_DEPTH_8U, 3);
+	
+	hBitmap = NULL;
+	HDC frameDC = GetDC(destFrame);
+	memDC = CreateCompatibleDC(frameDC);
+	ReleaseDC(destFrame, frameDC);
+
+	
+	wchar_t *folderName;
+	SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &folderName);
+	CoTaskMemFree(folderName);
+
+	currentlySelectedTest.clear();
+
+	int iconWidth = GetSystemMetrics(SM_CXSMICON), iconHeight = GetSystemMetrics(SM_CYSMICON);
+
+	HDC listViewDC = GetDC(NULL);
+	BITMAPINFO bi;
+	memset(&bi, 0, sizeof(bi));
+	bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bi.bmiHeader.biWidth = iconWidth;
+	bi.bmiHeader.biHeight = iconHeight;
+	bi.bmiHeader.biPlanes = 1;
+	bi.bmiHeader.biBitCount = (unsigned short)24;
+	bi.bmiHeader.biCompression = BI_RGB;
+
+	BYTE *colorArray;
+	HBITMAP hBitmap = CreateDIBSection(listViewDC, &bi, DIB_RGB_COLORS, (void **)&colorArray, NULL, NULL);
+	HBITMAP hBlackMask = CreateBitmap(iconWidth, iconHeight, 1, 1, NULL);
+
+	ICONINFO ii;
+	memset(&ii, 0, sizeof(ii));
+	ii.fIcon = TRUE;
+	ii.hbmColor = hBitmap;
+	ii.hbmMask = hBlackMask;
+
+	hSmallMouseActivity = ImageList_Create(iconWidth, iconHeight, ILC_COLOR24, 1, 1);
+
+	COLORREF mouseActivityColors[3] = { RGB(0, 0, 0), RGB(255, 0, 0), RGB(0, 255, 0) };
+	for (int c = 0; c < 3; c++) {
+		BYTE *colorPtr = colorArray;
+		for (int i = 0; i < iconHeight; i++) {
+			for (int j = 0; j < iconWidth; j++, colorPtr += 3) {
+				colorPtr[0] = GetBValue(mouseActivityColors[c]);
+				colorPtr[1] = GetGValue(mouseActivityColors[c]);
+				colorPtr[2] = GetRValue(mouseActivityColors[c]);
+			}
+		}
+		HICON hIcon = CreateIconIndirect(&ii);
+		ImageList_AddIcon(hSmallMouseActivity, hIcon);
+		DestroyIcon(hIcon);
+	}
+
+	hSmall = ImageList_Create(iconWidth, iconHeight, ILC_COLOR24, 1, 1);
+
+	selectedPathsImage.clear();
+	int j = 0;
+	for (std::unordered_map<int, TestPath>::const_iterator it = mainTestDesigner.begin(); it != mainTestDesigner.end(); it++, j++) {
+		BYTE *colorPtr = colorArray;
+		for (int i = 0; i < iconHeight; i++) {
+			for (int j = 0; j < iconWidth; j++, colorPtr += 3) {
+				colorPtr[0] = GetBValue(it->second.pathColor);
+				colorPtr[1] = GetGValue(it->second.pathColor);
+				colorPtr[2] = GetRValue(it->second.pathColor);
+			}
+		}
+
+		HICON hIcon = CreateIconIndirect(&ii);
+		ImageList_AddIcon(hSmall, hIcon);
+		DestroyIcon(hIcon);
+		selectedPathsImage[it->first] = j;
+	}
+	DeleteObject(hBitmap);
+	DeleteObject(hBlackMask);
+	ReleaseDC(NULL, listViewDC);
+
+	processingStageOutput.enterTestingPhase();
+
+	processingStageOutput.ImageDestinationInfo(BACKGROUND_STAGE, NULL, 0) = backgroundStaticHwnd;
+	processingStageOutput.ImageDestinationInfo(DISPARITY_STAGE, NULL, 0) = NULL;
+	processingStageOutput.ImageDestinationInfo(EDGE_ACTIVITY_STAGE, NULL, 0) = NULL;
+
+	processingStageOutput.ImageDestinationInfo(RAW_FOREGROUND_STAGE, NULL, 0) = leftLittleStaticHwnd;
+	processingStageOutput.ImageDestinationInfo(PLANVIEW_OCCUPANCY_STAGE, NULL, 0) = NULL;
+
+	processingStageOutput.ImageDestinationInfo(FILTERED_FOREGROUND_STAGE, NULL, 0) = rightLittleStaticHwnd;
+	processingStageOutput.ImageDestinationInfo(PLANVIEW_HEIGHT_STAGE, NULL, 0) = NULL;
+
+	//Tab control configuration
+	TCITEM tie;
+	tie.mask = TCIF_TEXT | TCIF_IMAGE;
+	tie.iImage = -1;
+
+	if (si->GetStereoRig() && si->GetStereoRig()->IsRunning() && (AcquisitionCameraFactory::GetRegisteredCameras()[si->GetStereoRig()->GetAcquisitionProperties().cameraModel].availableOptions & AcquisitionCameraFactory::CameraDescription::VIRTUAL_CAMERA)) {
+		//tie.pszText = L"Complete Offline test";
+		doClipRect = false;
+	}
+	else {
+		//tie.pszText = "New Position test";
+		doClipRect = true;
+	}
+	/*
+	RECT tabbedWindowRect; 
+	tabbedWindowRect.right -= tabbedWindowRect.left;
+	tabbedWindowRect.bottom -= tabbedWindowRect.top;
+	tabbedWindowRect.left = tabbedWindowRect.top = 0;
+	
+	SetWindowPos(currentlyTabbedWindow, NULL, tabbedWindowRect.left, tabbedWindowRect.top,
+		tabbedWindowRect.right - tabbedWindowRect.left, tabbedWindowRect.bottom - tabbedWindowRect.top,
+		SWP_SHOWWINDOW);
+	*/
+	////INIT finish
+	currentlySelectedTest.SetPositionTestType(PositionTest::COMPLETION_POSITION_TEST);
+
 	if (currentlySelectedTest.GetPositionTestType() == PositionTest::NOT_INITIALIZED_TEST) {
 		return;
 	}
@@ -629,11 +749,16 @@ void PositionTestStart() {
 		else {
 			strcpy(dataDirectory, originalDataDirectory);
 		}
+		printf("dataDirectory: %s\n", dataDirectory);
 		si->GetStereoRig()->StartPlaybackMode(dataDirectory, false);
 		currentlySelectedTest.StartNewTest(NULL);
 	}
 	currentlySelectedTest.UpdateImage(currentImage, mainTestDesigner);
-	hBitmap = IplImage2HBITMAP(destFrame, hBitmap, currentImage);
+	printf("salvo png\n");
+	cvSaveImage("foto.png", currentImage);
+
+	//hBitmap = IplImage2HBITMAP(destFrame, hBitmap, currentImage);
+
 	RedrawStaticControl(&destFrame, 1);
 
 	//EnableWindow(currentlyTabbedWindow, FALSE);
@@ -661,8 +786,8 @@ HANDLE* PositionTestProc(int cmd) {
 int PositionTestThread() {
 	DWORD waitResult = 2;
 	waitResult = 0;
-	//while (waitResult != 1) {
-		//waitResult = MsgWaitForMultipleObjects(2, eventToWait, FALSE, INFINITE, QS_ALLINPUT) - WAIT_OBJECT_0;
+	while (waitResult != 1) {
+		waitResult = MsgWaitForMultipleObjects(2, eventToWait, FALSE, INFINITE, QS_ALLINPUT) - WAIT_OBJECT_0;
 		if (waitResult == 2 ) {
 			if (standardRawMouseMessageDispatcher.IsRawMessageAnalysisStarted())
 				standardRawMouseMessageDispatcher.ReplacedWindowsInnerLoop();
@@ -677,7 +802,7 @@ int PositionTestThread() {
 		} else if (waitResult == 0) {
 			currentlySelectedTest.AddLastSoftwareMeasurements(mainTestDesigner, RoomSettings::GetInstance()->data.texelSide, notYetAnalyzedData, notYetAnalyzedDataLock);
 		}
-	//}
+	}
 	return 0;
 }
 

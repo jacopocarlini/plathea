@@ -233,8 +233,8 @@ ElaborationCore::ElaborationCore(): BMState(ecParameters.BMState), noCorresponde
 	currentElaborationCoreMode = FULL_FEATURE_ELABORATION_CORE_MODE;
 	
 	initPhase = true;
-	printf("elaboration core %d\n", si->GetElaborationCore());
-	printf("%d initPhase  true=%d\n", &initPhase,initPhase);
+	//printf("elaboration core %d\n", si->GetElaborationCore());
+	//printf("%d initPhase  true=%d\n", &initPhase,initPhase);
 
 	/*this->SGBMState = new cv::StereoSGBM(ecParameters.BMState->minDisparity, ecParameters.BMState->numberOfDisparities,
 		ecParameters.BMState->SADWindowSize);
@@ -331,7 +331,7 @@ DWORD WINAPI HaarThread(LPVOID lpParam) {
 }
 
 bool ElaborationCore::PrerequisitesCheck(wchar_t *errMsg, int bufferSize, bool *warning) {
-	printf("check\n");
+	//printf("check\n");
 	if (!StereoCalibration::GetInstance()->IsComplete()) {
 		if (errMsg) {
 			wcscpy_s(errMsg, bufferSize, L"Stereo Calibration Data has not been loaded!!\r\n\r\nElaboration Core won't be able to execute the whole work.");
@@ -361,41 +361,51 @@ bool ElaborationCore::PrerequisitesCheck(wchar_t *errMsg, int bufferSize, bool *
 void ElaborationCore::Run(void *param) {
 	printf("elaboration core run\n");
 	ApplicationWorkFlow::GetInstance()->UpdateSystemState(ELABORATION_STARTED);
-
+	printf("1\n");
 	StereoRig *asr = si->GetStereoRig();
-	
+	printf("2\n");
 	int height, width;
+	printf("3\n");
 	si->GetStereoRig()->GetAcquisitionProperties().GetResolution(&height, &width, true);
+	printf("4\n");
 	IplImage * grayScaleImage[2] = {cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 1),
 		cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 1)};
+	printf("5\n");
 	IplImage * vEdge = cvCreateImage(cvSize(width, height), IPL_DEPTH_16S, 1);
+	printf("6\n");
 	IplImage * hEdge = cvCreateImage(cvSize(width, height), IPL_DEPTH_16S, 1);
+	printf("7\n");
 	IplImage * clonedColorImages[2] = {cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3),
 		cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3)};
+	printf("7\n");
 	int heightS, widthS;
+	printf("8\n");
 	si->GetStereoRig()->GetAcquisitionProperties().GetResolution(&heightS, &widthS, false);
-	
+	printf("9\n");
 	IplImage *clonedColorBigLeftImage = cvCreateImage(cvSize(widthS, heightS), IPL_DEPTH_8U, 3);
-	
+	printf("10\n");
 	CvMat *disp = cvCreateMat(height, width, CV_16S); //Short Type Disparity Map
+	printf("11\n");
 	CvMat *dispFloat = cvCreateMat(height, width, CV_32FC1);
-
+	printf("12\n");
 	IplImage *temp3channel = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
+	printf("13\n");
 	IplImage *temp1channel = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 1);
-
+	printf("14\n");
 	RoomSettingsStruct *rss = &RoomSettings::GetInstance()->data;
-
+	printf("15\n");
 	bm = new BackgroundModeling(height, width);
-
+	printf("16\n");
 	CvMat *reprojection3D = cvCreateMat(height, width, CV_32FC3); //Reprojection to 3D
+	printf("17\n");
 	pvm = NULL;
-
+	printf("18\n");
 	HaarClassifierThreadParam hctp;
-
+	printf("19\n");
 	HANDLE hHaarThread = INVALID_HANDLE_VALUE;
-
+	printf("20\n");
 	HANDLE hSaveToFile = INVALID_HANDLE_VALUE;
-
+	printf("21\n");
 	if (currentElaborationCoreMode == FULL_FEATURE_ELABORATION_CORE_MODE) {
 		StereoExplorer::GetInstance(reprojection3D, dispFloat);
 	
@@ -414,39 +424,53 @@ void ElaborationCore::Run(void *param) {
 			hSaveToFile = CreateFileA(saveToFilename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		}
 	}
-	
+	printf("22\n");
 	asr->SubscribeEvent(STEREO_IMAGE_READY, hStereoEvent);
+	printf("23\n");
 	int faceRecognitionPhase = 0;
 
 	HANDLE hEventsToWait[] = {hStereoEvent, hStopRunningEvent};
-	
+	printf("24\n");
 	StereoRig::StereoTimestampsStruct lastTimestamps; lastTimestamps.stereoTimeStamp = GetTickCount();
+
+	printf("25\n");
 	while (WaitForMultipleObjects(2, hEventsToWait, FALSE, INFINITE) == WAIT_OBJECT_0) {
 		printf("while (WaitForMultipleObjects\n");
 		IplImage * leftImage, * rightImage;
+		printf("25 1\n");
 		asr->StereoLock.AcquireReadLock();
+			printf("25 2\n");
 			DWORD initialCount = GetTickCount();
+			printf("25 3\n");
 			asr->GetStereoImages(&leftImage, &rightImage, false);
+			printf("25 4\n");
 			cvCopy(leftImage, clonedColorImages[LEFT_SIDE_CAMERA]);
+			printf("25 5\n");
 			cvCopy(rightImage, clonedColorImages[RIGHT_SIDE_CAMERA]);
+			printf("25 6\n");
 			StereoRig::StereoTimestampsStruct newTimestamps = asr->GetStereoImages(&leftImage, &rightImage, true);
+			printf("25 7\n"); 
 			DWORD dt = newTimestamps.stereoTimeStamp - lastTimestamps.stereoTimeStamp;
+			printf("25 8\n");
 			lastTimestamps = newTimestamps;
+			printf("25 9\n");
 			if (faceRecognitionPhase == 0)
 				cvCopy(leftImage, clonedColorBigLeftImage);
+			printf("25 10\n");
 			asr->SetFrameAsConsumed();
+			printf("25 11\n");
 		asr->StereoLock.ReleaseReadLock();
-
+		printf("25 12\n");
 		asr->RequestMoreFrames();
-		
+		printf("25 13\n");
 		//A lot of algorithms work with gray scale version of input images
 		cvCvtColor(clonedColorImages[LEFT_SIDE_CAMERA], grayScaleImage[LEFT_SIDE_CAMERA], CV_BGR2GRAY);
 		cvCvtColor(clonedColorImages[RIGHT_SIDE_CAMERA], grayScaleImage[RIGHT_SIDE_CAMERA], CV_BGR2GRAY);
-
+		printf("25 14\n");
 		//We need the image border to compute activities
 		cvSobel(grayScaleImage[LEFT_SIDE_CAMERA], vEdge, 0, 1, 3);
 		cvSobel(grayScaleImage[LEFT_SIDE_CAMERA], hEdge, 1, 0, 3);
-
+		printf("25 15\n");
 		//Disparity Map and normalization to gray scale image
 		cvFindStereoCorrespondenceBM(grayScaleImage[LEFT_SIDE_CAMERA], grayScaleImage[RIGHT_SIDE_CAMERA], disp, BMState);
 		/*this->BMState->operator()(cv::Mat(grayScaleImage[LEFT_SIDE_CAMERA]), cv::Mat(grayScaleImage[RIGHT_SIDE_CAMERA]),
@@ -458,16 +482,19 @@ void ElaborationCore::Run(void *param) {
 		this->SGBMState->preFilterCap = BMState->preFilterCap;
 		this->SGBMState->operator()(cv::Mat(grayScaleImage[LEFT_SIDE_CAMERA]), cv::Mat(grayScaleImage[RIGHT_SIDE_CAMERA]),
 			cv::Mat(disp));*/
+		printf("25 16\n");
 		cvScale(disp, dispFloat, 0.0625);
+		printf("25 17\n"); 
 		cvReprojectImageTo3D(dispFloat, reprojection3D, StereoCalibration::GetInstance()->Q);
-
+		printf("25 18\n");
 		modelLock.AcquireWriteLock();
-		
+		printf("25 19\n");
 		//We update the foreground info
 		CvSeq *blobs = bm->UpdateForeground(clonedColorImages[LEFT_SIDE_CAMERA], vEdge, hEdge, initPhase);
-		printf("initPhase %d\n", initPhase);
+		//printf("initPhase %d\n", initPhase);
+		printf("25 20\n");
 		if (pvm) {
-			printf("if (pvm)\n");
+			//printf("if (pvm)\n");
 			if (!initPhase && faceRecognitionPhase == 0) {
 				pvm->UpdatePlanViewMap(reprojection3D, bm->GetFindConnectedComponents()->GetConnectedComponents(),
 					disp, clonedColorImages[LEFT_SIDE_CAMERA], hctp.imagePixelMapping);
@@ -478,7 +505,7 @@ void ElaborationCore::Run(void *param) {
 			}
 			pvm->IdentifyVisibleSubjects();
 			if (!initPhase) {
-				printf("if (!initPhase)\n");
+				//printf("if (!initPhase)\n");
 				if (faceRecognitionPhase == 1) {
 					pvm->Track_em(&hctp.tfc, dt);
 					faceRecognitionPhase = 2;
@@ -496,8 +523,8 @@ void ElaborationCore::Run(void *param) {
 				}
 				//if (serv != NULL)
 					//serv->NotifyClients(pvm->trackedPersons);
-				printf("tracked persons %d\n",pvm->trackedPersons.size());
-				updateTrackedPeople(pvm->trackedPersons);
+				//printf("tracked persons %d\n",pvm->trackedPersons.size());
+				updateTrackedPeople(pvm->trackedPersons);				
 				if (saveToFile && hSaveToFile != INVALID_HANDLE_VALUE) {
 					char lineToWrite[256]; DWORD writtenBytes;
 					for (std::vector<TrackedObject *>::const_iterator it = pvm->trackedPersons.begin(); it != pvm->trackedPersons.end(); it++) {
@@ -510,37 +537,41 @@ void ElaborationCore::Run(void *param) {
 				}
 			}
 		}
-
+		printf("25 21\n");
 		modelLock.ReleaseWriteLock();
-
+		printf("25 22\n");
 		modelLock.AcquireReadLock();
-
+		printf("25 23\n");
 		DWORD currWait = GetTickCount() - initialCount;
-
+		printf("25 24\n");
 		processingStageOutput.showImage(FILTERED_FOREGROUND_STAGE, bm->GetFindConnectedComponents()->GetConnectedComponents());
-		
+		printf("25 25\n");
 		cvNormalize(disp, temp1channel, 0, 255, CV_MINMAX);
+		printf("25 26\n");
 		processingStageOutput.showImage(DISPARITY_STAGE, temp1channel);
-		
+		printf("25 27\n");
 		processingStageOutput.showImage(RAW_FOREGROUND_STAGE, bm->GetForegroundSegmentationPtr()->GetCurrentForegroundPtr());
-		
+		printf("25 28\n");
 		cvConvert(bm->GetEdgeIntensityModelPtr()->GetDifferential(), temp1channel);
+		printf("25 29\n");
 		processingStageOutput.showImage(EDGE_ACTIVITY_STAGE, temp1channel);
-		
+		printf("25 30\n");
 		cvConvert( bm->GetColorModelPtr()->GetAveragePtr(), temp3channel);
+		printf("25 31\n");
 		processingStageOutput.showImage(BACKGROUND_STAGE, temp3channel);
-		
+		printf("25 32\n");
 		if (pvm) {
 			processingStageOutput.showImage(PLANVIEW_OCCUPANCY_STAGE, pvm->GetOccupancyImage());
 
 			processingStageOutput.showImage(PLANVIEW_HEIGHT_STAGE, pvm->GetHeightImage());
 		}
-
+		printf("25 33\n");
 		modelLock.ReleaseReadLock();
-		
+		printf("25 34\n");
 		wchar_t text_buf[20];
 		swprintf_s(text_buf, 20, L"%u ms", currWait);
 		PostMessage(si->GetStatusBar(), (UINT) SB_SETTEXT, (WPARAM) (INT) 0, (LPARAM) text_buf);
+		printf("25 35\n");
 	}
 
 	if (pvm) {
@@ -559,6 +590,7 @@ void ElaborationCore::Run(void *param) {
 		pvm = NULL;
 	}
 	
+	printf("26\n");
 	cvReleaseImage(&grayScaleImage[0]);
 	cvReleaseImage(&grayScaleImage[1]);
 	cvReleaseImage(&vEdge);
@@ -570,13 +602,14 @@ void ElaborationCore::Run(void *param) {
 	cvReleaseMat(&reprojection3D);
 	cvReleaseImage(&temp3channel);
 	cvReleaseImage(&temp1channel);
-	
+	printf("27\n");
 	asr->UnSubscribeEvent(STEREO_IMAGE_READY, hStereoEvent);
-
+	printf("28\n");
 	delete bm;
 	bm = NULL;
-
+	printf("29\n");
 	ApplicationWorkFlow::GetInstance()->UpdateSystemState(ELABORATION_ENDED);
+	printf("30\n");
 }
 
 bool ElaborationCore::StopPreprocedure() {

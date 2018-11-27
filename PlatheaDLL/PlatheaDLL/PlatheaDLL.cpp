@@ -34,10 +34,11 @@ HANDLE* positionThread;
    OutputDebugStringW( os_.str().c_str() );  \
 }
 
-// Da cancellare
-Point* createPoint() {
-	return new Point();
+/*
+TrackedPerson* createPerson(char prefix[2],static int staticID, int X, int Y, int nameID, char identityPrefix[2], char name[256]) {
+	return (new TrackedPerson(prefix, staticID, X,Y, nameID, identityPrefix, name));
 }
+*/
 
 void internalCalibrationDemo(const char str[]) {
 	calibration_internalcalibration_load(str, 7);
@@ -221,7 +222,7 @@ void test_positiontest(bool exitInitPhase) {
 }
 
 void test_positiontest_start() {
-	positionThread = PositionTestProc(0);
+	PositionTestStart();
 }
 
 void test_positiontest_stop() {
@@ -232,7 +233,7 @@ void test_savetrackstofile() {
 	saveTracksToFile = !saveTracksToFile;
 }
 
-void test_plathearecorder() {
+void test_platheaplayer() {
 	if (si->GetStereoRig()) {
 		PLaTHEARecorderMode selectedMode = PLaTHEA_RECORDER_MODE;
 		if (si->GetStereoRig()->GetAcquisitionProperties().cameraAvailableOptions & AcquisitionCameraFactory::CameraDescription::VIRTUAL_CAMERA) {
@@ -242,11 +243,11 @@ void test_plathearecorder() {
 	}
 }
 
-void test_plathearecorder_start(const char* dir) {
+void test_platheaplayer_start(const char* dir) {
 	//const char* s = "D:\PLaTHEATest\Tests\21-12-2012 - 11-25-10-165";
 	printf("start\n");
 	StartPlayer(dir);
-	printf("sterted\n");
+	printf("started\n");
 }
 
 void test_plathearecorder_stop() {
@@ -416,7 +417,46 @@ void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
 	printf("update tracked people\n");
 	mtx.lock();
 	trackedPeople = trackedPersons;
+	std::vector<TrackedObject*> persons = trackedPersons;
 	mtx.unlock();
+
+	//trackedPeople = std::vector<TrackedPerson*>();
+	static int round = 0;
+	int notificationStep = 1; //How many frames should pass between a measurement and another? >=1
+	char rowToWrite[1024];
+	int texelSide = (int)RoomSettings::GetInstance()->data.texelSide;
+	printf("persons.size() %d\n",persons.size());
+	for (int i = 0; i < int(persons.size()); i++) {
+		if (persons[i]->type == TRACKED || persons[i]->type == LOST) {
+			printf("TRACKED OR LOST\n");
+			int newX = ((persons[i]->bottomRight.x + persons[i]->upperLeft.x) / 2)*texelSide;
+			int newY = ((persons[i]->bottomRight.y + persons[i]->upperLeft.y) / 2)*texelSide;
+			char prefix[2];
+			if (persons[i]->type == TRACKED)
+				sprintf_s(prefix, "t");
+			else if (persons[i]->type == LOST)
+				sprintf_s(prefix, "l");
+			char identityPrefix[2];
+			if (persons[i]->nameID != -1) {
+				if (persons[1]->justIdentified)
+					sprintf_s(identityPrefix, "j");
+				else
+					sprintf_s(identityPrefix, "i");
+			}
+			else {
+				sprintf_s(identityPrefix, "-");
+			}
+			sprintf_s(rowToWrite, "%s\t%d\t(%d,%d)\t%d\t%s\t%s\r\n", prefix, persons[i]->ID, newX, newY,
+				persons[i]->nameID, identityPrefix, (persons[i]->nameID == -1 ? "-" : persons[i]->name));
+			printf("rowToWrite %s\n",rowToWrite);
+			//trackedPeople.push_back(new TrackedPerson(prefix, persons[i]->ID, newX, newY,persons[i]->nameID, identityPrefix, persons[i]->name));
+			if (round == 0)
+				printf("round 0");
+		}
+		
+	}
+	round++; round %= notificationStep;
+
 }
 
 

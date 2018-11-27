@@ -77,7 +77,7 @@ public:
 	void ShowSettingsWindow();
 	void EndInitializationPhase() {		
 		initPhase = 0;
-		printf("%d initPhase  false=%d\n", &initPhase, initPhase);
+		//printf("%d initPhase  false=%d\n", &initPhase, initPhase);
 	}
 	bool DuringInitializationPhase() {
 		return initPhase;

@@ -83,8 +83,11 @@ void StartPlayer(const char dir[260]) {
 				si->GetElaborationCore()->SaveCurrentState(cas);
 			}
 			else if (prm == PLaTHEA_PLAYER_MODE) {
+				printf("RecordPlayerDialog: loadSavedState...\n");
+				printf("%s\n", selectedDirectory);
 				cas = CvArrStorage(selectedDirectory);
 				si->GetElaborationCore()->LoadSavedState(cas);
+				printf("RecordPlayerDialog: loadSavedState done\n");
 			}
 			if (si->GetElaborationCore()->DuringInitializationPhase()) {
 				printf("EndInitializationPhase\n");
@@ -97,9 +100,11 @@ void StartPlayer(const char dir[260]) {
 			//SetDlgItemTextA(hwndDlg, IDC_EDIT1, "Recording Started");
 		}
 		else if (prm == PLaTHEA_PLAYER_MODE) {
+			printf("A 1\n");
 			si->GetStereoRig()->StartPlaybackMode(selectedDirectory, VideoPlaybackStarted());
 			//SetDlgItemTextA(hwndDlg, IDC_EDIT1, "Playback Started");
 		}
+		printf("A 2\n");
 		status = RECORDER_EXECUTION;
 	}
 }

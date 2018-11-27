@@ -100,7 +100,8 @@ static INT_PTR CALLBACK RecordPlayerDialogProc(HWND hwndDlg, UINT uMsg, WPARAM w
 					si->GetStereoRig()->StartRecorderMode();
 					SetDlgItemTextA(hwndDlg, IDC_EDIT1, "Recording Started");
 				} else if (prm == PLaTHEA_PLAYER_MODE) {
-					si->GetStereoRig()->StartPlaybackMode(selectedDirectory, VideoPlaybackStarted());
+					bool b = VideoPlaybackStarted();
+					si->GetStereoRig()->StartPlaybackMode(selectedDirectory, b);
 					SetDlgItemTextA(hwndDlg, IDC_EDIT1, "Playback Started");
 				}
 				EnableWindow(GetDlgItem(hwndDlg, IDC_BUTTON1), FALSE);

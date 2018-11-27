@@ -596,6 +596,7 @@ INT_PTR CALLBACK PositionTestProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
 	HWND tabControl = GetDlgItem(hwndDlg, IDC_POSITIONTESTTAB);
 	switch (uMsg) {
 	case WM_ACTIVATE:
+		DBOUT("WM_ACTIVATE");
 		if (wParam != 0 && doClipRect) {
 			PerformClipCursor(hwndDlg, false);
 		}
@@ -753,6 +754,7 @@ INT_PTR CALLBACK PositionTestProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
 					notYetAnalyzedData.clear();
 					notYetAnalyzedData.reserve(200);
 					if (currentlySelectedTest.GetPositionTestType() == PositionTest::ONLINE_POSITION_TEST || currentlySelectedTest.GetPositionTestType() == PositionTest::OFFLINE_POSITION_TEST) {
+						DBOUT("online offline");
 						std::vector<int> usersToSubjects;
 						usersToSubjects.resize(currentlySelectedTest.size());
 						for (int i = 0; i < currentlySelectedTest.size(); i++) {
@@ -774,6 +776,7 @@ INT_PTR CALLBACK PositionTestProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
 						}
 						currentlySelectedTest.StartNewTest(&usersToSubjects);
 					} else if (currentlySelectedTest.GetPositionTestType() == PositionTest::COMPLETION_POSITION_TEST) {
+						DBOUT("completion");
 						if (si->GetElaborationCore())
 							si->GetElaborationCore()->LoadSavedState(currentlySelectedTest.GetCvArrStorage());
 						char dataDirectory[MAX_PATH * 10]; GetCurrentDirectoryA(MAX_PATH * 10, dataDirectory);
@@ -922,6 +925,7 @@ INT_PTR CALLBACK PositionTestProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
 		return TRUE;
 	case WM_PAINT:
 		{
+			DBOUT("WM_PAINT");
 			PAINTSTRUCT ps;
 			BeginPaint(hwndDlg, &ps);
 
@@ -970,11 +974,11 @@ DWORD WINAPI PositionTestThread(LPVOID lpParameter) {
 	while (waitResult != 1) {
 		waitResult = MsgWaitForMultipleObjects(2, eventToWait, FALSE, INFINITE, QS_ALLINPUT) - WAIT_OBJECT_0;
 		if (waitResult == 2) {
-			DBOUT("waitResult = 2");
+			//DBOUT("waitResult = 2");
 			if (standardRawMouseMessageDispatcher.IsRawMessageAnalysisStarted())
 				standardRawMouseMessageDispatcher.ReplacedWindowsInnerLoop();
 			else {
-				DBOUT("waitResult - MSG");
+				//DBOUT("waitResult - MSG");
 				MSG msg;
 				while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 					if (!IsDialogMessage(testPositionHwnd, &msg) && (!currentlyTabbedWindow || !IsDialogMessage(currentlyTabbedWindow, &msg))) {
@@ -983,7 +987,7 @@ DWORD WINAPI PositionTestThread(LPVOID lpParameter) {
 					}
 			}
 		} else if (waitResult == 0) {
-			DBOUT("waitResult = 0");
+			//DBOUT("waitResult = 0");
 			currentlySelectedTest.AddLastSoftwareMeasurements(mainTestDesigner, RoomSettings::GetInstance()->data.texelSide, notYetAnalyzedData, notYetAnalyzedDataLock);
 		}
 	}

@@ -63,17 +63,17 @@ JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_startLocalizationEngine
 	return 0;
 }
 
-JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaRecorder
+JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaPlayer
 (JNIEnv *env, jobject thisObj) {
-	test_plathearecorder();
+	test_platheaplayer();
 	return 0;
 }
 
-JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaRecorderStart
+JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaPlayerStart
 (JNIEnv *env, jobject thisObj, jstring jdir) {
 	const char *dir = env->GetStringUTFChars(jdir, 0);
 	printf("dir:%s\n", dir);
-	test_plathearecorder_start(dir);
+	test_platheaplayer_start(dir);
 	return 0;
 }
 

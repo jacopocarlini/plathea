@@ -28,6 +28,7 @@ BufferedVideoRecorder::BufferedVideoRecorder(CvVideoWriter *leftWriter, CvVideoW
 }
 
 BufferedVideoRecorder::BufferedVideoRecorder(wchar_t *path, CvSize resolution, int rate) {
+	printf("BufferedVideo %s\n",path);
 	char sourceFileName[_MAX_PATH]; 
 
 	sprintf_s(sourceFileName, "%S\\%s", path, "left.avi");
@@ -51,8 +52,10 @@ BufferedVideoRecorder::~BufferedVideoRecorder() {
 }
 
 void BufferedVideoRecorder::Run(void *param) {
+	printf("VideoRecorder: run \n");
 	HANDLE hEventsToWait[] = {hNewDataToRead, hStopRunningEvent};
 	while (WaitForMultipleObjects(2, hEventsToWait, FALSE, INFINITE) == WAIT_OBJECT_0) {
+		printf("VideoRecorder: wait for \n");
 		listLock.AcquireReadLock();
 		int numberToRead = (int) leftFrames.size();
 		listLock.ReleaseReadLock();

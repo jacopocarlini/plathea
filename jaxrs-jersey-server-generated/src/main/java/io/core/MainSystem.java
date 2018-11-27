@@ -822,7 +822,7 @@ public class MainSystem {
     
      public static synchronized ReturnRoomMessage plathearecorder(Integer roomID) {
         if(rooms.containsKey(roomID)){
-            rooms.get(roomID).interfaceJNI.platheaRecorder();
+            rooms.get(roomID).interfaceJNI.platheaPlayer();
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
@@ -831,7 +831,7 @@ public class MainSystem {
     public static ReturnRoomMessage plathearecorderstart(Integer roomID) {
         if(rooms.containsKey(roomID)){
             String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room0\\Tests\\21-12-2012 - 11-25-10-165";
-            rooms.get(roomID).interfaceJNI.platheaRecorderStart(path);
+            rooms.get(roomID).interfaceJNI.platheaPlayerStart(path);
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 

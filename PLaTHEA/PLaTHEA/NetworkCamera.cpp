@@ -653,8 +653,10 @@ bool StereoRig::StartPlaybackMode(const char *baseDirectory, bool onRequestMode)
 	int height = (int) cvGetCaptureProperty(*CastedCameraPtr[LEFT_SIDE_CAMERA]->GetCapture(), CV_CAP_PROP_FRAME_HEIGHT);
 	currStereoBigImage[LEFT_SIDE_CAMERA] = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
 	currStereoBigImage[RIGHT_SIDE_CAMERA] = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
+
 	char resString[64]; sprintf_s(resString, "%dx%d", width, height);
 	ap.resolution = resString;
+
 	StereoLock.ReleaseWriteLock();
 	SetEvent(videoLoadedEvent);
 	return true;

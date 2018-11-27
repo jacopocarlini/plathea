@@ -84,8 +84,10 @@ void VideoOutput::ChangeSource(VideoEvent *veLeft, VideoEvent *veRight) {
 }
 
 void VideoOutput::Run(void *param) {
+	printf("VideoOutput: run \n");
 	continueRunning = true;
 	while (continueRunning) {
+		printf("VideoOutput: continue running \n");
 		DWORD res = WaitForMultipleObjects(2, hReadyEvent, FALSE, INFINITE);
 		DWORD curr = res - WAIT_OBJECT_0;
 		switch (ve[curr].st) {
@@ -104,10 +106,14 @@ void VideoOutput::Run(void *param) {
 				break;
 			case NETWORK_STEREO_RIG:
 				{
+					printf("video_output: NETWORK_STEREO_RIG");
 					StereoRig * asr = (StereoRig *) ve[curr].eventSource;
 					asr->StereoLock.AcquireReadLock();
 						IplImage * left, * right;
 						asr->GetStereoImages(&left, &right, false);
+						// Save 
+						cvSaveImage("D:\\github\\myimage.png", left);
+
 						selectFrame(LEFT_SIDE_SCREEN, left);
 						selectFrame(RIGHT_SIDE_SCREEN, right);
 						lastImageSize = cvSize(left->width, left->height);

@@ -300,6 +300,7 @@ StereoRig::~StereoRig() {
 	cvReleaseImage(&currStereoBigImage[RIGHT_SIDE_CAMERA]);
 	wchar_t platheaTempDir[_MAX_PATH]; GetPLaTHEATempPath(platheaTempDir, _MAX_PATH);
 	char sourceFileName[_MAX_PATH]; sprintf_s(sourceFileName, "%S\\left.avi", platheaTempDir);
+	printf("NetworkCamera: %s\n",sourceFileName);
 	DeleteFileA(sourceFileName);
 	sprintf_s(sourceFileName, "%S\\right.avi", platheaTempDir);
 	DeleteFileA(sourceFileName);
@@ -356,6 +357,7 @@ void StereoRig::RequestMoreFrames() {
 }
 
 void StereoRig::Run(void *param) {
+	printf("run networkcamera\n");
 	if (this->UseCalibrationData)
 		ApplicationWorkFlow::GetInstance()->UpdateSystemState(ACQUISITION_STARTED_CALIB);
 	else
@@ -377,7 +379,7 @@ void StereoRig::Run(void *param) {
 	SetStatus(THREAD_LOADING);
 
 	//HANDLE hFile = CreateFile(L".\\STEREO_CAMERA.csv", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	
+	printf("networkcamera: if camera available \n");
 	if (ap.cameraAvailableOptions & AcquisitionCameraFactory::CameraDescription::CAMERA_OPTION_NETWORK) {
 		IplImage * networkDelayBuffer = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
 		bool networkDelayBufferUsageFlag = false; int networkDelayBufferSide = -1;
@@ -409,6 +411,7 @@ void StereoRig::Run(void *param) {
 		DWORD startTimestamps[2];
 		DWORD lastStereoFrame = GetTickCount();
 		while((currCamera = WaitForMultipleObjects(3, hReadyEvent, FALSE, INFINITE) - WAIT_OBJECT_0) != 2) {
+			printf("networkcamera: wait for \n");
 			int otherCamera = (currCamera + 1) % 2;
 			DWORD theTimestamp; float theDelay;
 			IplImage *imgPtr = CameraPtr[currCamera]->GetImage(&theTimestamp, NULL, &theDelay);
@@ -440,7 +443,7 @@ void StereoRig::Run(void *param) {
 			while (validBuffer[LEFT_SIDE_CAMERA] && validBuffer[RIGHT_SIDE_CAMERA]) {
 				DWORD minTimeStamp = MIN(startTimestamps[LEFT_SIDE_CAMERA], startTimestamps[RIGHT_SIDE_CAMERA]);
 				DWORD maxTimeStamp = MAX(startTimestamps[LEFT_SIDE_CAMERA], startTimestamps[RIGHT_SIDE_CAMERA]);
-
+				printf("networkcamera: valid buffer \n");
 				/*char lineToWrite[1024]; int written = sprintf_s(lineToWrite, 1024, "%lu;%lu;%lu;%lu;%f\r\n", minTimeStamp,
 				maxTimeStamp, maxTimeStamp - minTimeStamp, (DWORD) (cameraAvgDelays[LEFT_SIDE_CAMERA] + cameraAvgDelays[RIGHT_SIDE_CAMERA]) / 4, onlineAcquisitionRate);
 				DWORD writtenBytes;
@@ -488,6 +491,7 @@ void StereoRig::Run(void *param) {
 				}
 			}
 		}
+
 		CameraPtr[LEFT_SIDE_CAMERA]->DecrementForcedWaitingSemaphore();
 		CameraPtr[RIGHT_SIDE_CAMERA]->DecrementForcedWaitingSemaphore();
 		CameraPtr[LEFT_SIDE_CAMERA]->UnSubscribeEvent(IMAGE_READY, hReadyEvent[LEFT_SIDE_CAMERA]);
@@ -560,6 +564,8 @@ void StereoRig::Run(void *param) {
 			StereoLock.ReleaseWriteLock();
 		}
 	}
+
+	printf("networkcamera: rilascio \n");
 
 	//CloseHandle(hFile);
 
@@ -642,11 +648,12 @@ bool StereoRig::StartPlaybackMode(const char *baseDirectory, bool onRequestMode)
 	OpenCvCaptureCamera* CastedCameraPtr[2] = {(OpenCvCaptureCamera *) CameraPtr[0], (OpenCvCaptureCamera *) CameraPtr[1]};
 	const char * fileNames[] = {"left.avi", "right.avi"};
 	char destinationFileName[_MAX_PATH];
-	printf("get camera\n");
+	
 	for (int i = 0; i < 2; i++) {
 		sprintf_s(destinationFileName, "%s\\%s", baseDirectory, fileNames[i]);
 		*CastedCameraPtr[i]->GetCapture() = cvCreateFileCapture(destinationFileName);
 	}
+	printf("get camera %s\n", destinationFileName);
 	sprintf_s(destinationFileName, "%s\\offsets.bin", baseDirectory);
 	hOffsetFile = CreateFileA(destinationFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	cvReleaseImage(&currStereoBigImage[LEFT_SIDE_CAMERA]);
@@ -656,6 +663,7 @@ bool StereoRig::StartPlaybackMode(const char *baseDirectory, bool onRequestMode)
 	int height = (int) cvGetCaptureProperty(*CastedCameraPtr[LEFT_SIDE_CAMERA]->GetCapture(), CV_CAP_PROP_FRAME_HEIGHT);
 	currStereoBigImage[LEFT_SIDE_CAMERA] = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
 	currStereoBigImage[RIGHT_SIDE_CAMERA] = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 3);
+	
 	printf("release\n");
 	char resString[64]; sprintf_s(resString, "%dx%d", width, height);
 	ap.resolution = resString;

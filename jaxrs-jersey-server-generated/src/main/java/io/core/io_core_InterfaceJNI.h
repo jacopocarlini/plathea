@@ -57,18 +57,18 @@ JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_startLocalizationEngine
 
 /*
  * Class:     io_core_InterfaceJNI
- * Method:    platheaRecorder
+ * Method:    platheaPlayer
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaRecorder
+JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaPlayer
   (JNIEnv *, jobject);
 
 /*
  * Class:     io_core_InterfaceJNI
- * Method:    platheaRecorderStart
+ * Method:    platheaPlayerStart
  * Signature: (Ljava/lang/String;)I
  */
-JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaRecorderStart
+JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaPlayerStart
   (JNIEnv *, jobject, jstring);
 
 /*

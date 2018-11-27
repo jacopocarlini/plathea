@@ -25,6 +25,7 @@
 
 HANDLE* ShowPositionTestWindow();
 int PositionTestThread();
+void PositionTestStart();
 HANDLE* PositionTestProc(int cmd);
 void RegisterNewSoftwareMeasurements(std::vector<TrackedObject *> &data, DWORD measurementTimestamp);
 
