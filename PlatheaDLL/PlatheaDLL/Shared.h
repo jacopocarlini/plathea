@@ -59,6 +59,7 @@ public:
 	void SetElaborationCore(ElaborationCore *ec);
 	ElaborationCore * GetElaborationCore();
 	HWND GetMainWindow();
+	void setRoomID(int roomID);
 private:
 	HWND statusBar, mainWnd;
 	StereoRig *asr;

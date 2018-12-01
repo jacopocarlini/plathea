@@ -36,10 +36,12 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
     public abstract Response initializesystem(Integer roomID,String username,String password,String type,String resolution,Integer fps,String cameraModel,String ipAddress1,Integer port1,String ipAddress2,Integer port2,SecurityContext securityContext) throws NotFoundException;
     public abstract Response internalcalibration(Integer roomID,Integer mask,List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions,SecurityContext securityContext) throws NotFoundException;
     public abstract Response loadconfigurationfile(Integer roomID,InputStream uploadedInputStream, FormDataContentDisposition fileDetail,SecurityContext securityContext) throws NotFoundException;
-    public abstract Response plathearecorder(Integer roomID,SecurityContext securityContext) throws NotFoundException;
-    public abstract Response plathearecorderstart(Integer roomID,SecurityContext securityContext) throws NotFoundException;
-    public abstract Response plathearecorderstop(Integer roomID,SecurityContext securityContext) throws NotFoundException;
+    public abstract Response platheaplayer(Integer roomID,SecurityContext securityContext) throws NotFoundException;
+    public abstract Response platheaplayerstart(Integer roomID,SecurityContext securityContext) throws NotFoundException;
+    public abstract Response platheaplayerstop(Integer roomID,SecurityContext securityContext) throws NotFoundException;
     public abstract Response selectsvmclassifier(Integer roomID,InputStream uploadedInputStream, FormDataContentDisposition fileDetail,SecurityContext securityContext) throws NotFoundException;
     public abstract Response startlocalizationengine(Integer roomID,Integer withoutTracking,Integer saveTracksToFile,SecurityContext securityContext) throws NotFoundException;
     public abstract Response updateRoom(Body body,Integer roomID,SecurityContext securityContext) throws NotFoundException;
+    public abstract Response continuousTracking(Integer roomID,SecurityContext securityContext) throws NotFoundException;
+
 }

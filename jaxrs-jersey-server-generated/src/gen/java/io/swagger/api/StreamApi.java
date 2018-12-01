@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.*;
 import javax.validation.constraints.*;
+import javax.ws.rs.core.MediaType;
 
 @Path("/stream")
 
@@ -59,9 +60,8 @@ import javax.validation.constraints.*;
    }
 
     @GET
-    @Path("/{streamID}")
-    
-    @Produces({ "application/json" })
+    @Path("/{streamID}")    
+    @Produces("multipart/x-mixed-replace; boundary=--BoundaryString\r\n")
     @Operation(summary = "Get a stream of a room", description = "", tags={ "stream" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(schema = @Schema(implementation = File.class))),

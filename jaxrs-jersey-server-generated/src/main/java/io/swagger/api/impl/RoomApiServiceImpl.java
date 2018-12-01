@@ -124,8 +124,8 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
         return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response plathearecorder(Integer roomID, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.plathearecorder(roomID);
+    public Response platheaplayer(Integer roomID, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.platheaplayer(roomID);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
@@ -133,8 +133,8 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
         return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response plathearecorderstart(Integer roomID, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.plathearecorderstart(roomID);
+    public Response platheaplayerstart(Integer roomID, SecurityContext securityContext) throws NotFoundException {
+        MainSystem.ReturnRoomMessage ret = MainSystem.platheaplayerstart(roomID);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
@@ -142,7 +142,7 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
         return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response plathearecorderstop(Integer roomID, SecurityContext securityContext) throws NotFoundException {
+    public Response platheaplayerstop(Integer roomID, SecurityContext securityContext) throws NotFoundException {
         // do some magic!
         return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
     }
@@ -176,4 +176,10 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
             return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
         return Response.ok().entity(ret.getMessage()).build();
     }
+    
+    @Override
+    public Response continuousTracking(Integer roomID, SecurityContext securityContext) throws NotFoundException {
+        return MainSystem.continuousTracking(roomID);
+    }
+    
 }

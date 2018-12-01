@@ -14,20 +14,20 @@ import java.util.List;
  * @author jack1
  */
 public class MyRoom{
-        public List<Person> people;
+        //public List<Person> people;
         public int id;
         public String name;
         public List<Integer> streams;
         public InterfaceJNI interfaceJNI;
         
         public MyRoom(int id, String name){
-            people = new ArrayList<Person>();
+            //people = new ArrayList<Person>();
             streams = new ArrayList<Integer>();
             this.id=id;
             this.name=name;
             interfaceJNI = new InterfaceJNI();
         }
-
+/*
     public List<Person> getPeople() {
         return people;
     }
@@ -35,7 +35,7 @@ public class MyRoom{
     public void setPeople(List<Person> people) {
         this.people = people;
     }
-
+*/
     public int getId() {
         return id;
     }

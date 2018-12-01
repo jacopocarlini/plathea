@@ -39,7 +39,7 @@ import javax.validation.constraints.*;
    **/
   @JsonProperty("identified")
   @Schema(description = "")
-  public Boolean isisIdentified() {
+  public Boolean isIdentified() {
     return identified;
   }
 

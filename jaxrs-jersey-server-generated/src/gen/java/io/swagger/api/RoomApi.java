@@ -273,45 +273,45 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
         return delegate.loadconfigurationfile(roomID, uploadedInputStream, fileDetail, securityContext);
     }
     @GET
-    @Path("/{roomID}/plathea_recorder")
+    @Path("/{roomID}/plathea_player")
     
     
-    @Operation(summary = "Set the mode of plathea in recorder", description = "", tags={ "room" })
+    @Operation(summary = "Set the mode of plathea in player", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
-    public Response plathearecorder(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
+    public Response platheaplayer(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.plathearecorder(roomID,securityContext);
+        return delegate.platheaplayer(roomID,securityContext);
     }
     @GET
-    @Path("/{roomID}/plathea_recorder_start")
+    @Path("/{roomID}/plathea_player_start")
     //@Consumes({ "multipart/form-data" })
     //@Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Operation(summary = "start the recorder", description = "", tags={ "room" })
+    @Operation(summary = "start the player", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),  
         @ApiResponse(responseCode = "405", description = "Invalid input") })
-    public Response plathearecorderstart(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
+    public Response platheaplayerstart(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.plathearecorderstart(roomID,securityContext);
+        return delegate.platheaplayerstart(roomID,securityContext);
     }
     @GET
-    @Path("/{roomID}/plathea_recorder_stop")
+    @Path("/{roomID}/plathea_player_stop")
     
     
-    @Operation(summary = "Stop the recorder", description = "", tags={ "room" })
+    @Operation(summary = "Stop the player", description = "", tags={ "room" })
     @ApiResponses(value = { 
         @ApiResponse(responseCode = "200", description = "successful operation"),
         
         @ApiResponse(responseCode = "405", description = "Invalid input") })
-    public Response plathearecorderstop(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
+    public Response platheaplayerstop(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.plathearecorderstop(roomID,securityContext);
+        return delegate.platheaplayerstop(roomID,securityContext);
     }
     @POST
     @Path("/{roomID}/select_svm_classifier")
@@ -365,4 +365,22 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
     throws NotFoundException {
         return delegate.updateRoom(body,roomID,securityContext);
     }
+    
+    
+    @GET
+    @Path("/{roomID}/continuousTracking")    
+    @Produces({ "application/json" })
+    @Operation(summary = "Start continuous Tracking", description = "", tags={ "room" })
+    @ApiResponses(value = { 
+        @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(array = @ArraySchema(schema = @Schema(implementation = Person.class)))),
+        
+        @ApiResponse(responseCode = "400", description = "Invalid ID supplied"),
+        
+        @ApiResponse(responseCode = "404", description = "Room not found") })
+    public Response continuousTracking(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
+,@Context SecurityContext securityContext)
+    throws NotFoundException {
+        return delegate.continuousTracking(roomID,securityContext);
+    }
+    
 }

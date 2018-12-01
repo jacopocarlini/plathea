@@ -5,6 +5,8 @@
 #include "PlatheaDLL.h"
 #include <mutex>          // std::mutex
 
+#include "JackSettings.h"
+
 std::mutex mtx;           // mutex for critical section
 
 
@@ -18,11 +20,11 @@ using namespace leostorm::settingspersistence;
 
 SystemInfo * si = new SystemInfo();
 vector<TrackedObject*> trackedPeople;
-
 HWND hActiveModelessWindow = NULL;
 bool hideVideoInput = false;
 bool saveTracksToFile = false;
 bool svmTracker = false;
+
 
 
 HANDLE* positionThread;
@@ -174,7 +176,7 @@ std::string setPath(string path) {
 }
 
 
-void system_loadconfigurationfile(char str[]) {
+void system_loadconfigurationfile(int roomId, char str[]) {
 	char currentDirectory[_MAX_PATH];
 	strcpy(currentDirectory, str);
 	//PathRemoveFileSpecA(currentDirectory); 
@@ -184,6 +186,8 @@ void system_loadconfigurationfile(char str[]) {
 	//DBOUT(setPath(s).c_str());
 	//const char* path = setPath(s).c_str();
 	//printf("dopo la chiamata: %s\n", setPath(s).c_str());
+	si->GetVideoOutput()->setRoomID(roomId);
+	IDroom = roomId;
 	SetCurrentDirectoryA(setPath(s).c_str());
 	SettingsPersistence::GetInstance()->LoadFromFile(str);
 	//UpdateWindowTitle(hwnd);
@@ -416,10 +420,10 @@ ElaborationCore* getElaborationCore() {
 void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
 	printf("update tracked people\n");
 	mtx.lock();
-	trackedPeople = trackedPersons;
+	//trackedPeople = trackedPersons;
 	std::vector<TrackedObject*> persons = trackedPersons;
-	mtx.unlock();
 
+	trackedPeople.clear();
 	//trackedPeople = std::vector<TrackedPerson*>();
 	static int round = 0;
 	int notificationStep = 1; //How many frames should pass between a measurement and another? >=1
@@ -449,6 +453,9 @@ void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
 			sprintf_s(rowToWrite, "%s\t%d\t(%d,%d)\t%d\t%s\t%s\r\n", prefix, persons[i]->ID, newX, newY,
 				persons[i]->nameID, identityPrefix, (persons[i]->nameID == -1 ? "-" : persons[i]->name));
 			printf("rowToWrite %s\n",rowToWrite);
+			persons[i]->X = newX;
+			persons[i]->Y = newY;
+			trackedPeople.push_back((persons[i]));
 			//trackedPeople.push_back(new TrackedPerson(prefix, persons[i]->ID, newX, newY,persons[i]->nameID, identityPrefix, persons[i]->name));
 			if (round == 0)
 				printf("round 0");
@@ -457,6 +464,7 @@ void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
 	}
 	round++; round %= notificationStep;
 
+	mtx.unlock();
 }
 
 

@@ -156,6 +156,9 @@
     <ClInclude Include="SyncTest.h">
       <Filter>File di intestazione\Core</Filter>
     </ClInclude>
+    <ClInclude Include="JackSettings.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -258,6 +261,9 @@
       <Filter>File di origine\Core</Filter>
     </ClCompile>
     <ClCompile Include="SyncTest.cpp">
+      <Filter>File di origine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="JackSettings.cpp">
       <Filter>File di origine\Core</Filter>
     </ClCompile>
   </ItemGroup>

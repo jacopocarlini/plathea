@@ -30,7 +30,7 @@ import javax.validation.constraints.*;
     }
     @Override
     public Response getPersonWithIdentity(Integer personID, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnPeopleMessage ret = MainSystem.getPersonWithIdentity();
+        MainSystem.ReturnPersonMessage ret = MainSystem.getPersonWithIdentity(personID);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 

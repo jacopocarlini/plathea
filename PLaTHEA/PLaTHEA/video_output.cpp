@@ -97,6 +97,7 @@ void VideoOutput::Run(void *param) {
 						if (curr == LEFT_SIDE_SCREEN)
 							selectFrame(LEFT_SIDE_SCREEN, temp);
 						else
+
 							selectFrame(RIGHT_SIDE_SCREEN, temp);
 						lastImageSize = cvSize(temp->width, temp->height);
 					asr->ImageLock.ReleaseReadLock();

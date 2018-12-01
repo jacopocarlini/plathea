@@ -101,6 +101,7 @@ public:
 		return staticsHandle[psi];
 	}
 	bool showImage(ProcessingStageImage psi, CvArr *image) {
+		DBOUT("showImage");
 		char windowName[64];
 		HWND destStatic = ImageDestinationInfo(psi, windowName, 64);
 		if (!testingPhase) {

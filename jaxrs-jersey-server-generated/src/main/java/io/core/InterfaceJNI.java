@@ -38,7 +38,7 @@ public class InterfaceJNI {
     */
 
     // Interface
-    public native int loadConfigurationFile(String dir);
+    public native int loadConfigurationFile(int roomID, String dir);
     public native int internalCalibration(String dir, int mask);
     public native int externalCalibration(String dir);
     public native int selectSVMclassifier(String dir);
@@ -46,23 +46,45 @@ public class InterfaceJNI {
     public native int startLocalizationEngine(boolean withoutTracking, boolean saveTracksToFile, String dir);
     public native int platheaPlayer();
     public native int platheaPlayerStart(String dir);
-    
-    public native String getPeopleInRoom(int roomID);
+    public native int platheaPlayerStop();
+    public native TrackedPerson[] getTrackedPeople();
 
 
-    void addRoomJNI() {
+   
+    public class TrackedPerson {
+        public String name;
+        public int nameID;
+        public int X,Y;
+        public int ID;
+        public String type;
 
+        public TrackedPerson(String name, int nameID, int X, int Y, int ID, String type) {
+            this.name = name;
+            this.nameID = nameID;
+            this.X = X;
+            this.Y = Y;
+            this.ID = ID;
+            this.type = type;
+        }
+
+
+        
     }
+    
 /*
     class PersonJNI{
-        String firstname;
-        String surtname;
+        String name;
+        int nameID;
+        int X,Y;
+        int ID;
+        String type;
+        
 
         public PersonJNI(){
 
         }
     }
-
+/*
     public class RoomJNI{
         public List<PersonJNI> people;
         public int id;

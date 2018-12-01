@@ -19,6 +19,16 @@
 
 #include "video_output.h"
 #include <LeoWindowsGDI.h>
+#include "PlatheaDLL.h"
+#include <fstream>
+#include <string>
+#include <iostream>
+
+#include "JackSettings.h"
+
+int leftcount=0;
+
+int roomID;
 
 ProcessingStageOutput processingStageOutput;
 
@@ -26,6 +36,10 @@ VideoEvent VideoOutput::GetNoneEvent() {
 	VideoEvent res;
 	res.ev = NONE_EVENT;
 	return res;
+}
+
+void VideoOutput::setRoomID(int roomId) {
+	roomID = roomId;
 }
 
 VideoOutput::VideoOutput(HWND hwndLeftPic, HWND hwndRightPic, VideoEvent *veLeft, VideoEvent *veRight) {
@@ -101,6 +115,16 @@ void VideoOutput::Run(void *param) {
 						else
 							selectFrame(RIGHT_SIDE_SCREEN, temp);
 						lastImageSize = cvSize(temp->width, temp->height);
+						// Save 
+						std::string nameframe = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+ std::to_string(roomID) +"\\frame" + std::to_string(leftcount) + ".jpeg";
+
+						cvSaveImage(nameframe.c_str(), temp);
+						std::string input = std::to_string(leftcount);
+						std::fstream out;
+						out.open("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room" + std::to_string(roomID) + "\\mutex.txt");						
+						out << input;
+						out.close();
+						leftcount++;
 					asr->ImageLock.ReleaseReadLock();
 				}
 				break;
@@ -112,7 +136,14 @@ void VideoOutput::Run(void *param) {
 						IplImage * left, * right;
 						asr->GetStereoImages(&left, &right, false);
 						// Save 
-						cvSaveImage("D:\\github\\myimage.png", left);
+						std::string nameframe = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room" + std::to_string(roomID) + "\\frame"+ std::to_string(leftcount) +".jpeg";
+						
+						cvSaveImage(nameframe.c_str(), left);
+						std::string input = std::to_string(leftcount);						
+						std::ofstream out("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room" + std::to_string(roomID) + "\\mutex.txt");
+						out << input;
+						out.close();
+						leftcount++;
 
 						selectFrame(LEFT_SIDE_SCREEN, left);
 						selectFrame(RIGHT_SIDE_SCREEN, right);

@@ -5,6 +5,10 @@
  */
 package io.core;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import io.core.InterfaceJNI.TrackedPerson;
+import io.core.PeopleManager.MyPerson;
 import io.swagger.model.Body1;
 import io.swagger.model.Body2;
 import io.swagger.model.Body5;
@@ -13,13 +17,16 @@ import io.swagger.model.Body7;
 import io.swagger.model.Body8;
 //import io.swagger.model.Body9;
 import io.swagger.model.Entity;
+import io.swagger.model.IdentifiedPerson;
 import io.swagger.model.Identity;
 import io.swagger.model.Person;
 import io.swagger.model.Position;
 import io.swagger.model.Room;
 import io.swagger.model.Stream;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,22 +35,31 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.ws.rs.Path;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import org.glassfish.jersey.media.multipart.BodyPartEntity;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.message.internal.Utils;
 
 /**
  *
@@ -54,19 +70,27 @@ public class MainSystem {
     static Map<Integer, Stream> streams = new HashMap<Integer, Stream>();
     static Map<Integer, Entity> entities = new HashMap<Integer, Entity>();
     static Map<Integer, Identity> identities = new HashMap<Integer, Identity>();
-    //static Map<Integer, Person> people = new HashMap<Integer, Person>();
-
+    //static Map<Integer, MyPerson> mypeople = new HashMap<Integer, MyPerson>();
+    static PeopleManager peopleManager = new PeopleManager();
 
     static int IDs=0;
     static int identityIDs=0;
+    static int streamIDs=0;
 
-    public static ReturnRoomMessage initializesystem(Integer roomID, UUID username, UUID password, UUID type, UUID resolution, Integer fps, UUID cameraModel, UUID ipAddress1) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    private static List<byte[]> imageByteList = new ArrayList<byte[]>(0);
+    private static Map<Integer, Integer> currentIndex =new HashMap<Integer, Integer>();
+    private static Cache<Integer, BufferedImage> images;
 
     
    
-
+    private static Cache<Integer, BufferedImage> getImages(){
+        if(images == null){
+            images = CacheBuilder.newBuilder()
+                        .expireAfterWrite(20, TimeUnit.SECONDS) 
+                        .build();
+        }
+        return images;
+    }
               
 
     //classi wrapper contenenti le info da inviare al client
@@ -162,7 +186,7 @@ public class MainSystem {
     }
     public static class ReturnPeopleMessage{
         private String message;
-        private List<Person> payload;
+        private List<IdentifiedPerson> payload;
         private StatusCode code;
 
         public ReturnPeopleMessage(StatusCode code) {            
@@ -189,11 +213,11 @@ public class MainSystem {
             this.code = code;
         }
 
-        public List<Person> getPayload() {
+        public List<IdentifiedPerson> getPayload() {
             return payload;
         }
 
-        public ReturnPeopleMessage setPayload(List<Person> payload) {
+        public ReturnPeopleMessage setPayload(List<IdentifiedPerson> payload) {
             this.payload = payload;
             return this;
         }
@@ -546,8 +570,6 @@ public class MainSystem {
         if (!rooms.containsKey(roomID)) {   
             return new ReturnRoomMessage(StatusCode.NOT_FOUND);
         }
-        String s = rooms.get(roomID).interfaceJNI.getPeopleInRoom(roomID);
-        System.out.println(s);
         return new ReturnRoomMessage(StatusCode.OK).setPayload(MyRoomToSwagger(rooms.get(roomID)));
                     
     }
@@ -586,7 +608,28 @@ public class MainSystem {
             }
         }
         */
-        return new ReturnPeopleMessage(StatusCode.OK).setPayload(rooms.get(roomID).people);
+        if(!rooms.containsKey(roomID)) return new ReturnPeopleMessage(StatusCode.NOT_FOUND).setMessage("Bad Room ID");
+        TrackedPerson[] tp = rooms.get(roomID).interfaceJNI.getTrackedPeople();
+        IdentifiedPerson[] people = new IdentifiedPerson[tp.length];
+        int i=0;
+        for(TrackedPerson elem : tp){
+            people[i].setId(elem.ID);
+            boolean b = !elem.name.equals("-");
+            people[i].setIdentified(b);
+            Position position = new Position();
+            position.setX((float)elem.X);
+            position.setY((float)elem.Y);
+            position.setRoomID(roomID);
+            people[i].setPosition(position); 
+            people[i].setIdentified(b);
+            Identity ident = new Identity();
+            ident.firstname(elem.name);
+            ident.setId(0);
+            people[i].setIdentity(ident);
+            i++;
+        }
+        peopleManager.updatePeopleInARoom(people);
+        return new ReturnPeopleMessage(StatusCode.OK).setPayload(peopleManager.getPeopleInARoom(roomID));
         
     }
     
@@ -595,14 +638,154 @@ public class MainSystem {
        return new ReturnStreamsMessage(StatusCode.OK).setPayload(rooms.get(roomID).streams); 
     }
     
-    public static synchronized ReturnStreamMessage getStream(Integer streamID){
-        if(streamID<0) return new ReturnStreamMessage(StatusCode.INVALID);
-        if (!streams.containsKey(streamID)) {   
-            return new ReturnStreamMessage(StatusCode.NOT_FOUND);
+    public static Response getStream(Integer streamID){
+        if(streamID<0) return Response.status(Response.Status.BAD_REQUEST).entity("wrong stream id").build();
+        boolean isPresent = false;
+        MyRoom room = null;
+        int j = 0;
+        String dir = "";
+        for(int i=0; i<rooms.size();i++){
+            if(rooms.get(i).streams.contains(streamID)) {
+                isPresent = true;
+                room = rooms.get(i);
+            }
         }
-        else{
-            return new ReturnStreamMessage(StatusCode.OK).setPayload(new Object());
-        }  
+        for(j=0;j<room.getStreams().size();j++)
+            if(room.getStreams().get(j) == streamID){                
+                if(j==0) dir = "";                     
+                if(j==1) dir = "\\rawforeground";
+                if(j==2) dir = "\\foreground";
+                if(j==3) dir = "\\disparity";
+                if(j==4) dir = "\\edge";
+                if(j==5) dir = "\\occupancy";
+                if(j==6) dir = "\\height";                
+                if(j==7) dir = "\\background"; 
+
+                break;
+            }
+        if(!isPresent) return Response.status(Response.Status.NOT_FOUND).build();
+        int i=0;
+        getImages();
+        currentIndex.put(streamID, 0);
+        //while(true){
+            try {
+                BufferedImage originalImage =null;
+                int n=0;
+                System.out.println("wait");
+                do{                                
+                    File mutex = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+room.id+dir+"\\mutex.txt");                    
+                    BufferedReader br = new BufferedReader(new FileReader(mutex));
+                    n = Integer.parseInt(br.readLine());
+                }
+                while( n<= currentIndex.get(streamID));  
+                currentIndex.put(streamID, currentIndex.get(streamID)+1);
+                                               
+                    File file = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+room.id+dir+"\\frame0.jpeg");                     
+                    //if(!image.exists()) break;
+                    originalImage = ImageIO.read(file);
+                if(originalImage==null) return Response.ok("no stream available").build();
+                images.put(streamID, originalImage);
+                
+                //ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                //ImageIO.write( originalImage, "jpeg", baos );
+                //baos.flush();
+                //imageByteList.add(baos.toByteArray());
+                i++;
+                System.out.println("aggiungo image");
+                //baos.close();                
+            }catch (Exception ex) {
+                System.err.println(ex);
+                System.out.println("errore verificato al frame: "+i);
+                return Response.ok().build();             
+            }
+        //}
+        return streamVideo(streamID, room.id, dir);
+    }
+    
+    // stream video
+    public static Response streamVideo(final int streamID, final int roomID, final String dir) {
+        StreamingOutput output  = new StreamingOutput() {
+            private BufferedImage prevImage = null;       
+            @Override
+            public void write(OutputStream outputStream) throws IOException, WebApplicationException {
+                BufferedImage image = null;
+                System.out.println("invio nframe: "+images.size());
+                try{
+                    //int streamID = 0;                    
+                    while((image = images.getIfPresent(streamID)) != null){
+                        if(prevImage == null || !image.equals(prevImage)){
+                            //System.out.println("data...");
+                            //streamID++;
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            //System.out.println("trasformo in ByteArrayOutputStream");
+                            ImageIO.write(image, "jpg", baos);
+                            //System.out.println("trasformo in byte ");
+                            byte[] imageData = baos.toByteArray();
+                            //System.out.println("write1 ");
+                            //System.out.println(imageData.length);
+                            
+
+                            outputStream.write((
+                                            "--BoundaryString\r\n" +
+                                            "Content-type: image/jpeg\r\n" +
+                                            "Content-Length: "+imageData.length+"\r\n\r\n").getBytes());
+                            //System.out.println("write2 ");
+                            outputStream.write(imageData);
+                            //System.out.println("write3 ");
+                            outputStream.write("\r\n\r\n".getBytes());
+                            outputStream.flush();
+                            //System.out.println("leggo");
+                            BufferedImage originalImage = null;
+                            int n=0;
+                            //System.out.println("wait");
+                            do{                                
+                                File mutex = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+dir+"\\mutex.txt");                    
+                                BufferedReader br = new BufferedReader(new FileReader(mutex));
+                                n = Integer.parseInt(br.readLine());
+                            }
+                            while( n<= currentIndex.get(streamID));  
+                            currentIndex.put(streamID, currentIndex.get(streamID)+1);
+                            do{                                
+                                File file = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+dir+"\\frame"+currentIndex.get(streamID)+".jpeg");                     
+                                //if(!image.exists()) break;
+                                originalImage = ImageIO.read(file);
+                            }
+                            while(originalImage==null);     
+                            
+                            //System.out.println("put "+ images + "original image"+ originalImage);
+                            images.put(streamID, originalImage);
+                            //System.out.println("done ");
+                        }
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(100);
+                            /*
+                            try {
+                            image.notifyAll();
+                            image.wait();
+                            } catch (InterruptedException e) {
+                            // just read the next image
+                            }
+                            */
+                        } catch (InterruptedException ex) {
+                            System.out.println("errore sleep");
+                            System.out.println(ex);
+                        }
+                    }
+                    outputStream.flush();
+                    outputStream.close();
+                }catch(IOException ioe){
+                        System.out.println("Steam closed by client!");
+                }
+          }
+        };
+        System.out.println("stream terminato");
+        return Response.ok(output)
+				.header("Connection", "close")
+				.header("Max-Age", "0")
+				.header("Expires", "0")
+				.header("Cache-Control", "no-cache, private")
+				.header("Pragma", "no-cache")
+				.build();
     }
     
     public static synchronized ReturnPositionMessage getPositionFromEntityID(Integer entityID) {
@@ -661,36 +844,20 @@ public class MainSystem {
     
     public static synchronized ReturnPersonMessage getPerson(Integer personID) {
         if(personID<0) return new ReturnPersonMessage(StatusCode.INVALID);
-        for(Integer key : rooms.keySet()){
-            for(Person person : rooms.get(key).people){
-                if(Objects.equals(person.getId(), personID)){
-                    return new ReturnPersonMessage(StatusCode.OK).setPayload(person);
-                }
-            }
-        }
+        Person p = peopleManager.getPerson(personID);
+        if (p!=null) return new ReturnPersonMessage(StatusCode.OK).setPayload(p);               
         return new ReturnPersonMessage(StatusCode.NOT_FOUND);              
     }
     
-    public static synchronized ReturnPeopleMessage getPersonWithIdentity() {
-        List <Person> ret = new ArrayList<Person>();
-        for(Integer key : rooms.keySet()){
-            for(Person person : rooms.get(key).people){
-                //if(person.isIdentified()){
-                  //  ret.add(person);
-                //}
-            }
-        }
-        return new ReturnPeopleMessage(StatusCode.OK).setPayload(ret);
+    public static synchronized ReturnPersonMessage getPersonWithIdentity(Integer personID) {
+        if(personID<0) return new ReturnPersonMessage(StatusCode.INVALID);
+        Person p = peopleManager.getPersonWithIdentity(personID);
+        if (p!=null) return new ReturnPersonMessage(StatusCode.OK).setPayload(p);      
+        return new ReturnPersonMessage(StatusCode.OK).setPayload(p);
     }
     
-    public static synchronized ReturnPeopleMessage getPeople() {
-        List <Person> ret = new ArrayList<Person>();
-        for(Integer key : rooms.keySet()){
-            for(Person person : rooms.get(key).people){                
-                ret.add(person);                
-            }
-        }
-        return new ReturnPeopleMessage(StatusCode.OK).setPayload(ret);
+    public static synchronized ReturnPeopleMessage getPeople() {        
+        return new ReturnPeopleMessage(StatusCode.OK).setPayload(peopleManager.getPeople());
     }
     
     
@@ -724,9 +891,30 @@ public class MainSystem {
         if(rooms.containsKey(roomID)){
             String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID;
             new File(path).mkdirs();
+            new File(path+"\\background").mkdir();
+            new File(path+"\\rawforeground").mkdir();
+            new File(path+"\\foreground").mkdir();
+            new File(path+"\\disparity").mkdir();
+            new File(path+"\\edge").mkdir();
+            new File(path+"\\occupancy").mkdir();
+            new File(path+"\\height").mkdir();
+
+            try {
+                new File(path+"\\background\\mutex.txt").createNewFile();
+                new File(path+"\\rawforeground\\mutex.txt").createNewFile();
+                new File(path+"\\foreground\\mutex.txt").createNewFile();
+                new File(path+"\\disparity\\mutex.txt").createNewFile();
+                new File(path+"\\edge\\mutex.txt").createNewFile();
+                new File(path+"\\occupancy\\mutex.txt").createNewFile();
+                new File(path+"\\height\\mutex.txt").createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
             String uploadedFileLocation = path+"\\" + fileDetail.getFileName();
             //writeToFile(uploadedInputStream, uploadedFileLocation);                      
-            rooms.get(roomID).interfaceJNI.loadConfigurationFile(uploadedFileLocation);
+            rooms.get(roomID).interfaceJNI.loadConfigurationFile(roomID, uploadedFileLocation);
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
@@ -820,7 +1008,7 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-     public static synchronized ReturnRoomMessage plathearecorder(Integer roomID) {
+     public static synchronized ReturnRoomMessage platheaplayer(Integer roomID) {
         if(rooms.containsKey(roomID)){
             rooms.get(roomID).interfaceJNI.platheaPlayer();
             return new ReturnRoomMessage(StatusCode.OK);
@@ -828,13 +1016,40 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static ReturnRoomMessage plathearecorderstart(Integer roomID) {
+    public static ReturnRoomMessage platheaplayerstart(Integer roomID) {
         if(rooms.containsKey(roomID)){
             String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room0\\Tests\\21-12-2012 - 11-25-10-165";
             rooms.get(roomID).interfaceJNI.platheaPlayerStart(path);
+            rooms.get(roomID).streams.add(streamIDs++);  //left
+            rooms.get(roomID).streams.add(streamIDs++);  //background    
+            rooms.get(roomID).streams.add(streamIDs++);  //disparity
+            rooms.get(roomID).streams.add(streamIDs++);  //edge          
+            rooms.get(roomID).streams.add(streamIDs++);  //foreground                        
+            rooms.get(roomID).streams.add(streamIDs++);  //height          
+            rooms.get(roomID).streams.add(streamIDs++);  //occupancy          
+            rooms.get(roomID).streams.add(streamIDs++);  //rawforeground          
+        
+
+                       
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
+    
+    public static Response continuousTracking(int roomID){
+        System.out.println("continuousTracking");
+        StreamingOutput output  = new StreamingOutput() {
+            int i=0;
+            @Override
+            public void write(OutputStream os) throws IOException,
+            WebApplicationException {
+              Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+              writer.write(i++);
+              writer.flush();  // <-- This is very important.  Do not forget.
+            }
+        };
+        System.out.println("stream terminato");
+        return Response.ok(output).build();       
     }
      
     // save uploaded file to new location

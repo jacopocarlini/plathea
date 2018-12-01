@@ -21,6 +21,7 @@
 #include "video_output.h"
 #include "ElaborationCore.h"
 
+
 //****** Implementation of SystemInfo ******//
 SystemInfo::SystemInfo() {
 	//this->statusBar = statusBar;

@@ -10,10 +10,10 @@ extern "C" {
 	/*
 	* Class:     io_core_InterfaceJNI
 	* Method:    loadConfigurationFile
-	* Signature: (Ljava/lang/String;)I
+	* Signature: (ILjava/lang/String;)I
 	*/
 	JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_loadConfigurationFile
-	(JNIEnv *, jobject, jstring);
+	(JNIEnv *, jobject, jint, jstring);
 
 	/*
 	* Class:     io_core_InterfaceJNI
@@ -73,11 +73,19 @@ extern "C" {
 
 	/*
 	* Class:     io_core_InterfaceJNI
-	* Method:    getPeopleInRoom
-	* Signature: (I)Ljava/lang/String;
+	* Method:    platheaPlayerStop
+	* Signature: ()I
 	*/
-	JNIEXPORT jstring JNICALL Java_io_core_InterfaceJNI_getPeopleInRoom
-	(JNIEnv *, jobject, jint);
+	JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaPlayerStop
+	(JNIEnv *, jobject);
+
+	/*
+	* Class:     io_core_InterfaceJNI
+	* Method:    getTrackedPeople
+	* Signature: ()[Lio/core/InterfaceJNI/TrackedPerson;
+	*/
+	JNIEXPORT jobjectArray JNICALL Java_io_core_InterfaceJNI_getTrackedPeople
+	(JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

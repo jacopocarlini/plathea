@@ -160,6 +160,7 @@
     <ClInclude Include="ConnectedComponents.h" />
     <ClInclude Include="ElaborationCore.h" />
     <ClInclude Include="FaceDatabase.h" />
+    <ClInclude Include="JackSettings.h" />
     <ClInclude Include="LeottaBackgroundModel.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="MLDialog.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="ElaborationCore.cpp" />
     <ClCompile Include="FaceDatabase.cpp" />
+    <ClCompile Include="JackSettings.cpp" />
     <ClCompile Include="LeottaBackgroundModel.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="MLDialog.cpp" />

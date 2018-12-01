@@ -74,6 +74,7 @@ struct TrackedObject {
 	char name[256];
 	int nameID;
 	int suspectID, numberOfProbation;
+	int X, Y;
 	DWORD creationTimestamp;
 	DWORD noUpdateDelay;
 

@@ -7,10 +7,10 @@
 using namespace std;
 
 
-JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_loadConfigurationFile(JNIEnv *env, jobject thisObj, jstring jdir) {
+JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_loadConfigurationFile(JNIEnv *env, jobject thisObj, jint jroomID, jstring jdir) {
 	const char *dir = env->GetStringUTFChars(jdir, 0);
 	printf("dir:%s\n",dir);
-	system_loadconfigurationfile((char*)dir);
+	system_loadconfigurationfile(jroomID, (char*)dir);
 	return 0;
 }
 
@@ -77,10 +77,49 @@ JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaPlayerStart
 	return 0;
 }
 
-JNIEXPORT jstring JNICALL Java_io_core_InterfaceJNI_getRoomInfo(JNIEnv *env, jobject thisObj) {
-	char buf[10] = "Hello";
-	jstring str = env->NewStringUTF(buf);
-	std::vector<TrackedObject*> tracked = getTrackedPeople();
-	printf("\ntracked: %d\n", tracked.size());
-	return str;
+JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaPlayerStop(JNIEnv *env, jobject thisObj) {
+	test_plathearecorder_stop();
+	return 0;
+}
+
+
+JNIEXPORT jobjectArray JNICALL Java_io_core_InterfaceJNI_getTrackedPeople(JNIEnv *env, jobject thisObj) {
+	//std::vector<TrackedObject*> tracked = getTrackedPeople();
+	std::vector<TrackedObject*> tracked;
+	jclass javaLocalClass = env->FindClass("io/core/InterfaceJNI$TrackedPerson");
+
+	if (javaLocalClass == NULL) {
+		printf("Find Class Failed.\n");
+		return NULL;
+	}
+	else {
+		printf("Found class.\n");
+	}
+
+	jclass javaGlobalClass = reinterpret_cast<jclass>(env->NewGlobalRef(javaLocalClass));
+
+	// info: last argument is Java method signature
+	jmethodID javaConstructor = env->GetMethodID(javaGlobalClass, "<init>", "(Lio/core/InterfaceJNI;Ljava/lang/String;IIIILjava/lang/String;)V" );
+
+	if (javaConstructor == NULL) {
+		printf("Find method Failed.\n");
+		return NULL;
+	}
+	else {
+		printf("Found method.\n");
+	}
+
+	jobjectArray ret = env->NewObjectArray(tracked.size(), javaLocalClass, nullptr);
+	for (int i = 0; i < tracked.size(); i++) {
+		jobject TrackedPersonObject = env->NewObject(javaGlobalClass, javaConstructor
+			, env->NewStringUTF(tracked[i]->name)
+			, tracked[i]->nameID
+			, tracked[i]->X
+			, tracked[i]->Y
+			, tracked[i]->ID
+			, (tracked[i]->type== TRACKED)? env->NewStringUTF("Tracked") : env->NewStringUTF("Lost"));
+		env->SetObjectArrayElement(ret, i, TrackedPersonObject);
+	}
+	return ret;
+
 }
