@@ -87,6 +87,14 @@ JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaPlayerStop
 JNIEXPORT jobjectArray JNICALL Java_io_core_InterfaceJNI_getTrackedPeople
   (JNIEnv *, jobject);
 
+/*
+ * Class:     io_core_InterfaceJNI
+ * Method:    getFrame
+ * Signature: (I)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_io_core_InterfaceJNI_getFrame
+  (JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif

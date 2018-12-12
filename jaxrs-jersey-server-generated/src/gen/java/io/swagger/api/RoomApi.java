@@ -251,10 +251,9 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
     public Response internalcalibration(@Parameter(description = "ID of a room",required=true) @PathParam("roomID") Integer roomID
 ,@Parameter(description = "mask" ,required=true)@HeaderParam("mask") Integer mask
 ,@FormDataParam("files") List<FormDataBodyPart> bodyParts
-,@FormDataParam("files") FormDataContentDisposition fileDispositions
 ,@Context SecurityContext securityContext)
     throws NotFoundException {
-        return delegate.internalcalibration(roomID,mask, bodyParts,fileDispositions ,securityContext);
+        return delegate.internalcalibration(roomID,mask, bodyParts ,securityContext);
     }
     @POST
     @Path("/{roomID}/load_configuration_file")

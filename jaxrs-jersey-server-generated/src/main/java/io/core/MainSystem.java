@@ -143,7 +143,7 @@ public class MainSystem {
     }
     public static class ReturnRoomsMessage{
         private String message;
-        private Map<Integer, Room> payload;
+        private List<Room> payload;
         private StatusCode code;
 
         public ReturnRoomsMessage(StatusCode code) {            
@@ -170,11 +170,11 @@ public class MainSystem {
             this.code = code;
         }
 
-        public Map<Integer, Room> getPayload() {
+        public List<Room> getPayload() {
             return payload;
         }
 
-        public ReturnRoomsMessage setPayload(Map<Integer, Room> payload) {
+        public ReturnRoomsMessage setPayload(List<Room> payload) {
             this.payload = payload;
             return this;
         }
@@ -555,17 +555,16 @@ public class MainSystem {
         room.id(myRoom.id);
         return room;
     }
-    static Map<Integer, Room> MyRoomsToSwagger(Map<Integer, MyRoom> myrooms){
-        Map<Integer, Room> r = new HashMap<Integer, Room>();
+    static List<Room> MyRoomsToSwagger(Map<Integer, MyRoom> myrooms){
+        List<Room> r = new ArrayList<Room>();
         for(int i : rooms.keySet()){
-            r.put(i, MyRoomToSwagger(rooms.get(i)));
-        }
-        
+            r.add(MyRoomToSwagger(rooms.get(i)));
+        }        
         return r;
     }
     
     //RESTapi functions
-    public static synchronized ReturnRoomMessage getRoomInfo(int roomID){
+    public synchronized static  ReturnRoomMessage getRoomInfo(int roomID){
         if(roomID<0) return new ReturnRoomMessage(StatusCode.INVALID);
         if (!rooms.containsKey(roomID)) {   
             return new ReturnRoomMessage(StatusCode.NOT_FOUND);
@@ -574,21 +573,24 @@ public class MainSystem {
                     
     }
 
-    public static synchronized ReturnRoomMessage addRoom(String roomName){
+    public synchronized static  ReturnRoomMessage addRoom(String roomName){
+        System.out.println("add room " +roomName);
         MyRoom room = new MyRoom(IDs++, roomName);
         rooms.put(room.getId(),room);
+        peopleManager.addRoom(room.getId());
         return new ReturnRoomMessage(StatusCode.OK).setMessage(room.toString());
     }
 
-    public static synchronized ReturnRoomMessage deleteRoom(int roomId){
+    public synchronized static  ReturnRoomMessage deleteRoom(int roomId){
         if(rooms.containsKey(roomId)){
             rooms.remove(roomId);
-                new ReturnRoomMessage(StatusCode.OK);
+            peopleManager.removeRoom(roomId);
+            return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND);
     }
 
-    public static synchronized ReturnRoomMessage updateRoom(int roomId, String roomName){
+    public synchronized static  ReturnRoomMessage updateRoom(int roomId, String roomName){
         if(rooms.containsKey(roomId)){
             rooms.get(roomId).setName(roomName);
             return new ReturnRoomMessage(StatusCode.OK);
@@ -596,11 +598,11 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND);
     }
 
-    public static synchronized ReturnRoomsMessage getRooms() {
+    public synchronized static  ReturnRoomsMessage getRooms() {
         return new ReturnRoomsMessage(StatusCode.OK).setPayload(MyRoomsToSwagger(rooms));
     }
     
-    public static synchronized ReturnPeopleMessage getPeopleInRoom(int roomID) {
+    public synchronized static ReturnPeopleMessage getPeopleInRoom(int roomID) {
         /*Map<Integer,Person> ret = new HashMap<Integer, Person>();
         for(Integer key : people.keySet()){
             if(people.get(key).getPosition().getRoomID()==roomID){
@@ -608,11 +610,25 @@ public class MainSystem {
             }
         }
         */
+        System.out.println("getPeopleInRoom");
         if(!rooms.containsKey(roomID)) return new ReturnPeopleMessage(StatusCode.NOT_FOUND).setMessage("Bad Room ID");
-        TrackedPerson[] tp = rooms.get(roomID).interfaceJNI.getTrackedPeople();
+        for(Integer i: rooms.keySet()){
+            if (i!=roomID){
+                getPeopleAux(i);
+            }
+        }
+        getPeopleAux(roomID);
+        return new ReturnPeopleMessage(StatusCode.OK).setPayload(peopleManager.getPeopleInARoom(roomID));
+        
+    }
+    
+    public static void getPeopleAux(int roomID){
+    TrackedPerson[] tp = rooms.get(roomID).interfaceJNI.getTrackedPeople();
+        System.out.println("tracked people ritornate: "+tp.length);
         IdentifiedPerson[] people = new IdentifiedPerson[tp.length];
         int i=0;
         for(TrackedPerson elem : tp){
+            people[i] = new IdentifiedPerson();
             people[i].setId(elem.ID);
             boolean b = !elem.name.equals("-");
             people[i].setIdentified(b);
@@ -629,16 +645,14 @@ public class MainSystem {
             i++;
         }
         peopleManager.updatePeopleInARoom(people);
-        return new ReturnPeopleMessage(StatusCode.OK).setPayload(peopleManager.getPeopleInARoom(roomID));
-        
     }
     
-    public static synchronized ReturnStreamsMessage getStreams(Integer roomID) {
+    public synchronized static ReturnStreamsMessage getStreams(Integer roomID) {
        if(roomID<0) return new ReturnStreamsMessage(StatusCode.INVALID);
        return new ReturnStreamsMessage(StatusCode.OK).setPayload(rooms.get(roomID).streams); 
     }
     
-    public static Response getStream(Integer streamID){
+    public synchronized static Response getStream(Integer streamID){
         if(streamID<0) return Response.status(Response.Status.BAD_REQUEST).entity("wrong stream id").build();
         boolean isPresent = false;
         MyRoom room = null;
@@ -650,133 +664,59 @@ public class MainSystem {
                 room = rooms.get(i);
             }
         }
+        if(!isPresent) return Response.status(Response.Status.NOT_FOUND).build();
+        
+        int i=0;
         for(j=0;j<room.getStreams().size();j++)
             if(room.getStreams().get(j) == streamID){                
-                if(j==0) dir = "";                     
-                if(j==1) dir = "\\rawforeground";
-                if(j==2) dir = "\\foreground";
-                if(j==3) dir = "\\disparity";
-                if(j==4) dir = "\\edge";
-                if(j==5) dir = "\\occupancy";
-                if(j==6) dir = "\\height";                
-                if(j==7) dir = "\\background"; 
-
+                i=j;
                 break;
             }
-        if(!isPresent) return Response.status(Response.Status.NOT_FOUND).build();
-        int i=0;
+        
         getImages();
         currentIndex.put(streamID, 0);
-        //while(true){
-            try {
-                BufferedImage originalImage =null;
-                int n=0;
-                System.out.println("wait");
-                do{                                
-                    File mutex = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+room.id+dir+"\\mutex.txt");                    
-                    BufferedReader br = new BufferedReader(new FileReader(mutex));
-                    n = Integer.parseInt(br.readLine());
-                }
-                while( n<= currentIndex.get(streamID));  
-                currentIndex.put(streamID, currentIndex.get(streamID)+1);
-                                               
-                    File file = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+room.id+dir+"\\frame0.jpeg");                     
-                    //if(!image.exists()) break;
-                    originalImage = ImageIO.read(file);
-                if(originalImage==null) return Response.ok("no stream available").build();
-                images.put(streamID, originalImage);
-                
-                //ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                //ImageIO.write( originalImage, "jpeg", baos );
-                //baos.flush();
-                //imageByteList.add(baos.toByteArray());
-                i++;
-                System.out.println("aggiungo image");
-                //baos.close();                
-            }catch (Exception ex) {
-                System.err.println(ex);
-                System.out.println("errore verificato al frame: "+i);
-                return Response.ok().build();             
-            }
-        //}
-        return streamVideo(streamID, room.id, dir);
+        return streamVideo(streamID, room, i);
     }
     
     // stream video
-    public static Response streamVideo(final int streamID, final int roomID, final String dir) {
+    public static Response streamVideo(final int streamID, final MyRoom room, final int i) {
         StreamingOutput output  = new StreamingOutput() {
             private BufferedImage prevImage = null;       
             @Override
             public void write(OutputStream outputStream) throws IOException, WebApplicationException {
                 BufferedImage image = null;
-                System.out.println("invio nframe: "+images.size());
-                try{
-                    //int streamID = 0;                    
-                    while((image = images.getIfPresent(streamID)) != null){
-                        if(prevImage == null || !image.equals(prevImage)){
-                            //System.out.println("data...");
-                            //streamID++;
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            //System.out.println("trasformo in ByteArrayOutputStream");
-                            ImageIO.write(image, "jpg", baos);
-                            //System.out.println("trasformo in byte ");
-                            byte[] imageData = baos.toByteArray();
-                            //System.out.println("write1 ");
-                            //System.out.println(imageData.length);
-                            
-
+                try{                    
+                    byte[] frame = null;   
+                    do{
+                            frame = room.interfaceJNI.getFrame(i);           
+                        
+                          
+                            //if(frame.length==0) continue;
                             outputStream.write((
                                             "--BoundaryString\r\n" +
                                             "Content-type: image/jpeg\r\n" +
-                                            "Content-Length: "+imageData.length+"\r\n\r\n").getBytes());
+                                            "Content-Length: "+frame.length+"\r\n\r\n").getBytes());
                             //System.out.println("write2 ");
-                            outputStream.write(imageData);
+                            outputStream.write(frame);
                             //System.out.println("write3 ");
                             outputStream.write("\r\n\r\n".getBytes());
                             outputStream.flush();
-                            //System.out.println("leggo");
-                            BufferedImage originalImage = null;
-                            int n=0;
-                            //System.out.println("wait");
-                            do{                                
-                                File mutex = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+dir+"\\mutex.txt");                    
-                                BufferedReader br = new BufferedReader(new FileReader(mutex));
-                                n = Integer.parseInt(br.readLine());
-                            }
-                            while( n<= currentIndex.get(streamID));  
-                            currentIndex.put(streamID, currentIndex.get(streamID)+1);
-                            do{                                
-                                File file = new File("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+dir+"\\frame"+currentIndex.get(streamID)+".jpeg");                     
-                                //if(!image.exists()) break;
-                                originalImage = ImageIO.read(file);
-                            }
-                            while(originalImage==null);     
-                            
-                            //System.out.println("put "+ images + "original image"+ originalImage);
-                            images.put(streamID, originalImage);
-                            //System.out.println("done ");
-                        }
+                        /*
                         try {
                             TimeUnit.MILLISECONDS.sleep(100);
-                            /*
-                            try {
-                            image.notifyAll();
-                            image.wait();
-                            } catch (InterruptedException e) {
-                            // just read the next image
-                            }
-                            */
+                        
                         } catch (InterruptedException ex) {
                             System.out.println("errore sleep");
                             System.out.println(ex);
                         }
-                    }
-                    outputStream.flush();
-                    outputStream.close();
+                            */
+                    
+                    }while(true);
+                
                 }catch(IOException ioe){
                         System.out.println("Steam closed by client!");
                 }
-          }
+            }
         };
         System.out.println("stream terminato");
         return Response.ok(output)
@@ -788,7 +728,7 @@ public class MainSystem {
 				.build();
     }
     
-    public static synchronized ReturnPositionMessage getPositionFromEntityID(Integer entityID) {
+    public synchronized static ReturnPositionMessage getPositionFromEntityID(Integer entityID) {
         if(entityID<0) return new ReturnPositionMessage(StatusCode.INVALID);
         if (!entities.containsKey(entityID)) {   
             return new ReturnPositionMessage(StatusCode.NOT_FOUND);
@@ -798,11 +738,11 @@ public class MainSystem {
         } 
     }
     
-    public static synchronized ReturnEntitiesMessage getAllPositions() {
+    public synchronized static ReturnEntitiesMessage getAllPositions() {
         return new ReturnEntitiesMessage(StatusCode.OK).setPayload(entities);
     }
 
-    public static synchronized ReturnIdentityMessage addIdentity(Body8 body){
+    public synchronized static  ReturnIdentityMessage addIdentity(Body8 body){
         Identity identity = new Identity();
         identity.firstname(body.getFirstname());
         identity.setSurname(body.getSurname());
@@ -811,7 +751,7 @@ public class MainSystem {
         return new ReturnIdentityMessage(StatusCode.OK);
     }
 
-    public static synchronized ReturnIdentityMessage deleteIdentity(Integer identityID) {
+    public synchronized static  ReturnIdentityMessage deleteIdentity(Integer identityID) {
         if(identities.containsKey(identityID)){
             identities.remove(identityID);
                 new ReturnRoomMessage(StatusCode.OK);
@@ -819,7 +759,7 @@ public class MainSystem {
         return new ReturnIdentityMessage(StatusCode.NOT_FOUND);    
     }
     
-    public static synchronized ReturnIdentityMessage getIdentityInfo(Integer identityID) {
+    public synchronized static  ReturnIdentityMessage getIdentityInfo(Integer identityID) {
         if(identityID<0) return new ReturnIdentityMessage(StatusCode.INVALID);
         if (!identities.containsKey(identityID)) {   
             return new ReturnIdentityMessage(StatusCode.NOT_FOUND);
@@ -829,7 +769,7 @@ public class MainSystem {
         }     
     }
     
-    public static synchronized ReturnIdentityMessage updateIdentity(Integer identityID, Body7 body) {
+    public synchronized static  ReturnIdentityMessage updateIdentity(Integer identityID, Body7 body) {
         if(identities.containsKey(identityID)){
             identities.get(identityID).firstname(body.getFirstname());
             identities.get(identityID).surname(body.getSurname());
@@ -838,31 +778,31 @@ public class MainSystem {
         return new ReturnIdentityMessage(StatusCode.NOT_FOUND);   
     }
     
-    public static synchronized ReturnIdentitiesMessage getIdentities() {
+    public synchronized static  ReturnIdentitiesMessage getIdentities() {
         return new ReturnIdentitiesMessage(StatusCode.OK).setPayload(identities);
     }
     
-    public static synchronized ReturnPersonMessage getPerson(Integer personID) {
+    public synchronized static  ReturnPersonMessage getPerson(Integer personID) {
         if(personID<0) return new ReturnPersonMessage(StatusCode.INVALID);
         Person p = peopleManager.getPerson(personID);
         if (p!=null) return new ReturnPersonMessage(StatusCode.OK).setPayload(p);               
         return new ReturnPersonMessage(StatusCode.NOT_FOUND);              
     }
     
-    public static synchronized ReturnPersonMessage getPersonWithIdentity(Integer personID) {
+    public synchronized static  ReturnPersonMessage getPersonWithIdentity(Integer personID) {
         if(personID<0) return new ReturnPersonMessage(StatusCode.INVALID);
         Person p = peopleManager.getPersonWithIdentity(personID);
         if (p!=null) return new ReturnPersonMessage(StatusCode.OK).setPayload(p);      
         return new ReturnPersonMessage(StatusCode.OK).setPayload(p);
     }
     
-    public static synchronized ReturnPeopleMessage getPeople() {        
+    public synchronized static  ReturnPeopleMessage getPeople() {        
         return new ReturnPeopleMessage(StatusCode.OK).setPayload(peopleManager.getPeople());
     }
     
     
     //PLATHEA
-    public static synchronized ReturnRoomMessage facedatabase(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions){ 
+    public static  ReturnRoomMessage facedatabase(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions){ 
         if (bodyParts == null || bodyParts.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("No files in the body");
         if(rooms.containsKey(roomID)){
             new File("room"+roomID+"\\FaceDatabase").mkdirs();
@@ -877,7 +817,7 @@ public class MainSystem {
                 String fileName = bodyParts.get(i).getContentDisposition().getFileName();
                 String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\FaceDatabase\\"+fileName;                 
 
-                //writeToFile(bodyPartEntity.getInputStream(), path);			
+                save(bodyPartEntity.getInputStream(), path);			
 		
             }
                        
@@ -886,11 +826,13 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static synchronized ReturnRoomMessage loadconfigurationfile(Integer roomID, InputStream uploadedInputStream, FormDataContentDisposition fileDetail) {   
+    public static  ReturnRoomMessage loadconfigurationfile(Integer roomID, InputStream uploadedInputStream, FormDataContentDisposition fileDetail) {   
+        System.out.println("loadconfigurationfile");
         if (uploadedInputStream.equals(null)) return new ReturnRoomMessage(StatusCode.INVALID);
         if(rooms.containsKey(roomID)){
             String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID;
             new File(path).mkdirs();
+            /*
             new File(path+"\\background").mkdir();
             new File(path+"\\rawforeground").mkdir();
             new File(path+"\\foreground").mkdir();
@@ -910,9 +852,10 @@ public class MainSystem {
             } catch (IOException ex) {
                 Logger.getLogger(MainSystem.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+            */
             
             String uploadedFileLocation = path+"\\" + fileDetail.getFileName();
+            save(uploadedInputStream, uploadedFileLocation);
             //writeToFile(uploadedInputStream, uploadedFileLocation);                      
             rooms.get(roomID).interfaceJNI.loadConfigurationFile(roomID, uploadedFileLocation);
             return new ReturnRoomMessage(StatusCode.OK);
@@ -920,8 +863,29 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static synchronized ReturnRoomMessage internalcalibration(Integer roomID,Integer mask, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions) { 
+    public static void save( InputStream fileInputStream, String UPLOAD_PATH){
+    try
+    {
+        int read = 0;
+        byte[] bytes = new byte[1024];
+ 
+        OutputStream out = new FileOutputStream(new File(UPLOAD_PATH));
+        while ((read = fileInputStream.read(bytes)) != -1)
+        {
+            out.write(bytes, 0, read);
+        }
+        out.flush();
+        out.close();
+    } catch (IOException e)
+    {
+        throw new WebApplicationException("Error while uploading file. Please try again !!");
+    }
+    }
+    
+    public static  ReturnRoomMessage internalcalibration(Integer roomID,Integer mask, List<FormDataBodyPart> bodyParts) { 
+        System.out.println("internalcalibration");
         if (bodyParts == null || bodyParts.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("No files in the body");
+        System.out.println(bodyParts.get(0).getName());
         String[] name = {"3DReprojection.xml", "Essential.xml", "Fundamental.xml", 
                 "LeftDistortion.xml", "LeftIntrinsics.xml", "mx_LEFT.xml", "mx_RIGHT.xml",
                 "my_LEFT.xml", "my_RIGHT.xml", "RightDistortion.xml", "RightIntrinsics.xml",
@@ -940,7 +904,7 @@ public class MainSystem {
                 String fileName = bodyParts.get(i).getContentDisposition().getFileName();
                 String uploadedFileLocation = path+"\\"+fileName;                 
 
-                //writeToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);			
+                save(bodyPartEntity.getInputStream(), uploadedFileLocation);			
 		
             }
             rooms.get(roomID).interfaceJNI.internalCalibration(path, mask);         
@@ -949,7 +913,7 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static synchronized ReturnRoomMessage externalcalibration(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions) {   
+    public static  ReturnRoomMessage externalcalibration(Integer roomID, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions) {   
         if (bodyParts == null || bodyParts.isEmpty()) return new ReturnRoomMessage(StatusCode.INVALID).setMessage("No files in the body");
         String[] name = {"3DReprojection.xml", "Essential.xml", "Fundamental.xml", 
                 "LeftDistortion.xml", "LeftIntrinsics.xml", "mx_LEFT.xml", "mx_RIGHT.xml",
@@ -969,7 +933,7 @@ public class MainSystem {
                 String fileName = bodyParts.get(i).getContentDisposition().getFileName();
                 String uploadedFileLocation = path+"\\"+fileName;                 
 
-                //writeToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);			
+                save(bodyPartEntity.getInputStream(), uploadedFileLocation);			
 		
             }
             rooms.get(roomID).interfaceJNI.externalCalibration(path);         
@@ -978,28 +942,42 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static synchronized ReturnRoomMessage selectsvmclassifier(Integer roomID, InputStream uploadedInputStream, FormDataContentDisposition fileDetail) {   
+    public static  ReturnRoomMessage selectsvmclassifier(Integer roomID, InputStream uploadedInputStream, FormDataContentDisposition fileDetail) {   
         if (uploadedInputStream.equals(null)) return new ReturnRoomMessage(StatusCode.INVALID);
         if(rooms.containsKey(roomID)){
             String path = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+roomID+"\\Tracking";
             new File(path).mkdirs();
             String uploadedFileLocation = path+"\\" + fileDetail.getFileName();
-            //writeToFile(uploadedInputStream, uploadedFileLocation);            
+            save(uploadedInputStream, uploadedFileLocation);            
             rooms.get(roomID).interfaceJNI.selectSVMclassifier(uploadedFileLocation);
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static synchronized ReturnRoomMessage initializesystem(Integer roomID, String username, String password, String type, String resolution, Integer fps, String cameraModel, String ipAddress1, Integer port1, String ipAddress2, Integer port2) {
+    public static  ReturnRoomMessage initializesystem(Integer roomID, String username, String password, String type, String resolution, Integer fps, String cameraModel, String ipAddress1, Integer port1, String ipAddress2, Integer port2) {
+            System.out.println(roomID);
+            System.out.println(username);
+            System.out.println(password);
+            System.out.println(type);
+            System.out.println(resolution);
+            System.out.println(fps);
+            System.out.println(cameraModel);
+            System.out.println(ipAddress1);
+            System.out.println(port1);
+            System.out.println(ipAddress2);
+            System.out.println(port2);
+        if(username==null || password==null  || type==null ||ipAddress1==null ||port2 == null) //TODO: fare tutti i controlli
+            return new ReturnRoomMessage(StatusCode.INVALID);
         if(rooms.containsKey(roomID)){
+
             rooms.get(roomID).interfaceJNI.initializeSystem(username, password, type, resolution, fps, cameraModel, ipAddress1, port1, ipAddress2, port2);
             return new ReturnRoomMessage(StatusCode.OK);
         }
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-    public static synchronized ReturnRoomMessage startlocalizationengine(Integer roomID, Boolean withoutTracking, Boolean saveTracksToFile) {
+    public static  ReturnRoomMessage startlocalizationengine(Integer roomID, Boolean withoutTracking, Boolean saveTracksToFile) {
         if(rooms.containsKey(roomID)){
             String path = "";
             rooms.get(roomID).interfaceJNI.startLocalizationEngine(withoutTracking, saveTracksToFile, path);
@@ -1008,7 +986,7 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
-     public static synchronized ReturnRoomMessage platheaplayer(Integer roomID) {
+     public static  ReturnRoomMessage platheaplayer(Integer roomID) {
         if(rooms.containsKey(roomID)){
             rooms.get(roomID).interfaceJNI.platheaPlayer();
             return new ReturnRoomMessage(StatusCode.OK);
@@ -1052,28 +1030,9 @@ public class MainSystem {
         return Response.ok(output).build();       
     }
      
-    // save uploaded file to new location
-    private static void writeToFile(InputStream uploadedInputStream,String uploadedFileLocation) {
-
-		try {
-			OutputStream out = new FileOutputStream(new File(
-					uploadedFileLocation));
-			int read = 0;
-			byte[] bytes = new byte[1024];
-
-			out = new FileOutputStream(new File(uploadedFileLocation));
-			while ((read = uploadedInputStream.read(bytes)) != -1) {
-				out.write(bytes, 0, read);
-			}
-			out.flush();
-			out.close();
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
-
-	}
-    
+    public static void load(){
+        
+    }
     
 }
     

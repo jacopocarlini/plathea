@@ -616,11 +616,12 @@ bool StereoCalibration::LoadFromFolder(const char *folderName, int mask) {
 	if (mask & LEFT_INTERNAL) {
 		CleanMemory(LEFT_INTERNAL);
 		sprintf_s(tempStr, maxLen, "%s\\LeftIntrinsics.xml", folderName);
-		DBOUT(tempStr);
+		printf("StereoCalibration: tempStr %s\n",tempStr);
 		M_LEFT = (CvMat *) cvLoad(tempStr);
 		sprintf_s(tempStr, maxLen, "%s\\LeftDistortion.xml", folderName); D_LEFT = (CvMat *) cvLoad(tempStr);
 		DBOUT(calibrationStatus);
-		DBOUT(M_LEFT);
+		printf("StereoCalibration: M_LEFT %d\n",M_LEFT);
+		DBOUT("StreoCalibration");
 		DBOUT(D_LEFT);
 		if (M_LEFT && D_LEFT) {
 			calibrationStatus |= LEFT_INTERNAL;

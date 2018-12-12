@@ -48,6 +48,7 @@ public class InterfaceJNI {
     public native int platheaPlayerStart(String dir);
     public native int platheaPlayerStop();
     public native TrackedPerson[] getTrackedPeople();
+    public native byte[] getFrame(int id);
 
 
    
@@ -66,7 +67,20 @@ public class InterfaceJNI {
             this.ID = ID;
             this.type = type;
         }
-
+        public TrackedPerson(int nameID, int X, int Y, int ID){
+            this.nameID = nameID;
+            this.X = X;
+            this.Y = Y;
+            this.ID = ID;
+        }
+        
+        public void setName(String name){
+            this.name = name;
+        }
+        
+        public void setType(String type){
+            this.type = type;
+        }
 
         
     }

@@ -28,8 +28,29 @@ public class PeopleManager {
         this.stanze = new HashMap<Integer, InfoRoom>();
         //this.spariti = new HashMap<Integer, InfoRoom>();
         this.mappa = new HashMap<Integer, Porte>();
+        //mappa di esempio
+        Porte p = new Porte();
+        Coordinata c1 = new Coordinata(0,0);        
+        Coordinata c2 = new Coordinata(10,10);
+        p.coordsEntrata.add(c1);
+        p.coordsUscita.add(c2);
+        p.porte.add(1);
+        Porte p2 = new Porte();
+        p2.coordsEntrata.add(c2);
+        p2.coordsUscita.add(c1);
+        p2.porte.add(0);
+        mappa.put(0, p);
+        mappa.put(1, p2);
+
     }
     
+    public synchronized void  addRoom(int roomID){
+        stanze.put(roomID, new InfoRoom());
+    }
+    
+    public synchronized void removeRoom(int roomID){
+        stanze.remove(stanze.get(roomID));
+    }
     
     public void initialize(){
         // leggere file di configurazione della mappa con i punti di contatto delle stanze
@@ -69,6 +90,7 @@ public class PeopleManager {
     }
     
     public synchronized List<IdentifiedPerson> getPeopleInARoom(int roomID){
+        System.out.println();
         ArrayList<MyPerson> present = stanze.get(roomID).presenti;
         int n = present.size();
         List<IdentifiedPerson> ret = new ArrayList<IdentifiedPerson>(n);
@@ -81,23 +103,46 @@ public class PeopleManager {
     }
     
     public synchronized void updatePeopleInARoom(IdentifiedPerson [] persons){
+        if(persons==null || persons.length==0) return;
+        System.out.println("updatePeopleInARoom:"+persons.length);
         int i = persons[0].getPosition().getRoomID();
-        stanze.get(i).spariti = difference(persons);
-        ArrayList<IdentifiedPerson> people = (ArrayList<IdentifiedPerson>) Arrays.asList(persons);
-        ArrayList<MyPerson> ret = new ArrayList();
+        //stanze.get(i).spariti = difference((Person[])persons);
+        createPresent(persons);
+        //ArrayList<IdentifiedPerson> people = new ArrayList<IdentifiedPerson>( Arrays.asList(persons));
+        //ArrayList<MyPerson> ret = new ArrayList();
         //persone.add(new MyPerson(person, ID++));
-        for (IdentifiedPerson p : people) {
-            ret.add(new MyPerson(p, ID++));
-        }
-        stanze.get(i).presenti = ret;        
+        //for (IdentifiedPerson p : people) {
+        //    ret.add(new MyPerson(p, ID++));
+        //}
+        //stanze.get(i).presenti = ret;        
         checkOtherRoom(i);
     }
-       
+    
+    public void createPresent(IdentifiedPerson[] newPresent){
+        int n = newPresent[0].getPosition().getRoomID();
+        ArrayList<MyPerson> ret = new ArrayList<>();
+        ArrayList<MyPerson> pres = stanze.get(n).presenti;
+        for(int i=0; i < newPresent.length ; i++){
+            boolean isPresent = false;
+            MyPerson p=null;
+            for(int j=0; j<pres.size();j++){
+                if(newPresent[i].getId()==pres.get(j).person.getId()){
+                    isPresent = true;
+                    ret.add(p);
+                    break;
+                }
+            }
+            if(!isPresent){
+               ret.add(new MyPerson(newPresent[i],ID++));
+            }
+        }
+        stanze.get(n).presenti = ret;
+    }
     
     //ritorna le persone che spariscono da una stanza (differenza tra i 2 insiemi)
-    private synchronized ArrayList<MyPerson> difference(Person[] newPresent){
+    private  ArrayList<MyPerson> difference(Person[] newPresent){
         ArrayList<MyPerson> ret = new ArrayList<>();
-        ArrayList<Person> pres = (ArrayList<Person>) Arrays.asList(newPresent);
+        ArrayList<Person> pres = new ArrayList<Person> (Arrays.asList(newPresent));
 
         int i = newPresent[0].getPosition().getRoomID();
         for(MyPerson p : stanze.get(i).presenti){
@@ -109,7 +154,7 @@ public class PeopleManager {
     }
     
     // fare un check anche sul timestamp
-    private synchronized void checkOtherRoom(int roomid){
+    private  void checkOtherRoom(int roomid){
         for(MyPerson elem : stanze.get(roomid).presenti){
             for(int i=0; i < mappa.get(roomid).coordsEntrata.size(); i++){
                 if(elem.person.getPosition().getX() == mappa.get(roomid).coordsEntrata.get(i).x
@@ -140,7 +185,7 @@ public class MyPerson{
 }
 
 public class Porte{
-    public int roomID;
+    //public int roomID;
     public ArrayList<Coordinata> coordsUscita = new ArrayList<Coordinata>();
     public ArrayList<Integer> porte = new ArrayList<Integer>(); 
     public ArrayList<Coordinata> coordsEntrata = new ArrayList<Coordinata>();
@@ -150,6 +195,10 @@ public class Porte{
 
 public class Coordinata{
     public int x,y;
+    public Coordinata(int x, int y){
+        this.x=x;
+        this.y=y;
+    }
 }
 
 

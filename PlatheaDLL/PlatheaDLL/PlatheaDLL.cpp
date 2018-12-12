@@ -26,7 +26,6 @@ bool saveTracksToFile = false;
 bool svmTracker = false;
 
 
-
 HANDLE* positionThread;
 
 #define DBOUT( s )            \
@@ -182,11 +181,6 @@ void system_loadconfigurationfile(int roomId, char str[]) {
 	//PathRemoveFileSpecA(currentDirectory); 
 	//setPath è una funzione naif per emulare PathRemoveFileSpecA 
 	string s(str);
-	//printf("prima della chiamata: %s\n",s.c_str());
-	//DBOUT(setPath(s).c_str());
-	//const char* path = setPath(s).c_str();
-	//printf("dopo la chiamata: %s\n", setPath(s).c_str());
-	si->GetVideoOutput()->setRoomID(roomId);
 	IDroom = roomId;
 	SetCurrentDirectoryA(setPath(s).c_str());
 	SettingsPersistence::GetInstance()->LoadFromFile(str);
@@ -418,7 +412,7 @@ ElaborationCore* getElaborationCore() {
 
 
 void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
-	printf("update tracked people\n");
+	//printf("update tracked people\n");
 	mtx.lock();
 	//trackedPeople = trackedPersons;
 	std::vector<TrackedObject*> persons = trackedPersons;
@@ -429,10 +423,10 @@ void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
 	int notificationStep = 1; //How many frames should pass between a measurement and another? >=1
 	char rowToWrite[1024];
 	int texelSide = (int)RoomSettings::GetInstance()->data.texelSide;
-	printf("persons.size() %d\n",persons.size());
+	//printf("persons.size() %d\n",persons.size());
 	for (int i = 0; i < int(persons.size()); i++) {
 		if (persons[i]->type == TRACKED || persons[i]->type == LOST) {
-			printf("TRACKED OR LOST\n");
+			//printf("TRACKED OR LOST\n");
 			int newX = ((persons[i]->bottomRight.x + persons[i]->upperLeft.x) / 2)*texelSide;
 			int newY = ((persons[i]->bottomRight.y + persons[i]->upperLeft.y) / 2)*texelSide;
 			char prefix[2];
@@ -452,13 +446,12 @@ void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
 			}
 			sprintf_s(rowToWrite, "%s\t%d\t(%d,%d)\t%d\t%s\t%s\r\n", prefix, persons[i]->ID, newX, newY,
 				persons[i]->nameID, identityPrefix, (persons[i]->nameID == -1 ? "-" : persons[i]->name));
-			printf("rowToWrite %s\n",rowToWrite);
+			//printf("rowToWrite %s\n",rowToWrite);
 			persons[i]->X = newX;
 			persons[i]->Y = newY;
 			trackedPeople.push_back((persons[i]));
 			//trackedPeople.push_back(new TrackedPerson(prefix, persons[i]->ID, newX, newY,persons[i]->nameID, identityPrefix, persons[i]->name));
-			if (round == 0)
-				printf("round 0");
+			//if (round == 0) printf("round 0\n");
 		}
 		
 	}
@@ -468,7 +461,9 @@ void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons) {
 }
 
 
-
+StreamsVideo* getStreamsVideo() {
+	return streamsVideo;
+}
 
 
 //

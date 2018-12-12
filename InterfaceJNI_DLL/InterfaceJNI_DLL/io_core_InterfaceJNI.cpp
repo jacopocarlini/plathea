@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <list>
 #include "PlatheaDLL.h"
 #include "io_core_InterfaceJNI.h"
 using namespace std;
@@ -84,8 +85,10 @@ JNIEXPORT jint JNICALL Java_io_core_InterfaceJNI_platheaPlayerStop(JNIEnv *env, 
 
 
 JNIEXPORT jobjectArray JNICALL Java_io_core_InterfaceJNI_getTrackedPeople(JNIEnv *env, jobject thisObj) {
-	//std::vector<TrackedObject*> tracked = getTrackedPeople();
-	std::vector<TrackedObject*> tracked;
+	printf("start jni\n");
+	std::vector<TrackedObject*> tracked = getTrackedPeople();
+	printf("ok dll\n");
+	//std::vector<TrackedObject*> tracked;
 	jclass javaLocalClass = env->FindClass("io/core/InterfaceJNI$TrackedPerson");
 
 	if (javaLocalClass == NULL) {
@@ -99,7 +102,10 @@ JNIEXPORT jobjectArray JNICALL Java_io_core_InterfaceJNI_getTrackedPeople(JNIEnv
 	jclass javaGlobalClass = reinterpret_cast<jclass>(env->NewGlobalRef(javaLocalClass));
 
 	// info: last argument is Java method signature
-	jmethodID javaConstructor = env->GetMethodID(javaGlobalClass, "<init>", "(Lio/core/InterfaceJNI;Ljava/lang/String;IIIILjava/lang/String;)V" );
+	//jmethodID javaConstructor = env->GetMethodID(javaGlobalClass, "<init>", "(Lio/core/InterfaceJNI;Ljava/lang/String;IIIILjava/lang/String;)V");
+	jmethodID javaConstructor = env->GetMethodID(javaGlobalClass, "<init>", "(Lio/core/InterfaceJNI;IIII)V" );
+	jmethodID setname = env->GetMethodID(javaGlobalClass, "setName", "(Ljava/lang/String;)V");
+	jmethodID settype = env->GetMethodID(javaGlobalClass, "setType", "(Ljava/lang/String;)V");
 
 	if (javaConstructor == NULL) {
 		printf("Find method Failed.\n");
@@ -107,19 +113,112 @@ JNIEXPORT jobjectArray JNICALL Java_io_core_InterfaceJNI_getTrackedPeople(JNIEnv
 	}
 	else {
 		printf("Found method.\n");
+	} 
+	if (setname == NULL) {
+		printf("Find method Failed.\n");
+		return NULL;
+	}
+	if (settype == NULL) {
+		printf("Find method Failed.\n");
+		return NULL;
 	}
 
-	jobjectArray ret = env->NewObjectArray(tracked.size(), javaLocalClass, nullptr);
+	jobjectArray ret = env->NewObjectArray(tracked.size(), javaLocalClass, NULL);
+	//jobjectArray ret = env->NewObjectArray(1, javaGlobalClass, NULL);
+	
+	//jobject TrackedPersonObject;
+	//printf(".\n");
+	//TrackedPersonObject = env->NewObject(javaLocalClass, javaConstructor, 0,0,0,0);
+	//env->CallObjectMethod(TrackedPersonObject, setname, jstr);
+	//env->CallObjectMethod(TrackedPersonObject, settype, jstr);
+
+	
+	
 	for (int i = 0; i < tracked.size(); i++) {
-		jobject TrackedPersonObject = env->NewObject(javaGlobalClass, javaConstructor
-			, env->NewStringUTF(tracked[i]->name)
-			, tracked[i]->nameID
-			, tracked[i]->X
-			, tracked[i]->Y
-			, tracked[i]->ID
-			, (tracked[i]->type== TRACKED)? env->NewStringUTF("Tracked") : env->NewStringUTF("Lost"));
+		printf("%s\n", (tracked[i]->name));
+		printf("creo object\n");
+
+		printf("%s\n", tracked[i]->name);
+		printf("%d\n", tracked[i]->nameID);
+		printf("%d\n", tracked[i]->X);
+		printf("%d\n", tracked[i]->Y);
+		printf("%d\n", tracked[i]->ID);
+
+		int nameID = tracked[i]->nameID;
+		int X = tracked[i]->X;
+		int Y = tracked[i]->Y;
+		int ID = tracked[i]->ID;
+		jobject TrackedPersonObject;
+		printf("newobject\n");
+		// non so perchè ma se chiamo il costruttore con -1 non funziona
+		// per il momento tutti tutti hanno nameID==-1 
+		TrackedPersonObject = env->NewObject(javaLocalClass, javaConstructor, 0, X, Y, ID);
+			//, (tracked[i]->type== TRACKED)? env->NewStringUTF("Tracked") : env->NewStringUTF("Lost"));
+		printf("creo string\n");
+		const char* name;
+		if (tracked[i]->nameID == -1) {
+			printf("%d\n", tracked[i]->nameID);
+			name = "-";
+		}
+		else 
+			name = ((tracked[i])->name);
+		printf("prima lettera %c\n",name[0]);
+		jstring jname = env->NewStringUTF(name);
+		const char* type = (tracked[i]->type == TRACKED) ? "Tracked" : "Lost";
+		jstring jtype = env->NewStringUTF(type);
+		
+		printf("set string\n");
+		env->CallObjectMethod(TrackedPersonObject, setname, jname);
+		env->CallObjectMethod(TrackedPersonObject, settype, jtype);
+		printf("aggiungo all'array\n");
 		env->SetObjectArrayElement(ret, i, TrackedPersonObject);
 	}
+	
+	//env->SetObjectArrayElement(ret, 0, TrackedPersonObject);
+	printf("ok jni\n");
 	return ret;
 
+
+	
+
+}
+
+
+JNIEXPORT jbyteArray JNICALL Java_io_core_InterfaceJNI_getFrame(JNIEnv *env, jobject thisObj, jint id) {
+	StreamsVideo* streams = getStreamsVideo();
+	
+	//list to array
+	std::list<unsigned char> bytes;
+	//printf("id=%d\n",id);
+	if (id == 0)
+		bytes = streams->getFrame();
+	if (id == 1) {
+		bytes = streams->getFrameBackground();
+		printf("getFrameBackground bytes %d\n", bytes.size());
+	}
+	if (id == 2)
+		bytes = streams->getFrameRawforeground();
+	if (id == 3)
+		bytes = streams->getFrameForeground();
+	if (id == 4)
+		bytes = streams->getFrameDisparity();
+	if (id == 5)
+		bytes = streams->getFrameEdge();
+	if (id == 6)
+		bytes = streams->getFrameOccupancy();
+	if (id == 7)
+		bytes = streams->getFrameHeight();
+
+	//printf("size della lista %d\n",bytes.size());
+	if (bytes.size()==0) return env->NewByteArray(0);
+	unsigned char *arr = new unsigned char[bytes.size()];
+	//printf("copy\n");
+	copy(bytes.begin(), bytes.end(), arr);
+	//array to jbyteArray
+	//printf("new jarray\n");
+	jbyteArray jarr = env->NewByteArray(bytes.size());
+	//printf("set array\n");
+	env->SetByteArrayRegion(jarr, 0, bytes.size(), reinterpret_cast<jbyte*>(arr));
+	//printf("done jni\n");
+	return jarr;
 }

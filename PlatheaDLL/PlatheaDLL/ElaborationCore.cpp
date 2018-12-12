@@ -359,7 +359,7 @@ bool ElaborationCore::PrerequisitesCheck(wchar_t *errMsg, int bufferSize, bool *
 }
 
 void ElaborationCore::Run(void *param) {
-	printf("elaboration core run\n");
+	//printf("elaboration core run\n");
 	ApplicationWorkFlow::GetInstance()->UpdateSystemState(ELABORATION_STARTED);
 	//printf("1\n");
 	StereoRig *asr = si->GetStereoRig();
@@ -433,11 +433,11 @@ void ElaborationCore::Run(void *param) {
 	//printf("24\n");
 	StereoRig::StereoTimestampsStruct lastTimestamps; lastTimestamps.stereoTimeStamp = GetTickCount();
 
-	//printf("25\n");
+	//printf("ElaborationCore: wait for multiple Objects\n");
 	while (WaitForMultipleObjects(2, hEventsToWait, FALSE, INFINITE) == WAIT_OBJECT_0) {
-		printf("while (WaitForMultipleObjects\n");
+		//printf("while (WaitForMultipleObjects\n");
 		IplImage * leftImage, * rightImage;
-		//printf("25 1\n");
+		//printf("ElaborationCore: AcquireReadLock\n");
 		asr->StereoLock.AcquireReadLock();
 			//printf("25 2\n");
 			DWORD initialCount = GetTickCount();

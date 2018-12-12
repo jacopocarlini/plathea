@@ -111,7 +111,9 @@ extern "C" PLATHEADLL_API void localizationengine_svm();
 
 extern "C" PLATHEADLL_API std::vector<TrackedObject*> getTrackedPeople();
 extern "C" PLATHEADLL_API ElaborationCore* getElaborationCore();
+extern "C" PLATHEADLL_API StreamsVideo* getStreamsVideo();
 
 void updateTrackedPeople(std::vector<TrackedObject*> trackedPersons);
+
 
 

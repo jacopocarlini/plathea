@@ -106,8 +106,9 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
         return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
-    public Response internalcalibration(Integer roomID, Integer mask, List<FormDataBodyPart> bodyParts, FormDataContentDisposition fileDispositions, SecurityContext securityContext) throws NotFoundException {
-        MainSystem.ReturnRoomMessage ret = MainSystem.internalcalibration(roomID, mask, bodyParts, fileDispositions);
+    public Response internalcalibration(Integer roomID, Integer mask, List<FormDataBodyPart> bodyParts, SecurityContext securityContext) throws NotFoundException {
+        System.out.println(mask);
+        MainSystem.ReturnRoomMessage ret = MainSystem.internalcalibration(roomID, mask, bodyParts);
         if (ret.getCode()==MainSystem.StatusCode.INVALID) 
             return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
         if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 

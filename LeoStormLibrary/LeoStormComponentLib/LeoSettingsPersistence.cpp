@@ -52,6 +52,7 @@ SettingsPersistence::~SettingsPersistence() {
 }
 
 void SettingsPersistence::LoadFromFile(char *fileName) {
+	printf("SettingsPersistence: %s\n", fileName);
 	TiXmlDocument doc(fileName);
 	bool loadOkay = doc.LoadFile();
 	if (!loadOkay)
@@ -77,6 +78,7 @@ void SettingsPersistence::LoadFromFile(char *fileName) {
 				if (parameter_element) {
 					const char *type_attribute = parameter_element->Attribute("type");
 					if (type_attribute) {
+						printf("SettingsPersistence: %s\n",parameter_element->GetText());
 						Logger::writeToLOG(L"%S:%S = (%S) %S\r\n", module_iterator->first.c_str(), parameter_iterator->first.c_str(), type_attribute, parameter_element->GetText());
 						if (strcmp(type_attribute, "string") == 0) {
 							if (parameter_iterator->second.param_type == parameter_iterator->second.STRING_PARAM) {

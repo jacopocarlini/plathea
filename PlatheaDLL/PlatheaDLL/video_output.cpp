@@ -26,9 +26,8 @@
 
 #include "JackSettings.h"
 
-int leftcount=0;
 
-int roomID;
+StreamsVideo* mstreamsVideo = streamsVideo;
 
 ProcessingStageOutput processingStageOutput;
 
@@ -38,9 +37,6 @@ VideoEvent VideoOutput::GetNoneEvent() {
 	return res;
 }
 
-void VideoOutput::setRoomID(int roomId) {
-	roomID = roomId;
-}
 
 VideoOutput::VideoOutput(HWND hwndLeftPic, HWND hwndRightPic, VideoEvent *veLeft, VideoEvent *veRight) {
 	hwndPic[LEFT_SIDE_SCREEN]=hwndLeftPic;
@@ -98,10 +94,10 @@ void VideoOutput::ChangeSource(VideoEvent *veLeft, VideoEvent *veRight) {
 }
 
 void VideoOutput::Run(void *param) {
-	printf("VideoOutput: run \n");
+	//printf("VideoOutput: run \n");
 	continueRunning = true;
 	while (continueRunning) {
-		printf("VideoOutput: continue running \n");
+		//printf("VideoOutput: continue running \n");
 		DWORD res = WaitForMultipleObjects(2, hReadyEvent, FALSE, INFINITE);
 		DWORD curr = res - WAIT_OBJECT_0;
 		switch (ve[curr].st) {
@@ -115,36 +111,22 @@ void VideoOutput::Run(void *param) {
 						else
 							selectFrame(RIGHT_SIDE_SCREEN, temp);
 						lastImageSize = cvSize(temp->width, temp->height);
-						// Save 
-						std::string nameframe = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room"+ std::to_string(roomID) +"\\frame" + std::to_string(leftcount) + ".jpeg";
+						//salvare frame anche qui...
+						//TODO
 
-						cvSaveImage(nameframe.c_str(), temp);
-						std::string input = std::to_string(leftcount);
-						std::fstream out;
-						out.open("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room" + std::to_string(roomID) + "\\mutex.txt");						
-						out << input;
-						out.close();
-						leftcount++;
 					asr->ImageLock.ReleaseReadLock();
 				}
 				break;
 			case NETWORK_STEREO_RIG:
 				{
-					printf("video_output: NETWORK_STEREO_RIG");
+					//printf("video_output: NETWORK_STEREO_RIG\n");
 					StereoRig * asr = (StereoRig *) ve[curr].eventSource;
 					asr->StereoLock.AcquireReadLock();
 						IplImage * left, * right;
 						asr->GetStereoImages(&left, &right, false);
-						// Save 
-						std::string nameframe = "D:\\github\\plathea\\jaxrs-jersey-server-generated\\room" + std::to_string(roomID) + "\\frame"+ std::to_string(leftcount) +".jpeg";
+						// Save 						
+						streamsVideo->addFrame(*left);
 						
-						cvSaveImage(nameframe.c_str(), left);
-						std::string input = std::to_string(leftcount);						
-						std::ofstream out("D:\\github\\plathea\\jaxrs-jersey-server-generated\\room" + std::to_string(roomID) + "\\mutex.txt");
-						out << input;
-						out.close();
-						leftcount++;
-
 						selectFrame(LEFT_SIDE_SCREEN, left);
 						selectFrame(RIGHT_SIDE_SCREEN, right);
 						lastImageSize = cvSize(left->width, left->height);
@@ -162,4 +144,70 @@ bool VideoOutput::StopPreprocedure() {
 
 HWND *VideoOutput::GetStaticControls() {
 	return hwndPic;
+}
+
+
+bool ProcessingStageOutput::showImage(ProcessingStageImage psi, CvArr *image) {
+	char windowName[64];
+	//HWND destStatic = ImageDestinationInfo(psi, windowName, 64);
+	enterTestingPhase();
+	if (!testingPhase) {
+		return ConditionalShowImage(windowName, image);
+	}
+	else {
+		//if (!destStatic)
+		//return false;
+		//printf("showimage\n");
+		//staticsBitmaps[psi] = IplImage2HBITMAP(destStatic, staticsBitmaps[psi], image);
+		int imageWidth = (CV_IS_MAT(image) ? ((CvMat*)image)->cols : ((IplImage *)image)->width);
+		int imageHeight = (CV_IS_MAT(image) ? ((CvMat*)image)->rows : ((IplImage *)image)->height);
+		float imageWidthToHeightRatio = float(imageWidth) / float(imageHeight);
+		//RECT destRect; 
+		//GetClientRect(destStatic, &destRect);
+		/*
+		float destWidthToHeightRatio = float(destRect.right-destRect.left) / float(destRect.bottom-destRect.top);
+		int stretchWidth = (destWidthToHeightRatio > imageWidthToHeightRatio ?  int((destRect.bottom - destRect.top) * imageWidthToHeightRatio) : (destRect.right - destRect.left));
+		int stretchHeight = (destWidthToHeightRatio > imageWidthToHeightRatio ? (destRect.bottom - destRect.top) : int((destRect.right-destRect.left) * (1 / imageWidthToHeightRatio)));
+		if (imageHeight <= (destRect.bottom - destRect.top) && imageWidth <= (destRect.right - destRect.left)) {
+		stretchWidth = imageWidth;
+		stretchHeight = imageHeight;
+		}
+		*/
+		//printf("salvo\n");
+		//HDC destDC = GetDC(destStatic);
+		//HDC memoryDC = CreateCompatibleDC(destDC);
+		//SelectObject(memoryDC, staticsBitmaps[psi]);
+		//SetStretchBltMode(destDC, HALFTONE);
+		//StretchBlt(destDC, 0, 0, stretchWidth, stretchHeight, memoryDC, 0, 0, imageWidth, imageHeight, SRCCOPY);
+
+		// Save 
+		
+		if (psi == BACKGROUND_STAGE) {
+			printf("add frame background\n");
+			streamsVideo->addFrameBackground(*((IplImage*)image));
+		}
+		else if (psi == RAW_FOREGROUND_STAGE) {
+			streamsVideo->addFrameRawforeground(*((IplImage*)image));
+		}
+		else if (psi == FILTERED_FOREGROUND_STAGE) {
+			streamsVideo->addFrameForeground(*((IplImage*)image));
+		}
+		else if (psi == DISPARITY_STAGE) {
+			streamsVideo->addFrameDisparity(*((IplImage*)image));
+		}
+		else if (psi == EDGE_ACTIVITY_STAGE) {
+			streamsVideo->addFrameEdge(*((IplImage*)image));
+		}
+		else if (psi == PLANVIEW_OCCUPANCY_STAGE) {
+			streamsVideo->addFrameOccupancy(*((IplImage*)image));
+		}
+		else if (psi == PLANVIEW_HEIGHT_STAGE) {
+			streamsVideo->addFrameHeight(*((IplImage*)image));
+		}
+
+
+		//DeleteDC(memoryDC);
+		//ReleaseDC(destStatic, destDC);
+		return true;
+	}
 }

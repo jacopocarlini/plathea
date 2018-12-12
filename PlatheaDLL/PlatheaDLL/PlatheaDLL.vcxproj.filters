@@ -264,7 +264,7 @@
       <Filter>File di origine\Core</Filter>
     </ClCompile>
     <ClCompile Include="JackSettings.cpp">
-      <Filter>File di origine\Core</Filter>
+      <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
