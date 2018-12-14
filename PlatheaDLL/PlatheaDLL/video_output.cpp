@@ -125,7 +125,7 @@ void VideoOutput::Run(void *param) {
 						IplImage * left, * right;
 						asr->GetStereoImages(&left, &right, false);
 						// Save 						
-						streamsVideo->addFrame(*left);
+						streamsVideo->addFrame(left);
 						
 						selectFrame(LEFT_SIDE_SCREEN, left);
 						selectFrame(RIGHT_SIDE_SCREEN, right);
@@ -181,7 +181,7 @@ bool ProcessingStageOutput::showImage(ProcessingStageImage psi, CvArr *image) {
 		//StretchBlt(destDC, 0, 0, stretchWidth, stretchHeight, memoryDC, 0, 0, imageWidth, imageHeight, SRCCOPY);
 
 		// Save 
-		
+		/*
 		if (psi == BACKGROUND_STAGE) {
 			printf("add frame background\n");
 			streamsVideo->addFrameBackground(*((IplImage*)image));
@@ -204,7 +204,7 @@ bool ProcessingStageOutput::showImage(ProcessingStageImage psi, CvArr *image) {
 		else if (psi == PLANVIEW_HEIGHT_STAGE) {
 			streamsVideo->addFrameHeight(*((IplImage*)image));
 		}
-
+		*/
 
 		//DeleteDC(memoryDC);
 		//ReleaseDC(destStatic, destDC);

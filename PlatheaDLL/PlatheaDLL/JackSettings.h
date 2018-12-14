@@ -24,6 +24,7 @@ extern int IDroom;
 class StreamsVideo {
 	std::vector<std::list<unsigned char>>  left, background, rawforeground, foreground, disparity, edge, occupancy, height;
 	//std::list<unsigned char>  left, background, rawforeground, foreground, disparity, edge, occupancy, height;
+	std::vector<unsigned char> buf;
 
 	std::mutex mtxleft, mtxbackground, mtxrawforeground, mtxforeground, mtxdisparity, mtxedge, mtxoccupancy, mtxheight;           // mutex for critical section
 	int leftcount = 0;
@@ -82,30 +83,31 @@ public:
 	
 	
 
-	void addFrame(IplImage frame) {
+	void addFrame(IplImage* frame) {
 		mtxleft.lock();
 		cv::Mat image = cv::cvarrToMat(&frame);
-		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-		std::vector<unsigned char> buf (50000);
+		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);	
 		cv::imencode(".jpg", image, buf);
-		std::list<unsigned char> list;
-		std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		//printf("tobytes: %d\n", list.size());
-		left.push_back(list);
-		if(left.size()>1)left.erase(left.begin());
+		//std::list<unsigned char> list;
+		//std::copy(buf.begin(), buf.end(), std::back_inserter(list));
+		printf("tobytes: %d\n", list.size());
+		//left.push_back(list);
+		//if(left.size()>1)left.erase(left.begin());
 		//leftcount++;
 		mtxleft.unlock();
 	}
-	std::list<unsigned char> getFrame() {
+	std::vector<unsigned char> getFrame() {
 		mtxleft.lock();
 		
+		/*
 		//printf("nframe: %d\n", left.size());
 		if (left.empty()) {
 			std::list<unsigned char> r;
 			mtxleft.unlock();
 			return r;
 		}	
-		std::list<unsigned char> ret = left.front();
+		*/
+		std::vector<unsigned char> ret = buf;
 		//left.erase(left.begin());
 		
 		//std::list<unsigned char> ret = left;

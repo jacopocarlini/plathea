@@ -1,5 +1,5 @@
 {
-  "name": "WebApp",
+  "name": "calculator",
   "version": "0.1.0",
   "license": "MIT",
   "homepage": "http://ahfarmer.github.io/calculator",
@@ -12,8 +12,6 @@
   "dependencies": {
     "axios": "^0.18.0",
     "big.js": "^5.1.2",
-    "cors": "^2.8.5",
-    "express-fileupload": "^1.0.0",
     "github-fork-ribbon-css": "^0.2.1",
     "react": "^16.4.0",
     "react-dom": "^16.4.0"
