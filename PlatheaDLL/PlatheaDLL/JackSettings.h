@@ -85,12 +85,13 @@ public:
 
 	void addFrame(IplImage* frame) {
 		mtxleft.lock();
-		cv::Mat image = cv::cvarrToMat(&frame);
+		cv::Mat image = cv::cvarrToMat(frame);
 		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);	
 		cv::imencode(".jpg", image, buf);
 		//std::list<unsigned char> list;
 		//std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		printf("tobytes: %d\n", list.size());
+		printf("add frame\n");
+		//printf("tobytes: %d\n", list.size());
 		//left.push_back(list);
 		//if(left.size()>1)left.erase(left.begin());
 		//leftcount++;

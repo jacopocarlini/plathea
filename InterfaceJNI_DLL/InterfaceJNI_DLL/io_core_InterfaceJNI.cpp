@@ -188,8 +188,9 @@ JNIEXPORT jbyteArray JNICALL Java_io_core_InterfaceJNI_getFrame(JNIEnv *env, job
 	StreamsVideo* streams = getStreamsVideo();
 	
 	//list to array
-	std::list<unsigned char> bytes;
+	std::vector<unsigned char> bytes;
 	//printf("id=%d\n",id);
+	/*
 	if (id == 0)
 		bytes = streams->getFrame();
 	if (id == 1) {
@@ -208,12 +209,14 @@ JNIEXPORT jbyteArray JNICALL Java_io_core_InterfaceJNI_getFrame(JNIEnv *env, job
 		bytes = streams->getFrameOccupancy();
 	if (id == 7)
 		bytes = streams->getFrameHeight();
-
+	*/
 	//printf("size della lista %d\n",bytes.size());
+	bytes = streams->getFrame();
 	if (bytes.size()==0) return env->NewByteArray(0);
-	unsigned char *arr = new unsigned char[bytes.size()];
+	//unsigned char *arr = new unsigned char[bytes.size()];
 	//printf("copy\n");
-	copy(bytes.begin(), bytes.end(), arr);
+	//copy(bytes.begin(), bytes.end(), arr);
+	unsigned char* arr = &bytes[0];
 	//array to jbyteArray
 	//printf("new jarray\n");
 	jbyteArray jarr = env->NewByteArray(bytes.size());
