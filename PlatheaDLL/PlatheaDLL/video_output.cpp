@@ -181,30 +181,30 @@ bool ProcessingStageOutput::showImage(ProcessingStageImage psi, CvArr *image) {
 		//StretchBlt(destDC, 0, 0, stretchWidth, stretchHeight, memoryDC, 0, 0, imageWidth, imageHeight, SRCCOPY);
 
 		// Save 
-		/*
+		
 		if (psi == BACKGROUND_STAGE) {
-			printf("add frame background\n");
-			streamsVideo->addFrameBackground(*((IplImage*)image));
+			//printf("add frame background\n");
+			streamsVideo->addFrameBackground(((IplImage*)image));
 		}
 		else if (psi == RAW_FOREGROUND_STAGE) {
-			streamsVideo->addFrameRawforeground(*((IplImage*)image));
+			streamsVideo->addFrameRawforeground(((IplImage*)image));
 		}
 		else if (psi == FILTERED_FOREGROUND_STAGE) {
-			streamsVideo->addFrameForeground(*((IplImage*)image));
+			streamsVideo->addFrameForeground(((IplImage*)image));
 		}
 		else if (psi == DISPARITY_STAGE) {
-			streamsVideo->addFrameDisparity(*((IplImage*)image));
+			streamsVideo->addFrameDisparity(((IplImage*)image));
 		}
 		else if (psi == EDGE_ACTIVITY_STAGE) {
-			streamsVideo->addFrameEdge(*((IplImage*)image));
+			streamsVideo->addFrameEdge(((IplImage*)image));
 		}
 		else if (psi == PLANVIEW_OCCUPANCY_STAGE) {
-			streamsVideo->addFrameOccupancy(*((IplImage*)image));
+			streamsVideo->addFrameOccupancy(((IplImage*)image));
 		}
 		else if (psi == PLANVIEW_HEIGHT_STAGE) {
-			streamsVideo->addFrameHeight(*((IplImage*)image));
+			streamsVideo->addFrameHeight(((IplImage*)image));
 		}
-		*/
+		
 
 		//DeleteDC(memoryDC);
 		//ReleaseDC(destStatic, destDC);

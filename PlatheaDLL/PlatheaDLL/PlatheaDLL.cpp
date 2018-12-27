@@ -25,6 +25,8 @@ bool hideVideoInput = false;
 bool saveTracksToFile = false;
 bool svmTracker = false;
 
+int jacopo = 0;
+
 
 HANDLE* positionThread;
 
@@ -181,6 +183,8 @@ void system_loadconfigurationfile(int roomId, char str[]) {
 	//PathRemoveFileSpecA(currentDirectory); 
 	//setPath è una funzione naif per emulare PathRemoveFileSpecA 
 	string s(str);
+	printf("jacopo=%d\n",jacopo);
+	jacopo = 13;
 	IDroom = roomId;
 	SetCurrentDirectoryA(setPath(s).c_str());
 	SettingsPersistence::GetInstance()->LoadFromFile(str);

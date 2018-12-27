@@ -22,9 +22,9 @@ extern int IDroom;
 
 
 class StreamsVideo {
-	std::vector<std::list<unsigned char>>  left, background, rawforeground, foreground, disparity, edge, occupancy, height;
+	std::vector<unsigned char>  left, background, rawforeground, foreground, disparity, edge, occupancy, height;
 	//std::list<unsigned char>  left, background, rawforeground, foreground, disparity, edge, occupancy, height;
-	std::vector<unsigned char> buf;
+	//std::vector<unsigned char> buf;
 
 	std::mutex mtxleft, mtxbackground, mtxrawforeground, mtxforeground, mtxdisparity, mtxedge, mtxoccupancy, mtxheight;           // mutex for critical section
 	int leftcount = 0;
@@ -87,10 +87,10 @@ public:
 		mtxleft.lock();
 		cv::Mat image = cv::cvarrToMat(frame);
 		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);	
-		cv::imencode(".jpg", image, buf);
+		cv::imencode(".jpg", image, left);
 		//std::list<unsigned char> list;
 		//std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		printf("add frame\n");
+		//printf("add frame\n");
 		//printf("tobytes: %d\n", list.size());
 		//left.push_back(list);
 		//if(left.size()>1)left.erase(left.begin());
@@ -108,7 +108,7 @@ public:
 			return r;
 		}	
 		*/
-		std::vector<unsigned char> ret = buf;
+		std::vector<unsigned char> ret = left;
 		//left.erase(left.begin());
 		
 		//std::list<unsigned char> ret = left;
@@ -117,207 +117,98 @@ public:
 	}
 
 	
-	void addFrameBackground(IplImage frame) {
+	void addFrameBackground(IplImage* frame) {
 		mtxbackground.lock();
-		cv::Mat image = cv::cvarrToMat(&frame);
-		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-		std::vector<unsigned char> buf(50000);
-		cv::imencode(".jpg", image, buf);
-		std::list<unsigned char> list;
-		std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		printf("tobytes: %d\n", list.size());
-		background.push_back(list);
-		if (background.size()>1)background.erase(background.begin());
-		printf("dopo aver aggiunto nframe: %d\n", background.size());
+		cv::Mat image = cv::cvarrToMat(frame);
+		cv::imencode(".jpg", image, background);
 		mtxbackground.unlock();
 	}
-	std::list<unsigned char> getFrameBackground() {
+	std::vector<unsigned char> getFrameBackground() {
 		mtxbackground.lock();
-
-		printf("nframe: %d\n", background.size());
-		if (background.empty()) {
-			std::list<unsigned char> r;
-			mtxbackground.unlock();
-			return r;
-		}
-		std::list<unsigned char> ret = background.front();
-		//background.erase(background.begin());
-
+		std::vector<unsigned char> ret = background;
 		mtxbackground.unlock();
 		return ret;
 	}
 
-	void addFrameRawforeground(IplImage frame) {
+	void addFrameRawforeground(IplImage* frame) {
 		mtxrawforeground.lock();
-		cv::Mat image = cv::cvarrToMat(&frame);
-		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-		std::vector<unsigned char> buf(50000);
-		cv::imencode(".jpg", image, buf);
-		std::list<unsigned char> list;
-		std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		//printf("tobytes: %d\n", list.size());
-		rawforeground.push_back(list);
-		if (rawforeground.size()>1)rawforeground.erase(rawforeground.begin());
+		cv::Mat image = cv::cvarrToMat(frame);
+		cv::imencode(".jpg", image, rawforeground);
 		mtxrawforeground.unlock();
 
 	}
-	std::list<unsigned char> getFrameRawforeground() {
+	std::vector<unsigned char> getFrameRawforeground() {
 		mtxrawforeground.lock();
-
-		if (rawforeground.empty()) {
-			std::list<unsigned char> r;
-			mtxrawforeground.unlock();
-			return r;
-		}
-		std::list<unsigned char> ret = rawforeground.front();
-		//rawforeground.erase(rawforeground.begin());
-
+		std::vector<unsigned char> ret = rawforeground;
 		mtxrawforeground.unlock();
 		return ret;
 	}
 
-	void addFrameForeground(IplImage frame) {
+	void addFrameForeground(IplImage* frame) {
 		mtxforeground.lock();
-		cv::Mat image = cv::cvarrToMat(&frame);
-		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-		std::vector<unsigned char> buf(50000);
-		cv::imencode(".jpg", image, buf);
-		std::list<unsigned char> list;
-		std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		//printf("tobytes: %d\n", list.size());
-		foreground.push_back(list);
-		if (foreground.size()>1)foreground.erase(foreground.begin());
+		cv::Mat image = cv::cvarrToMat(frame);
+		cv::imencode(".jpg", image, foreground);
 		mtxforeground.unlock();
 	}
-	std::list<unsigned char> getFrameForeground() {
+	std::vector<unsigned char> getFrameForeground() {
 		mtxforeground.lock();
 
-		if (foreground.empty()) {
-			std::list<unsigned char> r;
-			mtxforeground.unlock();
-			return r;
-		}
-		std::list<unsigned char> ret = foreground.front();
-		//foreground.erase(foreground.begin());
+		std::vector<unsigned char> ret = foreground;
 
 		mtxforeground.unlock();
 		return ret;
 	}
 
 
-	void addFrameDisparity(IplImage frame) {
+	void addFrameDisparity(IplImage* frame) {
 		mtxdisparity.lock();
-		cv::Mat image = cv::cvarrToMat(&frame);
-		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-		std::vector<unsigned char> buf(50000);
-		cv::imencode(".jpg", image, buf);
-		std::list<unsigned char> list;
-		std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		//printf("tobytes: %d\n", list.size());
-		disparity.push_back(list);
-		if (disparity.size()>1)disparity.erase(disparity.begin());
-	
+		cv::Mat image = cv::cvarrToMat(frame);
+		cv::imencode(".jpg", image, disparity);
 		mtxdisparity.unlock();
 	}
-	std::list<unsigned char> getFrameDisparity() {
+	std::vector<unsigned char> getFrameDisparity() {
 		mtxdisparity.lock();
-
-		if (disparity.empty()) {
-			std::list<unsigned char> r;
-			mtxdisparity.unlock();
-			return r;
-		}
-		std::list<unsigned char> ret = disparity.front();
-		//disparity.erase(disparity.begin());
-
+		std::vector<unsigned char> ret = disparity;
 		mtxdisparity.unlock();
 		return ret;
 	}
 
-	void addFrameEdge(IplImage frame) {
+	void addFrameEdge(IplImage* frame) {
 		mtxedge.lock();
-		cv::Mat image = cv::cvarrToMat(&frame);
-		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-		std::vector<unsigned char> buf(50000);
-		cv::imencode(".jpg", image, buf);
-		std::list<unsigned char> list;
-		std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		//printf("tobytes: %d\n", list.size());
-		edge.push_back(list);
-		if (edge.size()>1)edge.erase(edge.begin());
-		
+		cv::Mat image = cv::cvarrToMat(frame);
+		cv::imencode(".jpg", image, edge);
 		mtxedge.unlock();
 	}
-	std::list<unsigned char> getFrameEdge() {
+	std::vector<unsigned char> getFrameEdge() {
 		mtxedge.lock();
-
-		if (edge.empty()) {
-			std::list<unsigned char> r;
-			mtxedge.unlock();
-			return r;
-		}
-		std::list<unsigned char> ret = edge.front();
-		//edge.erase(edge.begin());
-
+		std::vector<unsigned char> ret = edge;
 		mtxedge.unlock();
 		return ret;
 	}
 
 
-	void addFrameOccupancy(IplImage frame) {
+	void addFrameOccupancy(IplImage* frame) {
 		mtxoccupancy.lock();
-		cv::Mat image = cv::cvarrToMat(&frame);
-		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-		std::vector<unsigned char> buf(50000);
-		cv::imencode(".jpg", image, buf);
-		std::list<unsigned char> list;
-		std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		//printf("tobytes: %d\n", list.size());
-		occupancy.push_back(list);
-		if (occupancy.size()>1)occupancy.erase(occupancy.begin());
-	
+		cv::Mat image = cv::cvarrToMat(frame);
+		cv::imencode(".jpg", image, occupancy);
 		mtxoccupancy.unlock();
 	}
-	std::list<unsigned char> getFrameOccupancy() {
+	std::vector<unsigned char> getFrameOccupancy() {
 		mtxoccupancy.lock();
-
-		if (occupancy.empty()) {
-			std::list<unsigned char> r;
-			mtxoccupancy.unlock();
-			return r;
-		}
-		std::list<unsigned char> ret = occupancy.front();
-		//occupancy.erase(occupancy.begin());
-
+		std::vector<unsigned char> ret = occupancy;
 		mtxoccupancy.unlock();
 		return ret;
 	}
 
-	void addFrameHeight(IplImage frame) {
+	void addFrameHeight(IplImage* frame) {
 		mtxheight.lock();
-		cv::Mat image = cv::cvarrToMat(&frame);
-		//cv::threshold(image, image, 100, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-		std::vector<unsigned char> buf(50000);
-		cv::imencode(".jpg", image, buf);
-		std::list<unsigned char> list;
-		std::copy(buf.begin(), buf.end(), std::back_inserter(list));
-		//printf("tobytes: %d\n", list.size());
-		height.push_back(list);
-		if (height.size()>1)height.erase(height.begin());
-
+		cv::Mat image = cv::cvarrToMat(frame);
+		cv::imencode(".jpg", image, height);
 		mtxheight.unlock();
 	}
-	std::list<unsigned char> getFrameHeight() {
+	std::vector<unsigned char> getFrameHeight() {
 		mtxheight.lock();
-
-		if (height.empty()) {
-			std::list<unsigned char> r;
-			mtxheight.unlock();
-			return r;
-		}
-		std::list<unsigned char> ret = height.front();
-		//height.erase(height.begin());
-
+		std::vector<unsigned char> ret = height;
 		mtxheight.unlock();
 		return ret;
 	}

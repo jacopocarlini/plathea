@@ -22,6 +22,7 @@ class App extends React.Component {
             streams:[],
             nomistream : ["stream", "Background", "Raw foreground", "Filtered Foreground",
             "Disparity","Edge","Occupancy", "Height"],
+            tracked: false,
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -56,7 +57,7 @@ class App extends React.Component {
                 console.log(data);
                 var object = [];
                 data.forEach(function(value, key) {
-                    object.push("http://localhost:8080/stream/"+value);
+                    object.push("http://localhost:8080/room/"+self.state.selected+"/stream/"+value);
                 });
                 self.state.streams = object;
                 self.forceUpdate();
@@ -66,15 +67,25 @@ class App extends React.Component {
             });
     }
 
+    getPeopleClick = () =>{
+        this.state.tracked=!this.state.tracked;
+        console.log("click");
+        this.getPeople();
+    }
+
     getPeople = () => {
         var url = "http://localhost:8080/room/" + this.state.selected + "/people";
         var self = this;
+        console.log("people");
+        if(!this.state.tracked) return;
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                console.log(data);
                 self.state.people = data;
                 self.forceUpdate();
-                //self.getPeople();
+                setTimeout(self.getPeople, 1000);
+
             })
             .catch(err => {
                 console.log("fetch error" + err);
@@ -310,7 +321,7 @@ class App extends React.Component {
                 <br/>
 
                 <button onClick = {
-                    this.getPeople.bind(this)
+                    this.getPeopleClick.bind(this)
                 } > People </button><br/ >
                 <ul>
                 {
