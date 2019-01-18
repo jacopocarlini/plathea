@@ -33,32 +33,33 @@ import java.util.logging.Logger;
 public class InterfaceJNI {
     int roomID;
     public Process myProcess;
-   
-    InetAddress addr ;            
+
+    InetAddress addr ;
     Socket socket=null;
     BufferedReader in=null, stdIn=null;
     PrintWriter out=null;
      DataInputStream dIn =null;
 
-    
-    
+
+
     public InterfaceJNI(int roomID){
         this.roomID = roomID;
-        
+
         try {
             String port = String.valueOf(4000+this.roomID);
             //sendCommand("stop");
-            Runtime rt = Runtime.getRuntime();    
+            Runtime rt = Runtime.getRuntime();
+            // comment the following line and start the subprocess in a new terminal for debugging (you can see the log)   
             myProcess = rt.exec("java -cp D:\\github\\plathea\\jaxrs-jersey-server-generated\\src\\main\\java\\io\\core InstancePlathea "+port);
-        
-        
-            addr = InetAddress.getByName(null);       
+
+
+            addr = InetAddress.getByName(null);
             // creazione socket
             socket = new Socket(addr, 4000+this.roomID);
 
             System.out.println("EchoClient: started");
             System.out.println("Client Socket: "+ socket);
-            
+
             // creazione stream di input da socket
             InputStreamReader isr = null;
             isr = new InputStreamReader( socket.getInputStream());
@@ -67,18 +68,18 @@ public class InterfaceJNI {
             // creazione stream di output su socket
             OutputStreamWriter osw = new OutputStreamWriter( socket.getOutputStream());
             BufferedWriter bw = new BufferedWriter(osw);
-            out = new PrintWriter(bw, true);  
-            // creazione stream di input da socket 
+            out = new PrintWriter(bw, true);
+            // creazione stream di input da socket
             dIn = new DataInputStream(socket.getInputStream());
-                                
+
         } catch (Exception ex) {
             System.out.println(ex);
         }
-        
+
     }
-    
+
     public void hello(){
-    
+
     }
     public int loadConfigurationFile(int roomID, String dir){
         sendCommand("loadConfigurationFile;"+roomID+";"+dir);
@@ -121,9 +122,9 @@ public class InterfaceJNI {
         return 0;
     }
     public TrackedPerson[] getTrackedPeople(){
-        String string = sendCommand("getTrackedPeople");      
+        String string = sendCommand("getTrackedPeople");
         if(!string.contains(";")) return new TrackedPerson[0];
-        String[] elem = string.split(":");      
+        String[] elem = string.split(":");
         System.out.println(elem.length+" "+ string);
         TrackedPerson[] ret = new TrackedPerson[elem.length];
         for(int i=0; i < elem.length; i++){
@@ -134,22 +135,22 @@ public class InterfaceJNI {
         }
         return ret;
     }
-    
+
     public byte[] getFrame(int id){
-        return sendSpecialCommand("getFrame;"+id);        
+        return sendSpecialCommand("getFrame;"+id);
     }
-    
+
     String sendCommand(String cmd){
         String ret = "";
         try {
             /*
-            addr = InetAddress.getByName(null);       
+            addr = InetAddress.getByName(null);
             // creazione socket
             socket = new Socket(addr, 4000+this.roomID);
 
             System.out.println("EchoClient: started");
             System.out.println("Client Socket: "+ socket);
-            
+
             // creazione stream di output su socket
             OutputStreamWriter osw = new OutputStreamWriter( socket.getOutputStream());
             BufferedWriter bw = new BufferedWriter(osw);
@@ -160,17 +161,17 @@ public class InterfaceJNI {
             System.out.println("Echo: " + ret);
             //out.close();
             //in.close();
-            //socket.close(); 
+            //socket.close();
         }catch (Exception e) {
-            System.err.println("Couldn't get I/O for the connection to: " + addr);                
+            System.err.println("Couldn't get I/O for the connection to: " + addr);
         }
-           
+
         return ret;
     }
-    
-    byte [] sendSpecialCommand(String cmd){        
-        try{                      
-            
+
+    byte [] sendSpecialCommand(String cmd){
+        try{
+
             out.println(cmd);
             int length = dIn.readInt();                    // read length of incoming message
             System.out.println("frame lenght: "+length);
@@ -181,18 +182,18 @@ public class InterfaceJNI {
                 return message;
             }
             else return new byte[0];
-           
+
             //out.close();
             //dIn.close();
-            //socket.close();            
+            //socket.close();
             } catch (Exception e) {
                 System.err.println("Couldn't get I/O for the connection to: " + addr);
-            }             
-        
+            }
+
         return new byte[0];
     }
 
-   
+
     public class TrackedPerson {
         public String name;
         public int nameID;
@@ -215,27 +216,27 @@ public class InterfaceJNI {
             this.ID = ID;
         }
         public TrackedPerson(){
-            
+
         }
-        
+
         public void setIntegers(int nameID, int X, int Y, int ID){
             this.nameID = nameID;
             this.X = X;
             this.Y = Y;
             this.ID = ID;
         }
-        
+
         public void setName(String name){
             this.name = name;
         }
-        
+
         public void setType(String type){
             this.type = type;
         }
 
-        
+
     }
-    
+
 /*
     class PersonJNI{
         String name;
@@ -243,7 +244,7 @@ public class InterfaceJNI {
         int X,Y;
         int ID;
         String type;
-        
+
 
         public PersonJNI(){
 
