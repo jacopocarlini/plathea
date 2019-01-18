@@ -9,16 +9,11 @@ class Item extends React.Component {
     };
 
     render() {
-        return ( <
-            div >
-            <
-            button onClick = {
-                this.handleClick
-            } > Room {
-                this.props.id
-            }: {
-                this.props.name
-            } < /button> <
+        return ( <div>
+            <button class= "bottone" onClick = {this.handleClick} >
+            Room {this.props.id}:
+                <div class="grassetto">{this.props.name}</div>
+             < /button> <
             /div>
         );
     }

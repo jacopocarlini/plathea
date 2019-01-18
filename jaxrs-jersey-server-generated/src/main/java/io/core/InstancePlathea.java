@@ -133,6 +133,7 @@ public class InstancePlathea {
                 if(str.contains("getFrame")){
                     byte [] frame = Plathea.getFrame(Integer.parseInt(params[1]));
                     DataOutputStream dOut = new DataOutputStream(clientSocket.getOutputStream());
+                    System.out.println("frame lenght: "+frame.length);
                     dOut.writeInt(frame.length); // write length of the message
                     dOut.write(frame);           // write the message
                     ret="done";

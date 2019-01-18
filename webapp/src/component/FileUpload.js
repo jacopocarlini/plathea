@@ -11,7 +11,10 @@ class FileUpload extends Component {
         super(props);
         this.state = {
             selectedFiles: null,
+            filestring: "Choose the files",
         }
+
+
     }
 
 
@@ -45,28 +48,26 @@ class FileUpload extends Component {
     }
 
     handleselectedFile = event => {
+        console.log(event.target.files);
+        this.setState({
+            filestring: "Loaded"
+        });
         this.setState({
             selectedFiles: event.target.files,
         })
+        console.log("fatto");
     }
 
 
     render() {
-        return ( <
-            div className = "container" >
-            <
-            input type = "file"
-            name = ""
-            id = ""
-            onChange = {
-                this.handleselectedFile
-            }
-            required multiple / >
-            <
-            button onClick = {
-                this.handleUpload
-            } > Upload < /button> <
-            /div>
+        return (
+            <div class = "custom-file-upload" >
+                <input type = "file" class="inputfile" name="" id = {this.props.call}
+                    onChange = {this.handleselectedFile} required multiple/>
+                    <label htmlFor={this.props.call} required multiple>{this.state.filestring}</label>
+                <button class="upload" onClick = {this.handleUpload}>Upload</button>
+            </div>
+
         )
     }
 

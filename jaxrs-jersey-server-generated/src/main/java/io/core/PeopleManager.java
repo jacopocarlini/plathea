@@ -30,8 +30,8 @@ public class PeopleManager {
         this.mappa = new HashMap<Integer, Porte>();
         //mappa di esempio
         Porte p = new Porte();
-        Coordinata c1 = new Coordinata(0,0);        
-        Coordinata c2 = new Coordinata(10,10);
+        Coordinata c1 = new Coordinata(1950,3300);        
+        Coordinata c2 = new Coordinata(4530,4230);
         p.coordsEntrata.add(c1);
         p.coordsUscita.add(c2);
         p.porte.add(1);
@@ -114,6 +114,8 @@ public class PeopleManager {
         checkOtherRoom(i);
     }
     
+    
+    
     public ArrayList<MyPerson> createPresent(IdentifiedPerson[] newPresent){
         int n = newPresent[0].getPosition().getRoomID();
         ArrayList<MyPerson> ret = new ArrayList<>();
@@ -135,16 +137,27 @@ public class PeopleManager {
         return ret;
     }
     
-    //ritorna le persone che spariscono da una stanza (differenza tra i 2 insiemi)
+    //ritorna le persone che escono da una stanza da una porta monitorata
     private ArrayList<MyPerson> difference(ArrayList<MyPerson> pres){
         ArrayList<MyPerson> ret = new ArrayList<>();
         //ArrayList<Person> pres = new ArrayList<Person> (Arrays.asList(newPresent));
 
-        int i = pres.get(0).person.getPosition().getRoomID();
-        for(MyPerson p : stanze.get(i).presenti){
+        int id = pres.get(0).person.getPosition().getRoomID();
+        for(MyPerson p : stanze.get(id).presenti){
             for(int k =0;k<pres.size();k++){
                 if(p.person.getId() != pres.get(k).person.getId()){
-                    ret.add(p);
+                    for(int porta=0;porta<mappa.get(id).porte.size();porta++){
+                        float x,y,portax,portay;
+                        x=p.person.getPosition().getX();
+                        y=p.person.getPosition().getY();
+                        portax = mappa.get(id).coordsEntrata.get(porta).x;
+                        portay = mappa.get(id).coordsEntrata.get(porta).y;
+
+                        if( (x > portax-500 && x< portax+500)
+                            && (y > portay-500 && y< portay+500)){
+                            ret.add(p);
+                        }
+                    }
                 }
             }
         }
@@ -158,15 +171,29 @@ public class PeopleManager {
                 System.out.println(elem.person.getPosition().getX());                             
                 System.out.println(mappa.get(roomid).coordsEntrata.get(i).x);
                 System.out.println(elem.person.getPosition().getX());
+                
+                float x,y,portax,portay;
+                x=elem.person.getPosition().getX();
+                y=elem.person.getPosition().getY();
+                portax = mappa.get(roomid).coordsEntrata.get(i).x;
+                portay = mappa.get(roomid).coordsEntrata.get(i).y;
 
-                if(elem.person.getPosition().getX() == mappa.get(roomid).coordsEntrata.get(i).x
-                    && elem.person.getPosition().getY()==mappa.get(roomid).coordsEntrata.get(i).y){ //mettere un certo range di incertezza
+                if( (x > portax-500 && x< portax+500)
+                    && (y > portay-500 && y< portay+500)){ 
                     int otherroom = mappa.get(roomid).porte.get(i);
+                    if (!stanze.containsKey(otherroom)) return;
                     for(int j=0;j< stanze.get(otherroom).spariti.size(); j++){
                         Person p = stanze.get(otherroom).spariti.get(j).person;
-                        if(p.getPosition().getX() == mappa.get(roomid).coordsUscita.get(i).x
-                            && p.getPosition().getY() == mappa.get(roomid).coordsUscita.get(i).y){//mettere un certo range di incertezza
-                        elem.globalID = stanze.get(otherroom).spariti.get(j).globalID;
+                        float x1,y1,portax1,portay1;
+                        x1= p.getPosition().getX();
+                        y1= p.getPosition().getY();
+                        portax1=mappa.get(roomid).coordsUscita.get(i).x;
+                        portay1= mappa.get(roomid).coordsUscita.get(i).y;
+                        if( (x1 > portax1-500 && x1< portax1+500)
+                                && (y1 > portay1-500 && y1< portay1+500)){
+                            
+                            elem.globalID = stanze.get(otherroom).spariti.get(j).globalID;
+                            stanze.get(otherroom).spariti.remove(j);
                         } 
                     }
                 }                

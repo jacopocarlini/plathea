@@ -202,6 +202,7 @@ class App extends React.Component {
         data.forEach(function(value, key) {
             object[key] = value;
         });
+        console.log(object);
         var json = JSON.stringify(object);
 
         fetch('http://localhost:8080/room', {
@@ -244,83 +245,76 @@ class App extends React.Component {
         console.log("render");
         if (this.state.selected != -1)
             return ( <div id = "room" >
-                <h1 > Room {
-                    this.state.selected
-                } </h1>
-                load configuration file <FileUpload id = {
-                    this.state.selected
-                }
-                call = {
-                    "load_configuration_file"
-                }/><br/ >
-                internal calibration <FileUpload id = {
-                    this.state.selected
-                }
-                call = {
-                    "internal_calibration"
-                }/><br/ >
-                external calibration <FileUpload id = {
-                    this.state.selected
-                }
-                call = {
-                    "external_calibration"
-                }/><br/ > <br/>
-                svm classifier <FileUpload id = {
-                    this.state.selected
-                }
-                call = {
-                    "select_svm_classifier"
-                }/><br/ > <br/>
+                <h1 > Room {this.state.selected} </h1>
+                <div class="largo">Load Configuration File</div>
+                <FileUpload id = {this.state.selected}
+                call = {"load_configuration_file"}/><div class="spacer"/>
+                <div class="largo">Internal Calibration</div><FileUpload id = {this.state.selected}
+                call = {"internal_calibration"}/><div class="spacer"/>
+                <div class="largo">External Calibration</div><FileUpload id = {this.state.selected}
+                call = {"external_calibration"}/><div class="spacer"/>
+                <div class="largo">SVM Classifier</div><FileUpload id = {this.state.selected}
+                call = {"select_svm_classifier"}/><div class="spacer"/>
+
+                <div class="spacer"/>
 
                 <form onSubmit = {
                     this.initializesys.bind(this)
                 } >
-                <label htmlFor = "username" > username </label> <input id = "username"
+                <div class="largo"><label htmlFor = "username" > username </label></div>
+                <input id = "username"
                 name = "username"
                 type = "text"/> <br/>
-                <label htmlFor = "password" > password </label> <input id = "password"
+                <div class="largo"><label htmlFor = "password" > password </label></div><input id = "password"
                 name = "password"
                 type = "text"/> <br/>
-                <label htmlFor = "type" > type </label> <input id = "type"
+                <div class="largo"><label htmlFor = "type" > type </label></div><input id = "type"
                 name = "type"
                 type = "text"/> <br/>
-                <label htmlFor = "resolution" > resolution </label> <input id = "resolution"
+                <div class="largo"><label htmlFor = "resolution" > resolution </label> </div><input id = "resolution"
                 name = "resolution"
                 type = "text"/> <br/>
-                <label htmlFor = "fps" > fps </label> <input id = "fps"
+                <div class="largo"><label htmlFor = "fps" > fps </label></div><input id = "fps"
                 name = "fps"
                 type = "text"/> <br/>
-                <label htmlFor = "cameraModel" > cameraModel </label> <input id = "cameraModel"
+                <div class="largo"><label htmlFor = "cameraModel" > cameraModel </label> </div><input id = "cameraModel"
                 name = "cameraModel"
                 type = "text"/> <br/>
-                <label htmlFor = "IPAddress1" > IPAddress1 </label> <input id = "IPAddress1"
+                <div class="largo"><label htmlFor = "IPAddress1" > IPAddress1 </label></div><input id = "IPAddress1"
                 name = "IPAddress1"
                 type = "text"/> <br/>
-                <label htmlFor = "port1" > port1 </label> <input id = "port1"
+                <div class="largo"><label htmlFor = "port1" > port1 </label> </div><input id = "port1"
                 name = "port1"
                 type = "text"/> <br/>
-                <label htmlFor = "IPAddress2" > IPAddress2 </label> <input id = "IPAddress2"
+                <div class="largo"><label htmlFor = "IPAddress2" > IPAddress2 </label></div><input id = "IPAddress2"
                 name = "IPAddress2"
                 type = "text"/> <br/>
-                <label htmlFor = "port2" > port2 </label> <input id = "port2"
+                <div class="largo"><label htmlFor = "port2" > port2 </label></div><input id = "port2"
                 name = "port2"
                 type = "text"/> <br/>
 
-                <button > initialize system </button> </
-                form > <br/>
-                <button onClick = {
+                <button class="spostato"> Initialize System </button>
+                </form >
+
+
+                <div class="allineato">
+                <button class="bottone2" onClick = {
                     this.startLocalization.bind(this)
-                } > start Localization Engine </button><br/ >
-                 <br/>
-                <button onClick = {
+                } > Start Localization Engine </button>
+
+                <button class="bottone2" onClick = {
                     this.playerMode.bind(this)
-                } > player mode </button><br/ >
-                <button onClick = {
+                } > Player Mode </button>
+
+                <button class="bottone2" onClick = {
                     this.playerStart.bind(this)
-                } > player start </button><br/ >
+                } > Player Start </button>
+
+                </div>
                 <br/>
 
-                <button onClick = {
+                <div class="info">
+                <button  class= "bottone2" onClick = {
                     this.getPeopleClick.bind(this)
                 } > People </button><br/ >
                 <ul>
@@ -343,19 +337,22 @@ class App extends React.Component {
                 }
                 </ul>
                 </div>
+                </div>
 
             );
-        return ( <div id = "rooms" >
-            <form onSubmit = {
-                this.handleSubmit
-            } >
+        return (
+            <div id = "room" >
+                <form class="flex-form" onSubmit = {this.handleSubmit}>
+                    <label></label>
+                    <input id = "roomName" name = "roomName" type = "search" placeholder="Enter the name of the new room "/>
 
-            <label htmlFor = "roomName" > Enter the name of the new room </label>
-            <div class="room-wrapper"> <input id = "roomName" name = "roomName" type = "text"/>
-            <button > New Room! </button> </div>
-            </form > <div id = "response" > {
-                this.state.value
-            } </div> <div >
+                    <input type="submit" value="Add New Room!"/>
+                </form >
+
+
+
+            <div >
+            <div class="spacer"/>
             <ul > {
                 this.state.rooms.map((item, key) => {
                     console.log(item);

@@ -1025,6 +1025,17 @@ public class MainSystem {
         return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
     }
     
+    public static ReturnRoomMessage platheaplayerstop(Integer roomID) {
+        if(rooms.containsKey(roomID)){
+            rooms.get(roomID).interfaceJNI.platheaPlayerStop();
+            rooms.get(roomID).streams.clear();
+            rooms.get(roomID).plathea=false;
+                       
+            return new ReturnRoomMessage(StatusCode.OK);
+        }
+        return new ReturnRoomMessage(StatusCode.NOT_FOUND); 
+    }
+    
     public static Response continuousTracking(int roomID){
         System.out.println("continuousTracking");
         StreamingOutput output  = new StreamingOutput() {

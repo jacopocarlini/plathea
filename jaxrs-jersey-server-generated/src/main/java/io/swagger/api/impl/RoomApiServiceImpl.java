@@ -144,8 +144,12 @@ import org.glassfish.jersey.media.multipart.FormDataBodyPart;
     }
     @Override
     public Response platheaplayerstop(Integer roomID, SecurityContext securityContext) throws NotFoundException {
-        // do some magic!
-        return Response.ok().entity(new ApiResponseMessage(ApiResponseMessage.OK, "magic!")).build();
+        MainSystem.ReturnRoomMessage ret = MainSystem.platheaplayerstop(roomID);
+        if (ret.getCode()==MainSystem.StatusCode.INVALID) 
+            return Response.status(Response.Status.BAD_REQUEST).entity(ret.getMessage()).build();
+        if (ret.getCode()==MainSystem.StatusCode.NOT_FOUND) 
+            return Response.status(Response.Status.NOT_FOUND).entity(ret.getMessage()).build();
+        return Response.ok().entity(ret.getMessage()).build();
     }
     @Override
     public Response selectsvmclassifier(Integer roomID, InputStream uploadedInputStream, FormDataContentDisposition fileDetails, SecurityContext securityContext) throws NotFoundException {

@@ -49,7 +49,7 @@ public class InterfaceJNI {
             String port = String.valueOf(4000+this.roomID);
             //sendCommand("stop");
             Runtime rt = Runtime.getRuntime();    
-            //myProcess = rt.exec("java -cp D:\\github\\plathea\\jaxrs-jersey-server-generated\\src\\main\\java\\io\\core InstancePlathea "+port);
+            myProcess = rt.exec("java -cp D:\\github\\plathea\\jaxrs-jersey-server-generated\\src\\main\\java\\io\\core InstancePlathea "+port);
         
         
             addr = InetAddress.getByName(null);       
@@ -173,12 +173,14 @@ public class InterfaceJNI {
             
             out.println(cmd);
             int length = dIn.readInt();                    // read length of incoming message
+            System.out.println("frame lenght: "+length);
             if(length>0) {
                 byte[] message = new byte[length];
                 dIn.readFully(message, 0, message.length); // read the message
                 System.out.println(message.length);
                 return message;
             }
+            else return new byte[0];
            
             //out.close();
             //dIn.close();
