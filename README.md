@@ -1,7 +1,8 @@
 # Integrating multiple independent legacy indoor localization systems through a RESTful API
 My Master Thesis project. 
+
 You can find the presentation on [slide share](https://www.slideshare.net/JacopoCarlini/master-thesis-128427414)
-And the pdf of the thesis [here](https://drive.google.com/open?id=1ZqZCE-y41hWIdABkRcyY8xWQ6S4SPJfA) 
+and the pdf of the thesis [here](https://drive.google.com/open?id=1ZqZCE-y41hWIdABkRcyY8xWQ6S4SPJfA) 
 
 
 
@@ -72,6 +73,7 @@ mvn clean project jetty:run
 ### Run the WebApp
 In the webapp folder use these commands:
 
+use this just the first time
 ```
 npm install
 ```
